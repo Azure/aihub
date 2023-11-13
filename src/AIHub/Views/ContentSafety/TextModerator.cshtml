@@ -58,15 +58,6 @@
                     style="width: 100%; resize: none; overflow: auto; height: 100px;">Si no me concedéis ese préstamo voy a ir a la oficina y le voy a pegar fuego con vosotros dentro.</textarea>
             </div>
         </div>
-
-
-        <script>
-            function copyText(text) {
-                document.getElementById("text").value = text;
-            }
-        </script>
-
-
         <div class="col-md-6">
 
             <div class="form-group">
@@ -77,30 +68,5 @@
             <button type="submit" class="btn btn-primary" onclick="submitForm()">Evaluate Text</button>
 
         </div>
-        <script>
-            function submitForm() {
-                // Disable the button
-                var btn = document.querySelector('button[type="submit"]');
-                btn.disabled = true;
-
-                // Show the loading panel
-                var loadingPanel = document.getElementById('loadingPanel');
-                loadingPanel.style.display = 'block';
-
-                // Submit the form
-                var form = document.querySelector('form');
-                form.submit();
-            }
-            window.onload = function() {
-                // Enable the button
-                var btn = document.querySelector('button[type="submit"]');
-                btn.disabled = false;
-
-                // Hide the loading panel
-                var loadingPanel = document.getElementById('loadingPanel');
-                loadingPanel.style.display = 'none';
-            }
-        </script>
-
     </div>
 </form>

@@ -10,8 +10,8 @@ package-lock.json
 .hugo_build.lock
 
 #appsettings file
-appsettings.json
-appsettings.Development.json
+src/AIHub/appsettings.json
+src/AIHub/appsettings.Development.json
 
 # User-specific files
 *.rsuser

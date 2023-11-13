@@ -72,29 +72,5 @@
             <button type="submit" class="btn btn-primary" onclick="submitForm()">Upload Image</button>
 
         </div>
-        <script>
-            function submitForm() {
-                // Disable the button
-                var btn = document.querySelector('button[type="submit"]');
-                btn.disabled = true;
-
-                // Show the loading panel
-                var loadingPanel = document.getElementById('loadingPanel');
-                loadingPanel.style.display = 'block';
-
-                // Submit the form
-                var form = document.querySelector('form');
-                form.submit();
-            }
-            window.onload = function () {
-                // Enable the button
-                var btn = document.querySelector('button[type="submit"]');
-                btn.disabled = false;
-
-                // Hide the loading panel
-                var loadingPanel = document.getElementById('loadingPanel');
-                loadingPanel.style.display = 'none';
-            }
-        </script>
     </div>
 </form>

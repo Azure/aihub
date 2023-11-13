@@ -57,15 +57,6 @@
                     style="width: 100%; resize: none; overflow: auto; height: 100px;">Ola, acabo de ter un accidente de tráfico e quería denuncialo. Ok, espero que esteas ben, que pasou? Ía pola I-18 e choquei contra outro coche. Estás ben? Si, estou un pouco impresionado. Iso é comprensible. Podes darme o teu nome completo? Claro, son Sarah Standl. Sabes o que provocou o accidente? Creo que podería ter un bache. Ben, onde ocorreu o accidente? Na estrada I-18. Alguén máis resultou ferido? Non creo. Pero non estou seguro. Ben, teremos que investigar. Podes darme información sobre os outros condutores? Por suposto, o seu nome é John Radley. E o teu número de seguro. OK. Dame un minuto. Vale, é 546452. Vale, que tipo de danos ten o coche? Os faros están rotos e apagáronse os airbags. Podes conducilo? Non sei. Vou ter que remolcalo. Ben, teremos que inspeccionalo. Seguirei e presentarei a reclamación e solucionarémolo todo. Grazas.</textarea>
             </div>
         </div>
-
-
-        <script>
-            function copyText(text) {
-                document.getElementById("text").value = text;
-            }
-        </script>
-
-
         <div class="col-md-6">
 
             <div class="form-group">
@@ -83,30 +74,5 @@
             <button type="submit" class="btn btn-primary" onclick="submitForm()">Analyze call</button>
             
         </div>
-        <script>
-            function submitForm() {
-                // Disable the button
-                var btn = document.querySelector('button[type="submit"]');
-                btn.disabled = true;
-
-                // Show the loading panel
-                var loadingPanel = document.getElementById('loadingPanel');
-                loadingPanel.style.display = 'block';
-
-                // Submit the form
-                var form = document.querySelector('form');
-                form.submit();
-            }
-            window.onload = function () {
-                // Enable the button
-                var btn = document.querySelector('button[type="submit"]');
-                btn.disabled = false;
-
-                // Hide the loading panel
-                var loadingPanel = document.getElementById('loadingPanel');
-                loadingPanel.style.display = 'none';
-            }
-        </script>
-
     </div>
 </form>
