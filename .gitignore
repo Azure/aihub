@@ -9,6 +9,10 @@ node_modules/
 package-lock.json
 .hugo_build.lock
 
+#appsettings file
+appsettings.json
+appsettings.Development.json
+
 # User-specific files
 *.rsuser
 *.suo
@@ -402,7 +406,3 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
-
-#appsettings file
-appsettings.json
-appsettings.Development.json
