@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.002.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AIHub", "AIHub.csproj", "{2ED5934A-7E08-4DA8-8B58-8A08137B18E9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2ED5934A-7E08-4DA8-8B58-8A08137B18E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2ED5934A-7E08-4DA8-8B58-8A08137B18E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2ED5934A-7E08-4DA8-8B58-8A08137B18E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2ED5934A-7E08-4DA8-8B58-8A08137B18E9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {20AA2353-81A6-44D5-8342-7A0BDDFA36A4}
+	EndGlobalSection
+EndGlobal
