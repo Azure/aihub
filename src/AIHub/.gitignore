@@ -1,0 +1,16 @@
+#ignore the appsettings.json file
+appsettings.json
+#ignore the publish folder
+publish/
+# ignore the packages folder
+!**/packages/*
+# ignore the .vscode folder
+!.vscode/
+# ignore Debug and subfolders
+**/Debug/*
+# ignore Release and subfolders
+**/Release/*
+# ignore obj folders
+obj/*
+# ignore .sln file
+*.sln

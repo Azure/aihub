@@ -1,0 +1,100 @@
+@{
+    ViewData["Title"] = "Image Moderator Test";
+}
+
+<div class="text-center">
+    <svg style="fill: var(--main-color)" xmlns="http://www.w3.org/2000/svg" height="4em"
+        viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.2 by @@fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+        <path
+            d="M256 0c4.6 0 9.2 1 13.4 2.9L457.7 82.8c22 9.3 38.4 31 38.3 57.2c-.5 99.2-41.3 280.7-213.6 363.2c-16.7 8-36.1 8-52.8 0C57.3 420.7 16.5 239.2 16 140c-.1-26.2 16.3-47.9 38.3-57.2L242.7 2.9C246.8 1 251.4 0 256 0zm0 66.8V444.8C394 378 431.1 230.1 432 141.4L256 66.8l0 0z" />
+    </svg>
+    <h1 class="sectionTitle">Image Moderator</h1>
+    <p class="sectionSubTitle">Moderate images by adding the thresholds for different flags, with threshold levels from
+        1 to 6, being 6 the most restricted content filter.</p>
+    <p>Learn about <a href="https://learn.microsoft.com/en-us/azure/ai-services/content-safety/overview">Detect Harmful
+            materials</a>.</p>
+</div>
+
+@if (ViewBag.Message != null)
+{
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-6">
+            <div class="alert alert-primary" role="alert">
+                @Html.Raw(ViewBag.Message.Replace("\n", "<br />"))
+            </div>
+        </div>
+    </div>
+}
+
+@if (ViewBag.Image != null)
+{
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-6">
+            <div class="alert alert-primary" role="alert">
+                <img id="bigpic" src="@ViewBag.Image" alt="picture" width=400 align="center" />
+            </div>
+        </div>
+    </div>
+}
+
+<form asp-controller="ContentSafety" asp-action="UploadFile" method="post" enctype="multipart/form-data">
+    <div class="row justify-content-center mt-5">
+        <div class="column">
+            <img src="@Url.Content("~/ContentSafety.png")" alt-text="Content Safety image" width="380"
+                height="184"></img>
+        </div>
+        <span class="form-group">
+            <label>Content Evaluation:</label>
+            <br />
+            <label for="severity">Severity:</label>
+            <input type="number" class="form-control" id="severitytext" name="severitytext" min="0" max="6"
+                value="@(Model?.Severity ?? 1)" style="width: 10%;" />
+            <label for="violence">Violence:</label>
+            <input type="number" class="form-control" id="violencetext" name="violencetext" min="0" max="6"
+                value="@(Model?.Violence ?? 1)" style="width: 10%;" />
+
+            <label for="self-harm">Self-harm:</label>
+            <input type="number" class="form-control" id="shtext" name="shtext" min="0" max="6"
+                value="@(Model?.SelfHarm ?? 1)" style="width: 10%;" />
+
+            <label for="hate">Hate:</label>
+            <input type="number" class="form-control" id="hatetext" name="hatetext" min="0" max="6"
+                value="@(Model?.Hate ?? 1)" style="width: 10%;" />
+
+        </span>
+        <div class="col-md-6">
+
+            <div class="form-group">
+                <label for="imageFile">Image File:</label><br>
+                <input type="file" class="form-control-file" id="imageFile" name="imageFile" />
+            </div>
+            <div id="loadingPanel" style="display: none;">Loading...</div>
+            <button type="submit" class="btn btn-primary" onclick="submitForm()">Upload Image</button>
+
+        </div>
+        <script>
+            function submitForm() {
+                // Disable the button
+                var btn = document.querySelector('button[type="submit"]');
+                btn.disabled = true;
+
+                // Show the loading panel
+                var loadingPanel = document.getElementById('loadingPanel');
+                loadingPanel.style.display = 'block';
+
+                // Submit the form
+                var form = document.querySelector('form');
+                form.submit();
+            }
+            window.onload = function () {
+                // Enable the button
+                var btn = document.querySelector('button[type="submit"]');
+                btn.disabled = false;
+
+                // Hide the loading panel
+                var loadingPanel = document.getElementById('loadingPanel');
+                loadingPanel.style.display = 'none';
+            }
+        </script>
+    </div>
+</form>

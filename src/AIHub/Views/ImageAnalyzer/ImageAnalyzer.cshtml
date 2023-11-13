@@ -1,0 +1,94 @@
+@{
+    ViewData["Title"] = "Image Analyzer";
+}
+
+<div class="text-center">
+    <svg style="fill: var(--main-color)" xmlns="http://www.w3.org/2000/svg" height="4em"
+        viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.2 by @@fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+        <path
+            d="M448 80c8.8 0 16 7.2 16 16V415.8l-5-6.5-136-176c-4.5-5.9-11.6-9.3-19-9.3s-14.4 3.4-19 9.3L202 340.7l-30.5-42.7C167 291.7 159.8 288 152 288s-15 3.7-19.5 10.1l-80 112L48 416.3l0-.3V96c0-8.8 7.2-16 16-16H448zM64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zm80 192a48 48 0 1 0 0-96 48 48 0 1 0 0 96z" />
+    </svg>
+    <h1 class="sectionTitle">Image Analyzer</h1>
+    <p class="sectionSubTitle">Analyze your image using GPT4 and Azure Vision Services.</p>
+    <p class="sectionDetails">You just need to upload an image (.jpg, .png).</p>
+
+</div>
+
+@if (ViewBag.Waiting != null)
+{
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-6">
+            <div class="alert alert-primary" role="banner">
+                @Html.Raw("Loading...")
+            </div>
+        </div>
+    </div>
+}
+
+@if (ViewBag.Message != null)
+{
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-6">
+            <div class="alert alert-primary" role="alert">
+                @Html.Raw(ViewBag.Message.Replace("\n", "<br />"))
+            </div>
+        </div>
+    </div>
+}
+@if (ViewBag.Image != null)
+{
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-6">
+            <div class="alert alert-primary" role="alert">
+                <img id="bigpic" src="@ViewBag.Image" alt="picture" width=400 align="center" />
+            </div>
+        </div>
+    </div>
+}
+
+
+<form asp-controller="ImageAnalyzer" asp-action="UploadFile" method="post" enctype="multipart/form-data">
+    @* <div class="row justify-content-center mt-5">
+    <span class="form-group">
+    <label for="fname">Upload your image to analyze:</label><br>
+    <input type="text" class="form-control" id="image_url" name="image_url" value="" style="width: 70%;"/>
+    <input type="file" class="form-control-file" id="imageFile" name="imageFile" />
+    </div>
+    <button type="submit" class="btn btn-primary">Upload Image</button>
+    </div> *@
+
+    <div class="col-md-6">
+
+        <div class="form-group">
+            <label for="imageFile">Image File:</label><br>
+            <input type="file" class="form-control-file" id="imageFile" name="imageFile" />
+        </div>
+        <div id="loadingPanel" style="display: none;">Loading...</div>
+        <button type="submit" class="btn btn-primary" onclick="submitForm()">Upload Image</button>
+
+    </div>
+    <script>
+        function submitForm() {
+            // Disable the button
+            var btn = document.querySelector('button[type="submit"]');
+            btn.disabled = true;
+
+            // Show the loading panel
+            var loadingPanel = document.getElementById('loadingPanel');
+            loadingPanel.style.display = 'block';
+
+            // Submit the form
+            var form = document.querySelector('form');
+            form.submit();
+        }
+        window.onload = function () {
+            // Enable the button
+            var btn = document.querySelector('button[type="submit"]');
+            btn.disabled = false;
+
+            // Hide the loading panel
+            var loadingPanel = document.getElementById('loadingPanel');
+            loadingPanel.style.display = 'none';
+        }
+    </script>
+</form>
