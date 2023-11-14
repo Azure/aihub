@@ -74,7 +74,7 @@ public class ImageAnalyzerController : Controller
     {
    
         //1. Get Image
-        string image = image_url;
+        model.Image = image_url;
        //2. Dense Captioning
         string output_result = "";
 
@@ -88,7 +88,7 @@ public class ImageAnalyzerController : Controller
 
              var content = new
             {
-                url = image + sasUri.Query
+                url = model.Image + sasUri.Query
             };
             
              var json = System.Text.Json.JsonSerializer.Serialize(content);
@@ -138,7 +138,7 @@ public class ImageAnalyzerController : Controller
 
              var content2 = new
             {
-                url = image + sasUri.Query
+                url = model.Image + sasUri.Query
             };
             
              var json2 = System.Text.Json.JsonSerializer.Serialize(content2);
@@ -213,7 +213,7 @@ public class ImageAnalyzerController : Controller
                     //"Hate severity: " + (response.Value.HateResult?.Severity ?? 0);
                    results_analisis.Message.Content
                    ;
-            ViewBag.Image=image + sasUri.Query;
+            ViewBag.Image=model.Image + sasUri.Query;
             Console.WriteLine(ViewBag.Message);
             Console.WriteLine(ViewBag.Image);
 
@@ -233,7 +233,7 @@ public class ImageAnalyzerController : Controller
        
         // var result = await _service.GetBuildingHomeAsync(); 
         // return Ok(result); 
-        return View("ImageAnalyzer");
+        return View("ImageAnalyzer", model);
     }
 
         //Upload a file to my azure storage account
