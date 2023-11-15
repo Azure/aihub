@@ -24,6 +24,6 @@ Important concepts about Azure OpenAI:
 * **Quotas**: the quotas available in Azure are allocated per model and per region, within a subscription. [Learn more about quotas](https://learn.microsoft.com/en-us/azure/ai-services/openai/quotas-limits). In the documentation you can find best practices to manage your quota.
 
 
-**Activate GenAI with Azure** uses Azure OpenAI Embeddings model to vectorize the content and ChatGPT model to conversate with that content. 
+**AI Hub** uses Azure OpenAI Embeddings model to vectorize the content and ChatGPT model to conversate with that content. 
 
 More information at the official documentation: [What is Azure OpenAI](https://learn.microsoft.com/en-us/azure/ai-services/openai/overview)

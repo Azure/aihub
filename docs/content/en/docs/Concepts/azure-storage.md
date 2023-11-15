@@ -19,6 +19,6 @@ Blob Storage is designed for:
 * Storing data for backup and restore, disaster recovery, and archiving.
 * Storing data for analysis by an on-premises or Azure-hosted service.
 
-**Activate GenAI with Azure** uses Blob Storage to store the documents (PDFs) that will be then vectorized and indexed. 
+**AI Hub** uses Blob Storage to store the documents (PDFs) that will be then vectorized and indexed. 
 
 Learn more about Azure Blob Storage: [What is Azure Blob Storage?](https://learn.microsoft.com/en-us/azure/storage/blobs/storage-blobs-overview)

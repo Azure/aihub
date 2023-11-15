@@ -167,7 +167,7 @@ enable = false
 [params.links]
 # Developer relevant links. These will show up on right side of footer and in the community page if you have one.
 [[params.links.developer]]
-  name = "Microsoft - Activate GenAI with Azure"
+  name = "Microsoft - AI Hub"
   url = "https://github.com/azure/aihub"
   icon = "fab fa-microsoft"
   desc = ""
