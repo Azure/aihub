@@ -4,7 +4,7 @@ date: 2023-11-16
 description: >
   Used to keep your content safe. Create better online experiences for everyone with powerful AI models that detect offensive or inappropriate content in text and images quickly and efficiently.
 categories: [Azure]
-tags: [docs, cognitive-search]
+tags: [docs, content-safety, azure, ai, content, safety]
 weight: 2
 ---
 
@@ -19,7 +19,7 @@ Moderator works both for text and image content. It can be used to detect adult 
 
 [Azure AI Content Safety Studio](https://contentsafety.cognitive.azure.com/) is an online tool designed to handle potentially offensive, risky, or undesirable content using cutting-edge content moderation ML models. It provides templates and customized workflows, enabling users to choose and build their own content moderation system. Users can upload their own content or try it out with provided sample content.
 
-<video width="320" height="240" controls>
+<video width="500" height="350" controls>
   <source src="https://cdn-dynmedia-1.microsoft.com/is/content/microsoftcorp/azure-ai-content-0x720-3266k" type="video/mp4">
   Your browser does not support the video tag.
 </video>
