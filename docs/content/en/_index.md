@@ -3,7 +3,7 @@ title: AI Hub
 ---
 
 {{< blocks/cover title="AI Hub!" image_anchor="top" height="full" >}}
-<div class=""><img src="/img/aihub-logo.png" style="height: 200px; margin-bottom: 20px;" /></div>
+<div class=""><img src="/aihub/img/aihub-logo.png" style="height: 200px; margin-bottom: 20px;" /></div>
 <div class="">
 <a class="btn btn-lg btn-primary me-3 mb-4" href="/aihub/docs/">
   Learn More <i class="fas fa-arrow-alt-circle-right ms-2"></i>
