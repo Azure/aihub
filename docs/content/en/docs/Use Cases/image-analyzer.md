@@ -8,4 +8,7 @@ tags: [docs, cognitive-search, azure-vision-services]
 weight: 3
 ---
 
-lorem ipsum dolor sit amet
+Analyze your image using GPT4 and Azure Vision Services.
+Upload an image and the Image Analyzer will analyze it using Azure Vision Services formats supported .jpg, .png
+
+![Image Analyzer screenshot](/aihub/img/imageanalyzer.jpg)

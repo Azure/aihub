@@ -9,6 +9,7 @@ weight: 9
 * [Chat Copilot Sample Application](https://github.com/microsoft/chat-copilot)
 * [ChatGPT + Enterprise data with Azure OpenAI and Cognitive Search](https://github.com/Azure-Samples/azure-search-openai-demo)
 * [Azure OpenAI Embeddings QnA](https://github.com/ruoccofabrizio/azure-open-ai-embeddings-qna)
+* [Azure SDK for .NET](https://github.com/Azure/azure-sdk-for-net)
 
 ## Azure APIM & Azure OpenAI
 
@@ -20,6 +21,7 @@ weight: 9
 
 * [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
 * [Azure Cognitive Search](https://learn.microsoft.com/en-us/azure/search/search-what-is-azure-search)
+* [Azure Content Safety](https://learn.microsoft.com/en-us/azure/ai-services/content-safety/overview)
 * [Azure Container Apps](https://learn.microsoft.com/en-us/azure/container-apps/overview)
 * [Azure API Management](https://learn.microsoft.com/en-us/azure/api-management/api-management-key-concepts)
 * [Azure Application Insights](hhttps://learn.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview?tabs=net)
