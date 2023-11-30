@@ -26,18 +26,21 @@ By the end of this delivery, you will be able to:
 - Scale and integrate the solution with other services
 
 ## Delivery Guidance
-This delivery consists of the following steps:
+This delivery involves the the following steps:
 
 ### Day 1:
-1. Scoping and planning.
-1. Prepare the environment.
-1. Adapt deployment scripts according to the customer's requirements.
+1. Defining and planning.
+1. Set up the environment.
+1. Customize the deployment to the customer's appearance and needs.
+1. Deploy the **AI Hub** solution: Create and configure the Azure resources.
+1. Upload custom data files and perform vector search.
+1. Test and use the services to ensure the presentation success. 
 
 ### Day 2:
-1. Deploy the **AI Hub** solution: Create and configure the Azure resources.
-1. Test and use the chat interface to query documents.
-1. Upload custom data files and perform vector search.
+1. Introduce the solution to the customer.
+1. Demonstrate the solution's features.
+1. Allow customer to try out the solution and prompts. 
 
 ## Closing
-By the end of  the **AI Hub** delivery, stakeholders will have a  powerful and innovative solution that can help them improve their document retrieval efficiency, enhance their user experience, increase their productivity, share their knowledge, gain data insights and analytics, and comply with security standards.ss
+By the end of the **AI Hub** delivery, stakeholders will have a strong and innovative perspective of some AOAI services which can be used separately or together to improve their document retrieval efficiency, enhance their user experience, increase their productivity, share their knowledge, gain data insights and analytics, and comply with security standards.
 
