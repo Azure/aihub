@@ -6,8 +6,8 @@ weight: 20
 ---
 
 {{% pageinfo %}}
-**AI Hub!** &mdash; Lorem ipsum bla bla bla.
+**AI Hub!** &mdash; To show in a simple way different Azure OpenAI features and services.
 {{% /pageinfo %}}
 
-This delivery guide will help you bla bla bla.
+This delivery guide will guide you through some of the most common scenarios and uses cases when using Azure OpenAI. 
 

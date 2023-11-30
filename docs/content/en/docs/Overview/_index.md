@@ -18,7 +18,7 @@ To use this solution, you will need the following:
 ## Objectives
 By the end of this delivery, you will be able to:
 - Configure and deploy the **AI Hub** solution
-- Use the chat interface to query documents and get relevant results
+- Use OpenAI cases to understand the solution's capabilities
 - Upload custom data files and perform vector search
 - Extend the solution with plugins
 - Manage the charge back functionality
@@ -37,13 +37,6 @@ This delivery consists of the following steps:
 1. Deploy the **AI Hub** solution: Create and configure the Azure resources.
 1. Test and use the chat interface to query documents.
 1. Upload custom data files and perform vector search.
-
-### Day 3:
-1. Customize the solution's look and feel.
-1. Extend the solution with prompt engineering and plugins.
-1. Show how the solution scales and integrates with other services.
-1. Show how the security and monitoring works.
-1. Plan the next steps.
 
 ## Closing
 By the end of  the **AI Hub** delivery, stakeholders will have a  powerful and innovative solution that can help them improve their document retrieval efficiency, enhance their user experience, increase their productivity, share their knowledge, gain data insights and analytics, and comply with security standards.ss
