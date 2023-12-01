@@ -1,7 +1,8 @@
 namespace MVCWeb.Models;
 
-public class CallCenterModel{
-    
+public class CallCenterModel
+{
+
     public int? Severity { get; set; }
     public int? Violence { get; set; }
     public int? SelfHarm { get; set; }

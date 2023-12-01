@@ -1,7 +1,8 @@
 namespace MVCWeb.Models;
 
-public class ContentSafetyModel{
-    
+public class ContentSafetyModel
+{
+
     public ContentSafetyModel()
     {
         Severity = 1; // Default value

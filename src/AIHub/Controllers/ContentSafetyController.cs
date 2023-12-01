@@ -1,14 +1,3 @@
-using System.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
-using MVCWeb.Models;
-using Azure.AI.ContentSafety;
-using Azure;
-using ContentSafetySampleCode;
-using System;
-using Azure.Storage.Blobs;
-using Azure.Storage.Blobs.Models;
-using Azure.Identity;
-
 namespace MVCWeb.Controllers;
 
 public class ContentSafetyController : Controller
@@ -58,8 +47,8 @@ public class ContentSafetyController : Controller
         sasUri = containerClient.GenerateSasUri(Azure.Storage.Sas.BlobContainerSasPermissions.Read, DateTimeOffset.UtcNow.AddHours(1));
         // Obtiene una lista de blobs en el contenedor
         blobs = containerClient.GetBlobs();
-        model = new ContentSafetyModel();       
-        
+        model = new ContentSafetyModel();
+
     }
 
     public IActionResult TextModerator()
@@ -115,7 +104,7 @@ public class ContentSafetyController : Controller
                     "SelfHarm severity: " + (response.Value.SelfHarmResult?.Severity ?? 0) + "\n" +
                     "Sexual severity: " + (response.Value.SexualResult?.Severity ?? 0) + "\n" +
                     "Violence severity: " + (response.Value.ViolenceResult?.Severity ?? 0);
-            ViewBag.Image=imageUrl + sasUri.Query;
+            ViewBag.Image = imageUrl + sasUri.Query;
         }
         catch (RequestFailedException ex)
         {
@@ -130,7 +119,7 @@ public class ContentSafetyController : Controller
     [HttpPost]
     public IActionResult EvaluateText()
     {
-        if(CheckNullValues(HttpContext))
+        if (CheckNullValues(HttpContext))
         {
             ViewBag.Message = "You must enter a value for each threshold";
             return View("TextModerator", model);
@@ -147,7 +136,7 @@ public class ContentSafetyController : Controller
         model.Hate = Convert.ToInt32(HttpContext.Request.Form["hatetext"]);
         model.Text = HttpContext.Request.Form["text"];
         model.Approve = true;
-        
+
         ContentSafetyClient client = new ContentSafetyClient(new Uri(endpoint), new AzureKeyCredential(subscriptionKey));
 
         var request = new AnalyzeTextOptions(model.Text);

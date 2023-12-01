@@ -1,25 +1,3 @@
-using System.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
-using MVCWeb.Models;
-using Azure.AI.ContentSafety;
-using Azure;
-using ContentSafetySampleCode;
-using System;
-using Azure.Storage.Blobs;
-using Azure.Storage.Blobs.Models;
-using Azure.Identity;
-using Azure.AI.OpenAI;
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using Newtonsoft.Json;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
-using System.Runtime.InteropServices;
-
-
 namespace MVCWeb.Controllers;
 
 public class ImageAnalyzerController : Controller
@@ -28,7 +6,7 @@ public class ImageAnalyzerController : Controller
     private readonly IConfiguration _config;
     private string Visionendpoint;
     private string OCRendpoint;
-    private string VisionsubscriptionKey;    
+    private string VisionsubscriptionKey;
     private string AOAIendpoint;
     private string AOAIsubscriptionKey;
     private string storageconnstring;
@@ -50,11 +28,11 @@ public class ImageAnalyzerController : Controller
     public ImageAnalyzerController(IConfiguration config)
     {
         _config = config;
-        Visionendpoint= _config.GetValue<string>("ImageAnalyzer:VisionEndpoint");
-        OCRendpoint=_config.GetValue<string>("ImageAnalyzer:OCREndpoint");
-        VisionsubscriptionKey= _config.GetValue<string>("ImageAnalyzer:VisionSubscriptionKey");
-        AOAIendpoint= _config.GetValue<string>("ImageAnalyzer:OpenAIEndpoint");
-        AOAIsubscriptionKey= _config.GetValue<string>("ImageAnalyzer:OpenAISubscriptionKey");
+        Visionendpoint = _config.GetValue<string>("ImageAnalyzer:VisionEndpoint");
+        OCRendpoint = _config.GetValue<string>("ImageAnalyzer:OCREndpoint");
+        VisionsubscriptionKey = _config.GetValue<string>("ImageAnalyzer:VisionSubscriptionKey");
+        AOAIendpoint = _config.GetValue<string>("ImageAnalyzer:OpenAIEndpoint");
+        AOAIsubscriptionKey = _config.GetValue<string>("ImageAnalyzer:OpenAISubscriptionKey");
         storageconnstring = _config.GetValue<string>("Storage:ConnectionString");
         BlobServiceClient blobServiceClient = new BlobServiceClient(storageconnstring);
         containerClient = blobServiceClient.GetBlobContainerClient(_config.GetValue<string>("Storage:ContainerName"));
@@ -63,7 +41,7 @@ public class ImageAnalyzerController : Controller
         blobs = containerClient.GetBlobs();
         model = new ImageAnalyzerModel();
     }
- 
+
     public IActionResult ImageAnalyzer()
     {
         return View();
@@ -72,37 +50,37 @@ public class ImageAnalyzerController : Controller
     [HttpPost]
     public async Task<IActionResult> DenseCaptionImage(string image_url)
     {
-   
+
         //1. Get Image
         model.Image = image_url;
-       //2. Dense Captioning
+        //2. Dense Captioning
         string output_result = "";
 
-         HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri(Visionendpoint);
+        HttpClient client = new HttpClient();
+        client.BaseAddress = new Uri(Visionendpoint);
 
-            // Add an Accept header for JSON format.
-            client.DefaultRequestHeaders.Accept.Add(
-            new MediaTypeWithQualityHeaderValue("application/json"));
-            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", VisionsubscriptionKey);
+        // Add an Accept header for JSON format.
+        client.DefaultRequestHeaders.Accept.Add(
+        new MediaTypeWithQualityHeaderValue("application/json"));
+        client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", VisionsubscriptionKey);
 
-             var content = new
-            {
-                url = model.Image + sasUri.Query
-            };
-            
-             var json = System.Text.Json.JsonSerializer.Serialize(content);
+        var content = new
+        {
+            url = model.Image + sasUri.Query
+        };
 
-            // Crear un HttpContent con el JSON y el tipo de contenido
-            HttpContent content_body = new StringContent(json, Encoding.UTF8, "application/json");
-           // List data response.
-            HttpResponseMessage response = await client.PostAsync(Visionendpoint, content_body);  // Blocking call! Program will wait here until a response is received or a timeout occurs.
-                response.EnsureSuccessStatusCode();
-                string responseBody = await response.Content.ReadAsStringAsync();
+        var json = System.Text.Json.JsonSerializer.Serialize(content);
+
+        // Crear un HttpContent con el JSON y el tipo de contenido
+        HttpContent content_body = new StringContent(json, Encoding.UTF8, "application/json");
+        // List data response.
+        HttpResponseMessage response = await client.PostAsync(Visionendpoint, content_body);  // Blocking call! Program will wait here until a response is received or a timeout occurs.
+        response.EnsureSuccessStatusCode();
+        string responseBody = await response.Content.ReadAsStringAsync();
         // Above three lines can be replaced with new helper method below
         // string responseBody = await client.GetStringAsync(uri);
 
-            response.EnsureSuccessStatusCode();
+        response.EnsureSuccessStatusCode();
 
         // Parse the response as JSON
         try
@@ -114,45 +92,45 @@ public class ImageAnalyzerController : Controller
             // Iterate over the news items and print them
             foreach (var i in dense_descriptions)
             {
-                output_result=output_result+i.text;
+                output_result = output_result + i.text;
             };
         }
         catch (Exception e)
         {
             Console.WriteLine(e.Message);
         }
-  
-        client.Dispose(); 
-        
-        
+
+        client.Dispose();
+
+
         //3. OCR
         string output_result_2 = "";
 
-         HttpClient client2 = new HttpClient();
-            client2.BaseAddress = new Uri(OCRendpoint);
+        HttpClient client2 = new HttpClient();
+        client2.BaseAddress = new Uri(OCRendpoint);
 
-            // Add an Accept header for JSON format.
-            client2.DefaultRequestHeaders.Accept.Add(
-            new MediaTypeWithQualityHeaderValue("application/json"));
-            client2.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", VisionsubscriptionKey);
+        // Add an Accept header for JSON format.
+        client2.DefaultRequestHeaders.Accept.Add(
+        new MediaTypeWithQualityHeaderValue("application/json"));
+        client2.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", VisionsubscriptionKey);
 
-             var content2 = new
-            {
-                url = model.Image + sasUri.Query
-            };
-            
-             var json2 = System.Text.Json.JsonSerializer.Serialize(content2);
+        var content2 = new
+        {
+            url = model.Image + sasUri.Query
+        };
 
-            // Crear un HttpContent con el JSON y el tipo de contenido
-            HttpContent content_body2 = new StringContent(json2, Encoding.UTF8, "application/json");
-           // List data response.
-            HttpResponseMessage response2 = await client2.PostAsync(OCRendpoint, content_body2);  // Blocking call! Program will wait here until a response is received or a timeout occurs.
-                response2.EnsureSuccessStatusCode();
-                string responseBody2 = await response2.Content.ReadAsStringAsync();
+        var json2 = System.Text.Json.JsonSerializer.Serialize(content2);
+
+        // Crear un HttpContent con el JSON y el tipo de contenido
+        HttpContent content_body2 = new StringContent(json2, Encoding.UTF8, "application/json");
+        // List data response.
+        HttpResponseMessage response2 = await client2.PostAsync(OCRendpoint, content_body2);  // Blocking call! Program will wait here until a response is received or a timeout occurs.
+        response2.EnsureSuccessStatusCode();
+        string responseBody2 = await response2.Content.ReadAsStringAsync();
         // Above three lines can be replaced with new helper method below
         // string responseBody = await client.GetStringAsync(uri);
 
-            response2.EnsureSuccessStatusCode();
+        response2.EnsureSuccessStatusCode();
 
         // Parse the response as JSON
         try
@@ -161,8 +139,8 @@ public class ImageAnalyzerController : Controller
             Console.WriteLine(responsejson2.ToString());
             // Get the web pages from the response
             var ocr = responsejson2.readResult.content;
-            if (ocr!="")output_result_2=ocr;
-            else output_result_2="there is no text in the image";
+            if (ocr != "") output_result_2 = ocr;
+            else output_result_2 = "there is no text in the image";
 
             // Iterate over the news items and print them           
         }
@@ -170,8 +148,8 @@ public class ImageAnalyzerController : Controller
         {
             Console.WriteLine(e.Message);
         }
-  
-        client.Dispose(); 
+
+        client.Dispose();
 
         //4. Tags 
 
@@ -185,10 +163,10 @@ public class ImageAnalyzerController : Controller
         //7. Describe Image GPT4
         try
         {
-                        
-           OpenAIClient client_oai = new OpenAIClient(
-            new Uri(AOAIendpoint),
-            new AzureKeyCredential(AOAIsubscriptionKey));
+
+            OpenAIClient client_oai = new OpenAIClient(
+             new Uri(AOAIendpoint),
+             new AzureKeyCredential(AOAIsubscriptionKey));
 
             // ### If streaming is not selected
             Response<ChatCompletions> responseWithoutStream = await client_oai.GetChatCompletionsAsync(
@@ -208,48 +186,48 @@ public class ImageAnalyzerController : Controller
                 });
 
             ChatCompletions completions = responseWithoutStream.Value;
-            ChatChoice results_analisis= completions.Choices[0];
-            ViewBag.Message = 
-                    //"Hate severity: " + (response.Value.HateResult?.Severity ?? 0);
+            ChatChoice results_analisis = completions.Choices[0];
+            ViewBag.Message =
+                   //"Hate severity: " + (response.Value.HateResult?.Severity ?? 0);
                    results_analisis.Message.Content
                    ;
-            ViewBag.Image=model.Image + sasUri.Query;
+            ViewBag.Image = model.Image + sasUri.Query;
             Console.WriteLine(ViewBag.Message);
             Console.WriteLine(ViewBag.Image);
 
-             /* result_image_front=image;
-             Console.WriteLine("1) "+result_image_front);
-             Console.WriteLine("2) "+result_message_front);
-              /* ViewBag.Message = 
-                   results_analisis.Message.Content
-                   ; */
-             //ViewBag.Image=result_image_front+".jpg"; 
+            /* result_image_front=image;
+            Console.WriteLine("1) "+result_image_front);
+            Console.WriteLine("2) "+result_message_front);
+             /* ViewBag.Message = 
+                  results_analisis.Message.Content
+                  ; */
+            //ViewBag.Image=result_image_front+".jpg"; 
 
         }
         catch (RequestFailedException ex)
         {
             throw;
         }
-       
+
         // var result = await _service.GetBuildingHomeAsync(); 
         // return Ok(result); 
         return View("ImageAnalyzer", model);
     }
 
-        //Upload a file to my azure storage account
+    //Upload a file to my azure storage account
     [HttpPost]
     public async Task<IActionResult> UploadFile(IFormFile imageFile)
     {
         //Check no image
 
-         if (CheckNullValues(imageFile))
+        if (CheckNullValues(imageFile))
         {
             ViewBag.Message = "You must upload an image";
             return View("ImageAnalyzer");
         }
 
         //Upload file to azure storage account
-        string url= imageFile.FileName.ToString();
+        string url = imageFile.FileName.ToString();
         Console.WriteLine(url);
         //url= url.Replace(" ", "")+Stopwatch.GetTimestamp();
 
@@ -258,7 +236,7 @@ public class ImageAnalyzerController : Controller
 
         //Get the url of the file
         Uri blobUrl = blobClient.Uri;
-        
+
         if (CheckImageExtension(blobUrl.ToString()))
         {
             ViewBag.Message = "You must upload an image with .jpg, .jpeg or .png extension";
@@ -268,34 +246,34 @@ public class ImageAnalyzerController : Controller
 
         //Call EvaluateImage with the url
         await DenseCaptionImage(blobUrl.ToString());
-        ViewBag.Waiting=null;
+        ViewBag.Waiting = null;
 
         return View("ImageAnalyzer");
     }
 
 
 
-   [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 
-        private bool CheckNullValues(IFormFile imageFile)
+    private bool CheckNullValues(IFormFile imageFile)
     {
-        if (imageFile==null)
+        if (imageFile == null)
         {
             return true;
-        }        
+        }
         return false;
     }
 
-     private bool CheckImageExtension(string blobUri)
+    private bool CheckImageExtension(string blobUri)
     {
-        string jpg= ".jpg";
-        string jpeg=".jpeg";
-        string png= ".png";
-        string uri_lower= blobUri;
+        string jpg = ".jpg";
+        string jpeg = ".jpeg";
+        string png = ".png";
+        string uri_lower = blobUri;
         if (uri_lower.Contains(jpg, StringComparison.OrdinalIgnoreCase))
         {
             return false;
@@ -303,11 +281,11 @@ public class ImageAnalyzerController : Controller
         if (uri_lower.Contains(jpeg, StringComparison.OrdinalIgnoreCase))
         {
             return false;
-        }   
+        }
         if (uri_lower.Contains(png, StringComparison.OrdinalIgnoreCase))
         {
             return false;
-        }           
+        }
         return true;
     }
 }

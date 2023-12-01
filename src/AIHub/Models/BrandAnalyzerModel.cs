@@ -1,7 +1,8 @@
 namespace MVCWeb.Models;
 
-public class BrandAnalyzerModel{
-    
+public class BrandAnalyzerModel
+{
+
     public int? Severity { get; set; }
     public int? Violence { get; set; }
     public int? SelfHarm { get; set; }
