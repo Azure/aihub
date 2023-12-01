@@ -1,25 +1,3 @@
-using System.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
-using MVCWeb.Models;
-using Azure.AI.ContentSafety;
-using Azure;
-using ContentSafetySampleCode;
-using System;
-using Azure.Storage.Blobs;
-using Azure.Storage.Blobs.Models;
-using Azure.Identity;
-using Azure.AI.OpenAI;
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using Newtonsoft.Json;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
-using System.Runtime.InteropServices;
-
-
 namespace MVCWeb.Controllers;
 
 public class FormAnalyzerController : Controller

@@ -2,7 +2,6 @@
 // Copyright (c) Microsoft. All rights reserved.
 // To learn more, please visit the documentation - Quickstart: Azure Content Safety: https://aka.ms/acsstudiodoc
 //
-
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -162,7 +161,7 @@ namespace ContentSafetySampleCode
     /// </summary>
     public class ImageDetectionResult : DetectionResult
     {
-        
+
     }
 
     /// <summary>
@@ -272,8 +271,11 @@ namespace ContentSafetySampleCode
         /// The JSON serializer options.
         /// </summary>
         public static readonly JsonSerializerOptions options =
-            new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                                        Converters = { new JsonStringEnumConverter() } };
+            new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                Converters = { new JsonStringEnumConverter() }
+            };
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ContentSafety"/> class.
@@ -295,12 +297,12 @@ namespace ContentSafetySampleCode
         {
             switch (mediaType)
             {
-            case MediaType.Text:
-                return $"{Endpoint}/contentsafety/text:analyze?api-version={API_VERSION}";
-            case MediaType.Image:
-                return $"{Endpoint}/contentsafety/image:analyze?api-version={API_VERSION}";
-            default:
-                throw new ArgumentException($"Invalid Media Type {mediaType}");
+                case MediaType.Text:
+                    return $"{Endpoint}/contentsafety/text:analyze?api-version={API_VERSION}";
+                case MediaType.Image:
+                    return $"{Endpoint}/contentsafety/image:analyze?api-version={API_VERSION}";
+                default:
+                    throw new ArgumentException($"Invalid Media Type {mediaType}");
             }
         }
 
@@ -315,12 +317,12 @@ namespace ContentSafetySampleCode
         {
             switch (mediaType)
             {
-            case MediaType.Text:
-                return new TextDetectionRequest(content, blocklists);
-            case MediaType.Image:
-                return new ImageDetectionRequest(content);
-            default:
-                throw new ArgumentException($"Invalid Media Type {mediaType}");
+                case MediaType.Text:
+                    return new TextDetectionRequest(content, blocklists);
+                case MediaType.Image:
+                    return new ImageDetectionRequest(content);
+                default:
+                    throw new ArgumentException($"Invalid Media Type {mediaType}");
             }
         }
 
@@ -334,12 +336,12 @@ namespace ContentSafetySampleCode
         {
             switch (mediaType)
             {
-            case MediaType.Text:
-                return JsonSerializer.Deserialize<TextDetectionResult>(json, options);
-            case MediaType.Image:
-                return JsonSerializer.Deserialize<ImageDetectionResult>(json, options);
-            default:
-                throw new ArgumentException($"Invalid Media Type {mediaType}");
+                case MediaType.Text:
+                    return System.Text.Json.JsonSerializer.Deserialize<TextDetectionResult>(json, options);
+                case MediaType.Image:
+                    return System.Text.Json.JsonSerializer.Deserialize<ImageDetectionResult>(json, options);
+                default:
+                    throw new ArgumentException($"Invalid Media Type {mediaType}");
             }
         }
 
@@ -354,7 +356,7 @@ namespace ContentSafetySampleCode
         {
             string url = BuildUrl(mediaType);
             DetectionRequest requestBody = BuildRequestBody(mediaType, content, blocklists);
-            string payload = JsonSerializer.Serialize(requestBody, requestBody.GetType(), options);
+            string payload = System.Text.Json.JsonSerializer.Serialize(requestBody, requestBody.GetType(), options);
 
             var msg = new HttpRequestMessage(HttpMethod.Post, url);
             msg.Content = new StringContent(payload, Encoding.UTF8, "application/json");
@@ -372,8 +374,7 @@ namespace ContentSafetySampleCode
 
             if (!response.IsSuccessStatusCode)
             {
-                DetectionErrorResponse? error =
-                    JsonSerializer.Deserialize<DetectionErrorResponse>(responseText, options);
+                DetectionErrorResponse? error = System.Text.Json.JsonSerializer.Deserialize<DetectionErrorResponse>(responseText, options);
                 if (error == null || error.error == null || error.error.code == null || error.error.message == null)
                 {
                     throw new DetectionException(response.StatusCode.ToString(),
@@ -489,8 +490,8 @@ namespace ContentSafetySampleCode
 
             // Set the media type and blocklists
             MediaType mediaType = MediaType.Image;
-            string[] blocklists = {};
-            
+            string[] blocklists = { };
+
             // Set the content to be tested
             string content = "<test_content>";
 

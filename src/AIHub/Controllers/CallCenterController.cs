@@ -1,19 +1,3 @@
-using System.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
-using MVCWeb.Models;
-using Azure.AI.ContentSafety;
-using Azure;
-using ContentSafetySampleCode;
-using System;
-using Azure.Storage.Blobs;
-using Azure.Identity;
-using Azure.AI.OpenAI;
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using Newtonsoft.Json;
-
 namespace MVCWeb.Controllers;
 
 public class CallCenterController : Controller
@@ -29,8 +13,8 @@ public class CallCenterController : Controller
     public CallCenterController(IConfiguration config)
     {
         _config = config;
-        endpoint= _config.GetValue<string>("CallCenter:OpenAIEndpoint");
-        subscriptionKey= _config.GetValue<string>("CallCenter:OpenAISubscriptionKey");
+        endpoint = _config.GetValue<string>("CallCenter:OpenAIEndpoint");
+        subscriptionKey = _config.GetValue<string>("CallCenter:OpenAISubscriptionKey");
         model = new CallCenterModel();
 
     }
@@ -53,10 +37,10 @@ public class CallCenterController : Controller
         }
         try
         {
-                        
-           OpenAIClient client_oai = new OpenAIClient(
-            new Uri(endpoint),
-            new AzureKeyCredential(subscriptionKey));
+
+            OpenAIClient client_oai = new OpenAIClient(
+             new Uri(endpoint),
+             new AzureKeyCredential(subscriptionKey));
 
             // ### If streaming is not selected
             Response<ChatCompletions> responseWithoutStream = await client_oai.GetChatCompletionsAsync(
@@ -76,9 +60,9 @@ public class CallCenterController : Controller
                 });
 
             ChatCompletions completions = responseWithoutStream.Value;
-            ChatChoice results_analisis= completions.Choices[0];
-            System.Console.WriteLine(results_analisis);    
-            ViewBag.Message = 
+            ChatChoice results_analisis = completions.Choices[0];
+            System.Console.WriteLine(results_analisis);
+            ViewBag.Message =
                    results_analisis.Message.Content
                    ;
         }
@@ -105,7 +89,7 @@ public class CallCenterController : Controller
         if (string.IsNullOrEmpty(prompt))
         {
             return true;
-        }           
+        }
         return false;
     }
 }
