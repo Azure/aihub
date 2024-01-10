@@ -407,3 +407,4 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+src/AIHub/appsettings.Development.json

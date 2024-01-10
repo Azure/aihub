@@ -1,13 +1,20 @@
 namespace MVCWeb.Controllers;
+using System;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Microsoft.AspNetCore.Mvc;
+using System.Net;
+using Newtonsoft.Json.Linq;
+using Microsoft.VisualBasic;
 
-public class AudioTrancriptionController : Controller
+public class AudioTranscriptionController : Controller
 {
     private readonly ILogger<HomeController> _logger;
     private readonly IConfiguration _config;
-    private string FormRecogEndpoint;
-    private string FormRecogSubscriptionKey;
-    private string AOAIendpoint;
-    private string AOAIsubscriptionKey;
+    private string SpeechRegion;
+    private string SpeechSubscriptionKey;
     private string storageconnstring;
     private readonly BlobServiceClient blobServiceClient;
     private readonly BlobContainerClient containerClient;
@@ -16,28 +23,25 @@ public class AudioTrancriptionController : Controller
 
 
     //Results
-    string result_image_front;
     string result_message_front;
 
 
 
-    private FormAnalyzerModel model;
+    private AudioTranscriptionModel model;
 
 
-    public AudioTrancriptionController(IConfiguration config)
+    public AudioTranscriptionController(IConfiguration config)
     {
         _config = config;
-        FormRecogEndpoint = _config.GetValue<string>("FormAnalyzer:FormRecogEndpoint");
-        FormRecogSubscriptionKey = _config.GetValue<string>("FormAnalyzer:FormRecogSubscriptionKey");
-        AOAIendpoint = _config.GetValue<string>("FormAnalyzer:OpenAIEndpoint");
-        AOAIsubscriptionKey = _config.GetValue<string>("FormAnalyzer:OpenAISubscriptionKey");
+        SpeechRegion = _config.GetValue<string>("AudioTranscription:SpeechLocation");
+        SpeechSubscriptionKey = _config.GetValue<string>("AudioTranscription:SpeechSubscriptionKey");
         storageconnstring = _config.GetValue<string>("Storage:ConnectionString");
         BlobServiceClient blobServiceClient = new BlobServiceClient(storageconnstring);
-        containerClient = blobServiceClient.GetBlobContainerClient(_config.GetValue<string>("FormAnalyzer:ContainerName"));
+        containerClient = blobServiceClient.GetBlobContainerClient(_config.GetValue<string>("AudioTranscription:ContainerName"));
         sasUri = containerClient.GenerateSasUri(Azure.Storage.Sas.BlobContainerSasPermissions.Read, DateTimeOffset.UtcNow.AddHours(1));
         // Obtiene una lista de blobs en el contenedor
         blobs = containerClient.GetBlobs();
-        model = new FormAnalyzerModel();
+        model = new AudioTranscriptionModel();
     }
 
     public IActionResult AudioTranscription()
@@ -46,126 +50,94 @@ public class AudioTrancriptionController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> TranscribeAudio(string image_url, string prompt)
+    public async Task<IActionResult> TranscribeAudio(string audio_url, IFormFile imageFile)
     {
 
+        string audio = audio_url + sasUri.Query;
 
-        //1. Get Image
-        string image = image_url + sasUri.Query;
-        Console.WriteLine(image);
-        //ViewBag.PdfUrl = "http://docs.google.com/gview?url="+image+"&embedded=true";
-        ViewBag.PdfUrl = image;
-        string output_result;
+    // CALL 1: STT 3.1
 
-        HttpClient client = new HttpClient();
-        client.BaseAddress = new Uri(FormRecogEndpoint);
-
-        // Add an Accept header for JSON format.
-        client.DefaultRequestHeaders.Accept.Add(
-        new MediaTypeWithQualityHeaderValue("application/json"));
-        client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", FormRecogSubscriptionKey);
-
-        var content = new
-        {
-            urlSource = image
-        };
-        var json = System.Text.Json.JsonSerializer.Serialize(content);
-        // Crear un HttpContent con el JSON y el tipo de contenido
-        HttpContent content_body = new StringContent(json, Encoding.UTF8, "application/json");
-        // List data response.
-        HttpResponseMessage response = await client.PostAsync(FormRecogEndpoint, content_body);  // Blocking call! Program will wait here until a response is received or a timeout occurs.
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Post, "https://"+SpeechRegion+".api.cognitive.microsoft.com/speechtotext/v3.1/transcriptions");
+        request.Headers.Add("Ocp-Apim-Subscription-Key", SpeechSubscriptionKey);
+        var content = new StringContent("{\r\n\"contentUrls\": [\r\n    \"" + audio + "\"\r\n  ],\r\n  \"locale\": \"es-es\",\r\n  \"displayName\": \"My Transcription\",\r\n  \"model\": null,\r\n  \"properties\": {\r\n    \"wordLevelTimestampsEnabled\": true,\r\n    \"languageIdentification\": {\r\n      \"candidateLocales\": [\r\n        \"en-US\", \"de-DE\", \"es-ES\"\r\n      ]\r\n    }\r\n    }\r\n}", null, "application/json");
+        request.Content = content;
+        var response = await client.SendAsync(request);
         response.EnsureSuccessStatusCode();
-
-        //string responseBody = await response.Content.ReadAsStringAsync();
-        string operation_location_url = response.Headers.GetValues("Operation-Location").FirstOrDefault();
-
+        //Console.WriteLine(await response.Content.ReadAsStringAsync());
+        var responsejson = JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync());
+        Console.WriteLine(responsejson);
+        var output_result = responsejson.self.ToString();
+        Console.WriteLine("SELF: "+output_result);
 
         client.Dispose();
 
-
-        //llamar a GET OPERATION
-        HttpClient client2 = new HttpClient();
-        client2.BaseAddress = new Uri(operation_location_url);
-
-        // Add an Accept header for JSON format.
-        client2.DefaultRequestHeaders.Accept.Add(
-        new MediaTypeWithQualityHeaderValue("application/json"));
-        client2.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", FormRecogSubscriptionKey);
-
-        // Crear un HttpContent con el JSON y el tipo de contenido
-        // List data response.
-        HttpResponseMessage response2 = await client2.GetAsync(operation_location_url);  // Blocking call! Program will wait here until a response is received or a timeout occurs.
-        Console.WriteLine(response2);
+    // CALL 2: CHECK FOR FINISH
+        var client2 = new HttpClient();
+        var request2 = new HttpRequestMessage(HttpMethod.Get, output_result);
+        client2.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", SpeechSubscriptionKey);
+        var content2 = new StringContent(string.Empty);
+        content2.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+        request2.Content = content2;
+        var response2 = await client2.SendAsync(request2);
         response2.EnsureSuccessStatusCode();
-        var responseBody = await response2.Content.ReadAsStringAsync();
-        var responsejson = JsonConvert.DeserializeObject<dynamic>(await response2.Content.ReadAsStringAsync());
-
-        //var analyzeresult = responseBody.analyzeResult;            
-        while (responsejson.status != "succeeded")
-        {
-            Thread.Sleep(10000);
-            response2 = await client2.GetAsync(operation_location_url);
-            responsejson = JsonConvert.DeserializeObject<dynamic>(await response2.Content.ReadAsStringAsync());
-        }
-        output_result = responsejson.analyzeResult.content.ToString();
-
-        // Above three lines can be replaced with new helper method below
-        // string responseBody = await client.GetStringAsync(uri);
-
-        // Parse the response as JSON
-        // var operationLocation= await response.Headers.ReadAsStringAsync();
-
+        //Console.WriteLine(await response2.Content.ReadAsStringAsync());
+        var responsejson2 = JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync());
+        Console.WriteLine(responsejson2);
+        while (responsejson2.status != "Succeeded")
+            {
+                Thread.Sleep(10000);
+                response2 = await client2.GetAsync(output_result);
+                responsejson2 = JsonConvert.DeserializeObject<dynamic>(await response2.Content.ReadAsStringAsync());
+                Console.WriteLine(responsejson2.status);
+            }
         client2.Dispose();
 
 
-        try
-        {
+    // CALL 3: GET RESULTS URL
 
-            OpenAIClient client_oai = new OpenAIClient(
-             new Uri(AOAIendpoint),
-             new AzureKeyCredential(AOAIsubscriptionKey));
+        var client3 = new HttpClient();
+        var request3 = new HttpRequestMessage(HttpMethod.Get, output_result+"/files/");
+        request3.Headers.Add("Ocp-Apim-Subscription-Key", SpeechSubscriptionKey);
+        var content3 = new StringContent(string.Empty);
+        content3.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+        request3.Content = content3;
+        var response3 = await client3.SendAsync(request3);
+        response3.EnsureSuccessStatusCode();
+        var responsejson3 = JsonConvert.DeserializeObject<dynamic>(await response3.Content.ReadAsStringAsync());
+        Console.WriteLine(responsejson3);
+        // Extract contentUrl field
+        string output_result3 = (string)responsejson3["values"][0]["links"]["contentUrl"];       
+        Console.WriteLine(output_result3);
+        client3.Dispose();
 
-            // ### If streaming is not selected
-            Response<ChatCompletions> responseWithoutStream = await client_oai.GetChatCompletionsAsync(
-                "DemoBuild",
-                new ChatCompletionsOptions()
-                {
-                    Messages =
-                    {
-                        new ChatMessage(ChatRole.System, @"You are specialized in understanding PDFs and answering questions about it. Document OCR result is: "+output_result),
-                        new ChatMessage(ChatRole.User, @"User question: "+prompt ),
-                    },
-                    Temperature = (float)0.7,
-                    MaxTokens = 1000,
-                    NucleusSamplingFactor = (float)0.95,
-                    FrequencyPenalty = 0,
-                    PresencePenalty = 0,
-                });
+    // CALL 4: GET RESULTS (TRANSCRIPTION)
 
-            ChatCompletions completions = responseWithoutStream.Value;
-            ChatChoice results_analisis = completions.Choices[0];
-            ViewBag.Message =
-                   //"Hate severity: " + (response.Value.HateResult?.Severity ?? 0);
-                   results_analisis.Message.Content
-                   ;
+        var client4 = new HttpClient();
+        var request4 = new HttpRequestMessage(HttpMethod.Get, output_result3);
+        request4.Headers.Add("Ocp-Apim-Subscription-Key", SpeechSubscriptionKey);
+        var content4 = new StringContent(string.Empty);
+        content4.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+        request4.Content = content4;
+        var response4 = await client4.SendAsync(request4);
+        response4.EnsureSuccessStatusCode();
+        Console.WriteLine(await response4.Content.ReadAsStringAsync());
+        var jsonObject4 = JsonConvert.DeserializeObject<JObject>(await response4.Content.ReadAsStringAsync());
+        string output_result4 = (string)jsonObject4["combinedRecognizedPhrases"][0]["lexical"];
+        Console.WriteLine(output_result4);
+        client4.Dispose();
 
-            /* result_image_front=image;
-            Console.WriteLine("1) "+result_image_front);
-            Console.WriteLine("2) "+result_message_front);
-             /* ViewBag.Message = 
-                  results_analisis.Message.Content
-                  ; */
-            //ViewBag.Image=result_image_front+".jpg"; 
 
-        }
-        catch (RequestFailedException ex)
-        {
-            throw;
-        }
+        //Show transcript results
+        ViewBag.Message = "TRANSCRIPTION RESULTS: \n\n"+output_result4;
 
-        // var result = await _service.GetBuildingHomeAsync(); 
-        // return Ok(result); 
+
         return View("AudioTranscription", model);
+    }
+        public class SpeechToTextResponse
+    {
+        [JsonProperty("text")]
+        public string Text { get; set; }
     }
 
     //Upload a file to my azure storage account
@@ -176,19 +148,19 @@ public class AudioTrancriptionController : Controller
 
         if (CheckNullValues(imageFile))
         {
-            ViewBag.Message = "You must upload an image";
+            ViewBag.Message = "You must upload an mp3 audio file";
             return View("AudioTranscription");
         }
 
         //Upload file to azure storage account
         string url = imageFile.FileName.ToString();
-        Console.WriteLine(url);
+        //Console.WriteLine(url);
         url = url.Replace(" ", "");
-        Console.WriteLine(url);
+        //Console.WriteLine(url);
         BlobClient blobClient = containerClient.GetBlobClient(url);
         var httpHeaders = new BlobHttpHeaders
         {
-            ContentType = "application/pdf",
+            ContentType = "audio/mpeg",
         };
         await blobClient.UploadAsync(imageFile.OpenReadStream(), new BlobUploadOptions { HttpHeaders = httpHeaders });
 
@@ -197,13 +169,13 @@ public class AudioTrancriptionController : Controller
 
         if (CheckImageExtension(blobUrl.ToString()))
         {
-            ViewBag.Message = "You must upload a document with .mp3 extension";
+            ViewBag.Message = "You must upload an audio file with .mp3 extension";
             return View("AudioTranscription", model);
         }
 
 
         //Call EvaluateImage with the url
-        await TranscribeAudio(blobUrl.ToString(), prompt);
+        await TranscribeAudio(blobUrl.ToString(), imageFile);
         ViewBag.Waiting = null;
 
         return View("AudioTranscription", model);
@@ -229,7 +201,7 @@ public class AudioTrancriptionController : Controller
     private bool CheckImageExtension(string blobUri)
     {
         string uri_lower = blobUri;
-        if (uri_lower.Contains(".pdf", StringComparison.OrdinalIgnoreCase))
+        if (uri_lower.Contains(".mp3", StringComparison.OrdinalIgnoreCase))
         {
             return false;
         }
