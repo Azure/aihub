@@ -177,7 +177,7 @@ public class AudioTrancriptionController : Controller
         if (CheckNullValues(imageFile))
         {
             ViewBag.Message = "You must upload an image";
-            return View("FormAnalyzer");
+            return View("AudioTranscription");
         }
 
         //Upload file to azure storage account
@@ -203,7 +203,7 @@ public class AudioTrancriptionController : Controller
 
 
         //Call EvaluateImage with the url
-        await AnalyzeForm(blobUrl.ToString(), prompt);
+        await TranscribeAudio(blobUrl.ToString(), prompt);
         ViewBag.Waiting = null;
 
         return View("AudioTranscription", model);
