@@ -54,7 +54,7 @@ jobs:
       - uses: azure/appservice-settings@v1
         with:
           app-name: ${{ vars.APPSERVICE_NAME }}
-          mask-inputs: false
+          mask-inputs: true
           slot-name: 'Production'
           app-settings-json: '${{ secrets.APPSERVICE_SETTINGS }}' 
 
