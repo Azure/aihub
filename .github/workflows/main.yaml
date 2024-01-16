@@ -55,6 +55,6 @@ jobs:
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
-          app-name: ${{ env.APPSERVICE_NAME }}
+          app-name: ${{ vars.APPSERVICE_NAME }}
           slot-name: 'Production'
           package: .
