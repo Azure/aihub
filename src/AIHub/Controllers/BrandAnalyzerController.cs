@@ -83,9 +83,19 @@ public class BrandAnalyzerController : Controller
         try
         {
 
-            OpenAIClient client_oai = new OpenAIClient(
-             new Uri(AOAIendpoint),
-             new AzureKeyCredential(AOAIsubscriptionKey));
+            OpenAIClient client_oai = null;
+            if (string.IsNullOrEmpty(AOAIsubscriptionKey))
+            {
+                client_oai = new OpenAIClient(
+                    new Uri(AOAIendpoint),
+                    new DefaultAzureCredential());
+            }
+            else
+            {
+                client_oai = new OpenAIClient(
+                    new Uri(AOAIendpoint),
+                    new AzureKeyCredential(AOAIsubscriptionKey));
+            }
 
             // ### If streaming is not selected
             Response<ChatCompletions> responseWithoutStream = await client_oai.GetChatCompletionsAsync(

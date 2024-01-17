@@ -37,10 +37,19 @@ public class CallCenterController : Controller
         }
         try
         {
-
-            OpenAIClient client_oai = new OpenAIClient(
-             new Uri(endpoint),
-             new AzureKeyCredential(subscriptionKey));
+            OpenAIClient client_oai = null;
+            if (string.IsNullOrEmpty(subscriptionKey))
+            {
+                client_oai = new OpenAIClient(
+                    new Uri(endpoint),
+                    new DefaultAzureCredential());
+            }
+            else
+            {
+                client_oai = new OpenAIClient(
+                    new Uri(endpoint),
+                    new AzureKeyCredential(subscriptionKey));
+            }
 
             // ### If streaming is not selected
             Response<ChatCompletions> responseWithoutStream = await client_oai.GetChatCompletionsAsync(

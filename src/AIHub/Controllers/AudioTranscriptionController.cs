@@ -1,13 +1,4 @@
 namespace MVCWeb.Controllers;
-using System;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Microsoft.AspNetCore.Mvc;
-using System.Net;
-using Newtonsoft.Json.Linq;
-using Microsoft.VisualBasic;
 
 public class AudioTranscriptionController : Controller
 {
