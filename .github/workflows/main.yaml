@@ -68,7 +68,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
         with:
-          context: .
+          context: ./src/AIHub/
           file: ./src/AIHub/Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ env.REGISTRY }}/${{ env.GITHUB_REPOSITORY_LOWER_CASE }}/agw-pep-custom-names:${{ env.MINVERVERSIONOVERRIDE }}
