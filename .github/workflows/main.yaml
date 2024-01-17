@@ -71,7 +71,7 @@ jobs:
           context: ./src/AIHub/
           file: ./src/AIHub/Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ env.REGISTRY }}/${{ env.GITHUB_REPOSITORY_LOWER_CASE }}/agw-pep-custom-names:${{ env.MINVERVERSIONOVERRIDE }}
+          tags: ${{ env.REGISTRY }}/${{ env.GITHUB_REPOSITORY_LOWER_CASE }}/aihub:${{ env.MINVERVERSIONOVERRIDE }}
           labels: ${{ steps.meta.outputs.labels }}
 
   deploy:
