@@ -25,6 +25,13 @@ By the end of this delivery, you will be able to:
 - Secure and monitor the solution
 - Scale and integrate the solution with other services
 
+## High-level Architecture
+
+The following diagram shows the high-level architecture of the **AI Hub** solution:
+
+![High-level Architecture](/aihub/img/AI-Hub-HLD.png)
+
+
 ## Delivery Guidance
 This delivery involves the the following steps:
 

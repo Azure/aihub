@@ -4,6 +4,12 @@ description: AI Hub &mdash; Steps to deploy the complete solution.
 weight: 1
 ---
 
+## High-level Architecture
+
+The following diagram shows the high-level architecture of the **AI Hub** solution:
+
+![High-level Architecture](/aihub/img/AI-Hub-HLD.png)
+
 ### Create a new resource group
 ```bash
 az group create --name aihub-rg --location westeurope
