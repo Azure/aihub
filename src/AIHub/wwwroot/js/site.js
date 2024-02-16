@@ -4,10 +4,17 @@
 // Write your JavaScript code.
 
 var contentSafetyDropdown = document.getElementById('contentSafetyDropdown');
-var dropdownMenu = document.querySelector('.dropdown-menu');
+var contentSafetyDropdownMenu = document.getElementById('contentSafetyDropdownMenu');
 
 contentSafetyDropdown.addEventListener('click', function () {
-    dropdownMenu.classList.toggle('show');
+    contentSafetyDropdownMenu.classList.toggle('show');
+});
+
+var documentComparisonDropdown = document.getElementById('documentComparisonDropdown');
+var documentComparisonDropdownMenu = document.getElementById('documentComparisonDropdownMenu');
+
+documentComparisonDropdown.addEventListener('click', function () {
+    documentComparisonDropdownMenu.classList.toggle('show');
 });
 
 function submitForm() {
