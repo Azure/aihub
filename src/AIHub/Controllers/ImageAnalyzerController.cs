@@ -10,6 +10,7 @@ public class ImageAnalyzerController : Controller
     private string AOAIendpoint;
     private string AOAIsubscriptionKey;
     private string storageconnstring;
+    private string AOAIDeploymentName;
     private readonly BlobServiceClient blobServiceClient;
     private readonly BlobContainerClient containerClient;
     private readonly IEnumerable<BlobItem> blobs;
@@ -37,6 +38,7 @@ public class ImageAnalyzerController : Controller
         BlobServiceClient blobServiceClient = new BlobServiceClient(storageconnstring);
         containerClient = blobServiceClient.GetBlobContainerClient(_config.GetValue<string>("Storage:ContainerName"));
         sasUri = containerClient.GenerateSasUri(Azure.Storage.Sas.BlobContainerSasPermissions.Read, DateTimeOffset.UtcNow.AddHours(1));
+        AOAIDeploymentName = _config.GetValue<string>("ImageAnalyzer:DeploymentName");
         // Obtiene una lista de blobs en el contenedor
         blobs = containerClient.GetBlobs();
         model = new ImageAnalyzerModel();
@@ -44,7 +46,7 @@ public class ImageAnalyzerController : Controller
 
     public IActionResult ImageAnalyzer()
     {
-        return View();
+        return View(new ImageAnalyzerModel());
     }
 
     [HttpPost]
@@ -179,7 +181,7 @@ public class ImageAnalyzerController : Controller
 
             // ### If streaming is not selected
             Response<ChatCompletions> responseWithoutStream = await client_oai.GetChatCompletionsAsync(
-                "DemoBuild",
+                AOAIDeploymentName,
                 new ChatCompletionsOptions()
                 {
                     Messages =
@@ -196,11 +198,13 @@ public class ImageAnalyzerController : Controller
 
             ChatCompletions completions = responseWithoutStream.Value;
             ChatChoice results_analisis = completions.Choices[0];
+            model.Message = results_analisis.Message.Content;
             ViewBag.Message =
                    //"Hate severity: " + (response.Value.HateResult?.Severity ?? 0);
                    results_analisis.Message.Content
                    ;
             ViewBag.Image = model.Image + sasUri.Query;
+            model.Image = model.Image + sasUri.Query;
             Console.WriteLine(ViewBag.Message);
             Console.WriteLine(ViewBag.Image);
 
@@ -220,7 +224,8 @@ public class ImageAnalyzerController : Controller
 
         // var result = await _service.GetBuildingHomeAsync(); 
         // return Ok(result); 
-        return View("ImageAnalyzer", model);
+        //return View("ImageAnalyzer", model);
+        return Ok(model);
     }
 
     //Upload a file to my azure storage account
@@ -252,22 +257,21 @@ public class ImageAnalyzerController : Controller
             return View("ImageAnalyzer");
         }
 
-
         //Call EvaluateImage with the url
         await DenseCaptionImage(blobUrl.ToString());
         ViewBag.Waiting = null;
 
-        return View("ImageAnalyzer");
+        // return View("ImageAnalyzer", model);
+        return Ok(model);
     }
-
-
-
+    
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 
+   
     private bool CheckNullValues(IFormFile imageFile)
     {
         if (imageFile == null)

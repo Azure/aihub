@@ -9,6 +9,7 @@ public class FormAnalyzerController : Controller
     private string AOAIendpoint;
     private string AOAIsubscriptionKey;
     private string storageconnstring;
+    private string AOAIDeploymentName;
     private readonly BlobServiceClient blobServiceClient;
     private readonly BlobContainerClient containerClient;
     private readonly IEnumerable<BlobItem> blobs;
@@ -35,6 +36,7 @@ public class FormAnalyzerController : Controller
         BlobServiceClient blobServiceClient = new BlobServiceClient(storageconnstring);
         containerClient = blobServiceClient.GetBlobContainerClient(_config.GetValue<string>("FormAnalyzer:ContainerName"));
         sasUri = containerClient.GenerateSasUri(Azure.Storage.Sas.BlobContainerSasPermissions.Read, DateTimeOffset.UtcNow.AddHours(1));
+        AOAIDeploymentName = _config.GetValue<string>("FormAnalyzer:DeploymentName");
         // Obtiene una lista de blobs en el contenedor
         blobs = containerClient.GetBlobs();
         model = new FormAnalyzerModel();
@@ -55,6 +57,7 @@ public class FormAnalyzerController : Controller
         Console.WriteLine(image);
         //ViewBag.PdfUrl = "http://docs.google.com/gview?url="+image+"&embedded=true";
         ViewBag.PdfUrl = image;
+        model.PdfUrl = image;
         string output_result;
 
         HttpClient client = new HttpClient();
@@ -136,7 +139,7 @@ public class FormAnalyzerController : Controller
 
             // ### If streaming is not selected
             Response<ChatCompletions> responseWithoutStream = await client_oai.GetChatCompletionsAsync(
-                "DemoBuild",
+                AOAIDeploymentName,
                 new ChatCompletionsOptions()
                 {
                     Messages =
@@ -153,18 +156,21 @@ public class FormAnalyzerController : Controller
 
             ChatCompletions completions = responseWithoutStream.Value;
             ChatChoice results_analisis = completions.Choices[0];
+            model.Message = results_analisis.Message.Content;
             ViewBag.Message =
                    //"Hate severity: " + (response.Value.HateResult?.Severity ?? 0);
                    results_analisis.Message.Content
                    ;
-
+            
             /* result_image_front=image;
             Console.WriteLine("1) "+result_image_front);
             Console.WriteLine("2) "+result_message_front);
              /* ViewBag.Message = 
                   results_analisis.Message.Content
                   ; */
-            //ViewBag.Image=result_image_front+".jpg"; 
+            //ViewBag.Image=result_image_front+".jpg";
+
+            model.Image = model.Image + sasUri.Query;
 
         }
         catch (RequestFailedException ex)
@@ -174,7 +180,8 @@ public class FormAnalyzerController : Controller
 
         // var result = await _service.GetBuildingHomeAsync(); 
         // return Ok(result); 
-        return View("FormAnalyzer", model);
+        //return View("FormAnalyzer", model);
+        return Ok(model);
     }
 
     //Upload a file to my azure storage account
@@ -215,7 +222,8 @@ public class FormAnalyzerController : Controller
         await AnalyzeForm(blobUrl.ToString(), prompt);
         ViewBag.Waiting = null;
 
-        return View("FormAnalyzer", model);
+        //return View("FormAnalyzer", model);
+        return Ok(model);
     }
 
 

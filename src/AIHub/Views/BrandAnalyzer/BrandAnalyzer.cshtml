@@ -1,42 +1,94 @@
+@model BrandAnalyzerModel
+
 @{
     ViewData["Title"] = "Brand Analyzer";
 }
 
-<div class="text-center">
-    <svg style="fill: var(--main-color)" xmlns="http://www.w3.org/2000/svg" height="4em"
-        viewBox="0 0 650 650"><!--! Font Awesome Free 6.4.2 by @@fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
-        <path
-            d="M36.8 192H603.2c20.3 0 36.8-16.5 36.8-36.8c0-7.3-2.2-14.4-6.2-20.4L558.2 21.4C549.3 8 534.4 0 518.3 0H121.7c-16 0-31 8-39.9 21.4L6.2 134.7c-4 6.1-6.2 13.2-6.2 20.4C0 175.5 16.5 192 36.8 192zM64 224V384v80c0 26.5 21.5 48 48 48H336c26.5 0 48-21.5 48-48V384 224H320V384H128V224H64zm448 0V480c0 17.7 14.3 32 32 32s32-14.3 32-32V224H512z" />
-    </svg>
-    <h1 class="sectionTitle">Brand Analyzer</h1>
-    <p class="sectionSubTitle">Analyze your brand's internet reputation by inserting the name of the company below.</p>
-    <p class="sectionDetails">By default, a list of positive and negative aspects in Spanish will be the result, but you
-        can customize the prompt.</p>
-</div>
-
-@if (ViewBag.Message != null)
-{
-    <div class="row justify-content-center mt-5">
-        <div class="col-md-6">
-            <div class="alert alert-primary" role="alert">
-                @Html.Raw(ViewBag.Message.Replace("\n", "<br />"))
+<!-- Start Content-->
+<div class="container-fluid">
+    
+    <!-- start page title -->
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box">
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item">Services</li>
+                        <li class="breadcrumb-item active">Brand Analyzer</li>
+                    </ol>
+                </div>
+                <h4 class="page-title">Brand Analyzer</h4>
             </div>
         </div>
     </div>
-}
-<form asp-controller="BrandAnalyzer" asp-action="AnalyzeCompany" method="post">
-    <div class="row justify-content-center mt-5">
-        <span class="form-group">
-            <label for="fname">Company name:</label><br>
-            <input type="text" class="form-control" id="companyName" name="companyName"
-                value="@(Model?.CompanyName ?? "Microsoft")" style="width: 70%;" />
-            <label for="text">Prompt:</label>
-            <textarea class="form-control" id="prompt" name="prompt"
-                rows="3"> @(Model?.Prompt ?? "Tell me the overall opinion of the internet users about the company, highlighting the positive and negative aspects. Show 2 main blocks with bullets and a final conclusion. Please reply me in Spanish.") </textarea>
+    <!-- end page title -->
 
-            <div id="loadingPanel" style="display: none;">Loading...</div>
-            <button type="submit" class="btn btn-primary" onclick="submitForm()">Start Analysis</button>
-
-        </span>
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="header-title">Brand Analyzer with Azure OpenAI Services</h4>
+                    <p class="text-muted font-14">
+                        Analyze your brand's internet reputation by inserting the name of the company below.
+                    </p>
+                    <div class="tab-pane show active" id="basic-form-preview" role="tabpanel">
+                        <form asp-controller="BrandAnalyzer" asp-action="AnalyzeCompany" id="brandform" method="post">
+                            <div class="mb-3">
+                                <label for="fname" class="form-label">Company Name:</label>
+                                <input type="text" class="form-control" id="companyName" name="companyName" aria-describedby="companyName" placeholder="Company Name" value="@(Model?.CompanyName ?? "Microsoft")">
+                            </div>
+                            <div class="mb-3">
+                                <label for="text" class="form-label">Prompt:</label>
+                                <textarea class="form-control" id="prompt" name="prompt" maxlength="225" rows="3"> @(Model?.Prompt ?? "Tell me the overall opinion of the internet users about the company, highlighting the positive and negative aspects. Show 2 main blocks with bullets and a final conclusion. Please reply me in Spanish.") </textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary" onclick="submitForm()">Start Analysis</button>
+                        </form>                                      
+                    </div> <!-- end preview-->
+                </div>
+            </div>
+        </div>
     </div>
-</form>
+
+    <div class="row d-none" id="loader">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <strong>Loading...</strong>
+                        <div class="spinner-border ms-auto" role="status" aria-hidden="true"></div>
+                    </div>
+                </div>
+                <!-- end card-body -->
+            </div>
+            <!-- end card-->
+        </div>
+    </div>
+
+@if (ViewBag.Message != null)
+{
+    <!-- end row -->    
+    <!--- show results -->
+    <div class="row" id="showresult">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="row g-0 align-items-center">
+                    <div class="col-md-12">
+                        <div class="card-body">
+                            <h2 class="header-title mt-0 mb-3">Text Analyze Result <span class="badge bg-success rounded-pill">Analysis Success</span></h2>
+                            <p class="text-muted font-16 mb-3" id="show-message-result">@Html.Raw(ViewBag.Message.Replace("\n", "<br />"))</p>
+                        </div> 
+                    </div>
+                </div>
+            </div> 
+        </div>
+    </div>
+}
+
+</div>
+<!-- container -->
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_BrandAnalyzerScriptsPartial");}
+}

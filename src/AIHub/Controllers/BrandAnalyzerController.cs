@@ -10,6 +10,7 @@ public class BrandAnalyzerController : Controller
     private string AOAIendpoint;
     private string AOAIsubscriptionKey;
     private string storageconnstring;
+    private string AOAIDeploymentName;
 
 
     public BrandAnalyzerController(IConfiguration config)
@@ -19,6 +20,7 @@ public class BrandAnalyzerController : Controller
         BingsubscriptionKey = _config.GetValue<string>("BrandAnalyzer:BingKey");
         AOAIendpoint = _config.GetValue<string>("BrandAnalyzer:OpenAIEndpoint");
         AOAIsubscriptionKey = _config.GetValue<string>("BrandAnalyzer:OpenAISubscriptionKey");
+        AOAIDeploymentName = _config.GetValue<string>("BrandAnalyzer:DeploymentName");
         model = new BrandAnalyzerModel();
 
     }
@@ -99,7 +101,7 @@ public class BrandAnalyzerController : Controller
 
             // ### If streaming is not selected
             Response<ChatCompletions> responseWithoutStream = await client_oai.GetChatCompletionsAsync(
-                "DemoBuild",
+                AOAIDeploymentName,
                 new ChatCompletionsOptions()
                 {
                     Messages =
@@ -116,6 +118,7 @@ public class BrandAnalyzerController : Controller
 
             ChatCompletions completions = responseWithoutStream.Value;
             ChatChoice results_analisis = completions.Choices[0];
+            model.Message = results_analisis.Message.Content;
             ViewBag.Message =
                    //"Hate severity: " + (response.Value.HateResult?.Severity ?? 0);
                    results_analisis.Message.Content
@@ -127,6 +130,7 @@ public class BrandAnalyzerController : Controller
         }
 
         return View("BrandAnalyzer", model);
+        //return Ok(model);
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

@@ -10,5 +10,6 @@ public class FormAnalyzerModel
     public string? Prompt { get; set; }
     public string? Image { get; set; }
     public string? Message { get; set; }
+     public string? PdfUrl { get; set; }
 
 }

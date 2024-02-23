@@ -1,78 +1,156 @@
+@model CallCenterModel
 @{
     ViewData["Title"] = "Call Center";
 }
 
-<div class="text-center">
-    <svg style="fill: var(--main-color)" xmlns="http://www.w3.org/2000/svg" height="4em"
-        viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.2 by @@fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
-        <path
-            d="M256 48C141.1 48 48 141.1 48 256v40c0 13.3-10.7 24-24 24s-24-10.7-24-24V256C0 114.6 114.6 0 256 0S512 114.6 512 256V400.1c0 48.6-39.4 88-88.1 88L313.6 488c-8.3 14.3-23.8 24-41.6 24H240c-26.5 0-48-21.5-48-48s21.5-48 48-48h32c17.8 0 33.3 9.7 41.6 24l110.4 .1c22.1 0 40-17.9 40-40V256c0-114.9-93.1-208-208-208zM144 208h16c17.7 0 32 14.3 32 32V352c0 17.7-14.3 32-32 32H144c-35.3 0-64-28.7-64-64V272c0-35.3 28.7-64 64-64zm224 0c35.3 0 64 28.7 64 64v48c0 35.3-28.7 64-64 64H352c-17.7 0-32-14.3-32-32V240c0-17.7 14.3-32 32-32h16z" />
-    </svg>
-    <h1 class="sectionTitle">Call Center Analytics</h1>
-    <p class="sectionSubTitle">Analyze call center call trancripts (that might come from your Call Center technology, or
-        having transcribed with Azure Speech Services).</p>
-    <dl class="sectionDetails">
-        <dt> In the example below it will identify the followings:</dt>
-        <dt>Call Reason |Cause of accident | Driver names | Insurance number | Location | Detailed summary</dt>
-    </dl>
-</div>
+<!-- Start Content-->
+<div class="container-fluid">
+    
+    <!-- start page title -->
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box">
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item">Services</li>
+                        <li class="breadcrumb-item active">Call Center Analytics</li>
+                    </ol>
+                </div>
+                <h4 class="page-title">Call Center Analytics</h4>
+            </div>
+        </div>
+    </div>
+    <!-- end page title -->
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="header-title">Call Center Analytics</h4>
+                    <p class="text-muted font-14">
+                        Analyze call center call trancripts (that might come from your Call Center technology, or having transcribed with Azure Speech Services).
+                    </p>
+                    <form asp-controller="CallCenter" asp-action="AnalyzeCall" method="post">
+                     <div class="row">
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-sm-3 mb-2 mb-sm-0">
+                                    <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                                        <a class="nav-link active show" id="v-pills-english-tab" data-bs-toggle="pill" href="#v-pills-english" role="tab" aria-controls="v-pills-home" aria-selected="true">
+                                            <i class="mdi mdi-home-variant d-md-none d-block"></i>
+                                            <span class="d-none d-md-block">English</span>
+                                        </a>
+                                        <a class="nav-link" id="v-pills-spanish-tab" data-bs-toggle="pill" href="#v-pills-spanish" role="tab" aria-controls="v-pills-profile" aria-selected="false">
+                                            <i class="mdi mdi-account-circle d-md-none d-block"></i>
+                                            <span class="d-none d-md-block">Español</span>
+                                        </a>
+                                        <a class="nav-link" id="v-pills-basque-tab" data-bs-toggle="pill" href="#v-pills-basque" role="tab" aria-controls="v-pills-settings" aria-selected="false">
+                                            <i class="mdi mdi-settings-outline d-md-none d-block"></i>
+                                            <span class="d-none d-md-block">Euskera</span>
+                                        </a>
+                                        <a class="nav-link" id="v-pills-catalan-tab" data-bs-toggle="pill" href="#v-pills-catalan" role="tab" aria-controls="v-pills-settings" aria-selected="false">
+                                            <i class="mdi mdi-settings-outline d-md-none d-block"></i>
+                                            <span class="d-none d-md-block">Catalan</span>
+                                        </a>
+                                        <a class="nav-link" id="v-pills-galego-tab" data-bs-toggle="pill" href="#v-pills-galego" role="tab" aria-controls="v-pills-settings" aria-selected="false">
+                                            <i class="mdi mdi-settings-outline d-md-none d-block"></i>
+                                            <span class="d-none d-md-block">Galego</span>
+                                        </a>
+                                    </div>
+                                </div> <!-- end col-->
+
+                                <div class="col-sm-9">
+                                    <div class="tab-content" id="v-pills-tabContent">
+                                        <div class="tab-pane fade active show" id="v-pills-english" role="tabpanel" aria-labelledby="v-pills-english-tab">
+                                            <p class="mb-0">Hi I just had a car accident and wanted to report it. OK, I hope you're alright, what happened? I was driving on the I-18 and I hit another car. Are you OK? Yeah, I'm just a little shaken up. That's understandable. Can you give me your full name? Sure, it's Sarah standl. Do you know what caused the accident? I think I might have hit a pothole. OK, where did the accident take place? On the I-18 freeway. Was anyone else injured? I don't think so. But I'm not sure. OK, well we'll need to do an investigation. Can you give me the other drivers information? Sure, his name is John Radley. And your insurance number. OK. Give me a minute. OK, it's 546452. OK, what type of damages has the car? Headlights are broken and the airbags went off. Are you going to be able to drive it? I don't know. I'm going to have to have it towed. Well, we'll need to get it inspected. I'll go ahead and start the claim and we'll get everything sorted out. Thank you.</p>
+                                        </div>
+                                        <div class="tab-pane fade" id="v-pills-spanish" role="tabpanel" aria-labelledby="v-pills-spanish-tab">
+                                            <p class="mb-0">Hola, acabo de tener un accidente automovilístico y quería reportarlo. Ok, espero que estés bien, ¿qué pasó? Estaba conduciendo por la I-18 y choqué contra otro auto. ¿Estás bien? Sí, estoy un poco conmocionado. Eso es comprensible. ¿Puedes darme tu nombre completo? Claro, soy Sarah Standl. ¿Sabes qué causó el accidente? Creo que podría haber caído en un bache. Bien, ¿dónde ocurrió el accidente? En la autopista I-18. ¿Alguien más resultó herido? No me parece. Pero no estoy seguro. Bien, tendremos que hacer una investigación. ¿Puedes darme información de los otros controladores? Claro, su nombre es John Radley. Y su número de seguro. DE ACUERDO. Dame un minuto. Vale, es 546452. Bien, ¿qué tipo de daños tiene el coche? Los faros están rotos y se dispararon los airbags. ¿Podrás conducirlo? No sé. Voy a tener que remolcarlo. Bueno, necesitaremos que lo inspeccionen. Seguiré adelante e iniciaré el reclamo y arreglaremos todo. Gracias.</p>
+                                        </div>
+                                        <div class="tab-pane fade" id="v-pills-basque" role="tabpanel" aria-labelledby="v-pills-basque-tab">
+                                            <p class="mb-0">Kaixo auto istripu bat izan berri dut eta salatu nahiko nuke. Ados, ondo egotea espero dut, zer gertatu da? I-18an nindoan eta beste auto bat jo dut. Ondo zaude? Bai, pixka bat aztoratuta nago. Hori ulergarria da. Zure izen osoa eman al didazu? Noski, Sarah Standl. Ba al dakizu zerk eragin duen istripua? Nere ustez zuloren bat jo dut. Ados, non gertatu da istripua? I-18 autobidean. Beste inor zauritu al da? Ez dut uste. Baina ez nago ziur. Ados, beno ikerketa bat egin beharko dugu. Emango al didazu beste gidarien informazioa? Noski, bere izena John Radley da. Eta zure aseguru zenbakia. ADOS. Emadazu minutu bat. Ados, 546452 da. Ados, zer motatako kalteak ditu autoak? Faroak apurtuta daude eta airbag-ak ireki dira. Gidatzeko gai izango al zara? Ez dakit. Autoa eraman beharko dute. Beno, berrikusi beharko dugu autoa. Aurrera egingo dut eta erreklamazioa hasiko dut eta dena konponduko dugu. Eskerrik asko.</p>
+                                        </div>
+                                        <div class="tab-pane fade" id="v-pills-catalan" role="tabpanel" aria-labelledby="v-pills-catalan-tab">
+                                            <p class="mb-0">Hola, acabo de tenir un accident de cotxe i volia denunciar-ho. D'acord, espero que estiguis bé, què ha passat? Conduïa per la I-18 i vaig xocar amb un altre cotxe. Estàs bé? Sí, només estic una mica alterat. Això és comprensible. Em pots donar el teu nom complet? Per descomptat, és Sarah Standl. Saps què va provocar l'accident? Crec que podria haver topat amb un sot. D'acord, on va tenir lloc l'accident? A l'autopista I-18. Algú més va resultar ferit? No ho crec. Però no n'estic segur. Bé, haurem de fer una investigació. Em pots donar la informació dels altres conductors? Per descomptat, es diu John Radley. I el teu número d'assegurança. D'ACORD. Dona'm un minut. D'acord, és 546452. D'acord, quin tipus de desperfectes té el cotxe? Els fars estan trencats i els airbags s'han apagat. Seràs capaç de conduir-lo? No ho sé. L'hauré de remolcar. Bé, haurem d'inspeccionar-lo. Seguiré endavant i començaré la reclamació i ho solucionarem tot. Gràcies.</p>
+                                        </div>
+                                        <div class="tab-pane fade" id="v-pills-galego" role="tabpanel" aria-labelledby="v-pills-galego-tab">
+                                            <p class="mb-0">Ola, acabo de ter un accidente de tráfico e quería denuncialo. Ok, espero que esteas ben, que pasou? Ía pola I-18 e choquei contra outro coche. Estás ben? Si, estou un pouco impresionado. Iso é comprensible. Podes darme o teu nome completo? Claro, son Sarah Standl. Sabes o que provocou o accidente? Creo que podería ter un bache. Ben, onde ocorreu o accidente? Na estrada I-18. Alguén máis resultou ferido? Non creo. Pero non estou seguro. Ben, teremos que investigar. Podes darme información sobre os outros condutores? Por suposto, o seu nome é John Radley. E o teu número de seguro. OK. Dame un minuto. Vale, é 546452. Vale, que tipo de danos ten o coche? Os faros están rotos e apagáronse os airbags. Podes conducilo? Non sei. Vou ter que remolcalo. Ben, teremos que inspeccionalo. Seguirei e presentarei a reclamación e solucionarémolo todo. Grazas.</p>
+                                        </div>
+                                        
+                                    </div> <!-- end tab-content-->
+                                </div> <!-- end col-->
+                            </div>
+                            <!-- end row-->
+                        </div>
+
+                        <div class="col-6">
+                            <label for="text" class="form-label">Prompt:</label>
+                            <textarea class="form-control" id="prompt" name="prompt" rows="6">@(Model?.Prompt ?? @"Extract the following information from the phone conversation use will send in a bulleted points format:
+1. Call Reason
+2. Name of drivers involved
+3. Cause of accident 
+4. Driver names
+5. Insurance number
+6. Location
+7. Detailed summary
+Use the same language of the transcript to complete the fields.") 
+                            </textarea>
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="mb-3">
+                            <textarea class="form-control d-none" id="text" name="text" rows="9">@Model?.Text</textarea>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-lg btn-primary" onclick="submitForm()">Analyze call</button>
+                        </div>
+                    </div>
+                    </form>
+                </div>
+                <!-- end card-body -->
+            </div>
+            <!-- end card-->
+        </div>
+    </div>
+
+    <div class="row d-none" id="loader">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <strong>Loading...</strong>
+                        <div class="spinner-border ms-auto" role="status" aria-hidden="true"></div>
+                    </div>
+                </div>
+                <!-- end card-body -->
+            </div>
+            <!-- end card-->
+        </div>
+    </div>
 
 @if (ViewBag.Message != null)
 {
-    <div class="row justify-content-center mt-5">
-        <div class="col-md-6">
-            <div class="alert alert-primary" role="alert">
-                @Html.Raw(ViewBag.Message.Replace("\n", "<br />"))
-            </div>
+    <div class="row" id="showresult">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="row g-0 align-items-center">
+                    <div class="col-md-12">
+                        <div class="card-body">
+                            <h2 class="header-title mt-0 mb-3">Text Analyze Result <span class="badge bg-success rounded-pill">Analysis Success</span></h2>
+                            <p class="text-muted font-16 mb-3" id="show-message-result">@Html.Raw(ViewBag.Message.Replace("\n", "<br />"))</p>
+                        </div> 
+                    </div>
+                </div>
+            </div> 
         </div>
     </div>
 }
-<form asp-controller="CallCenter" asp-action="AnalyzeCall" method="post">
-    <div class="row justify-content-center mt-5">
-        <div class="col-md-6">
-            <div class="form-group">
-                <label for="text1">Transcript Ejemplo ENGLISH:</label>
-                <textarea class="form-control" id="text1" readonly onclick="copyText(this.value)"
-                    style="width: 100%; resize: none; overflow: auto; height: 100px;">Hi I just had a car accident and wanted to report it. OK, I hope you're alright, what happened? I was driving on the I-18 and I hit another car. Are you OK? Yeah, I'm just a little shaken up. That's understandable. Can you give me your full name? Sure, it's Sarah standl. Do you know what caused the accident? I think I might have hit a pothole. OK, where did the accident take place? On the I-18 freeway. Was anyone else injured? I don't think so. But I'm not sure. OK, well we'll need to do an investigation. Can you give me the other drivers information? Sure, his name is John Radley. And your insurance number. OK. Give me a minute. OK, it's 546452. OK, what type of damages has the car? Headlights are broken and the airbags went off. Are you going to be able to drive it? I don't know. I'm going to have to have it towed. Well, we'll need to get it inspected. I'll go ahead and start the claim and we'll get everything sorted out. Thank you.</textarea>
-            </div>
-            <div class="form-group">
-                <label for="text2">Transcript Ejemplo ESPAÑOL:</label>
-                <textarea class="form-control" id="text2" readonly onclick="copyText(this.value)"
-                    style="width: 100%; resize: none; overflow: auto; height: 100px;">Hola, acabo de tener un accidente automovilístico y quería reportarlo. Ok, espero que estés bien, ¿qué pasó? Estaba conduciendo por la I-18 y choqué contra otro auto. ¿Estás bien? Sí, estoy un poco conmocionado. Eso es comprensible. ¿Puedes darme tu nombre completo? Claro, soy Sarah Standl. ¿Sabes qué causó el accidente? Creo que podría haber caído en un bache. Bien, ¿dónde ocurrió el accidente? En la autopista I-18. ¿Alguien más resultó herido? No me parece. Pero no estoy seguro. Bien, tendremos que hacer una investigación. ¿Puedes darme información de los otros controladores? Claro, su nombre es John Radley. Y su número de seguro. DE ACUERDO. Dame un minuto. Vale, es 546452. Bien, ¿qué tipo de daños tiene el coche? Los faros están rotos y se dispararon los airbags. ¿Podrás conducirlo? No sé. Voy a tener que remolcarlo. Bueno, necesitaremos que lo inspeccionen. Seguiré adelante e iniciaré el reclamo y arreglaremos todo. Gracias.</textarea>
-            </div>
-            <div class="form-group">
-                <label for="text3">Transcript Ejemplo EUSKERA:</label>
-                <textarea class="form-control" id="text32" readonly onclick="copyText(this.value)"
-                    style="width: 100%; resize: none; overflow: auto; height: 100px;">Kaixo auto istripu bat izan berri dut eta salatu nahiko nuke. Ados, ondo egotea espero dut, zer gertatu da? I-18an nindoan eta beste auto bat jo dut. Ondo zaude? Bai, pixka bat aztoratuta nago. Hori ulergarria da. Zure izen osoa eman al didazu? Noski, Sarah Standl. Ba al dakizu zerk eragin duen istripua? Nere ustez zuloren bat jo dut. Ados, non gertatu da istripua? I-18 autobidean. Beste inor zauritu al da? Ez dut uste. Baina ez nago ziur. Ados, beno ikerketa bat egin beharko dugu. Emango al didazu beste gidarien informazioa? Noski, bere izena John Radley da. Eta zure aseguru zenbakia. ADOS. Emadazu minutu bat. Ados, 546452 da. Ados, zer motatako kalteak ditu autoak? Faroak apurtuta daude eta airbag-ak ireki dira. Gidatzeko gai izango al zara? Ez dakit. Autoa eraman beharko dute. Beno, berrikusi beharko dugu autoa. Aurrera egingo dut eta erreklamazioa hasiko dut eta dena konponduko dugu. Eskerrik asko.</textarea>
-            </div>
-            <div class="form-group">
-                <label for="text4">Transcript Ejemplo CATALAN:</label>
-                <textarea class="form-control" id="text4" readonly onclick="copyText(this.value)"
-                    style="width: 100%; resize: none; overflow: auto; height: 100px;">Hola, acabo de tenir un accident de cotxe i volia denunciar-ho. D'acord, espero que estiguis bé, què ha passat? Conduïa per la I-18 i vaig xocar amb un altre cotxe. Estàs bé? Sí, només estic una mica alterat. Això és comprensible. Em pots donar el teu nom complet? Per descomptat, és Sarah Standl. Saps què va provocar l'accident? Crec que podria haver topat amb un sot. D'acord, on va tenir lloc l'accident? A l'autopista I-18. Algú més va resultar ferit? No ho crec. Però no n'estic segur. Bé, haurem de fer una investigació. Em pots donar la informació dels altres conductors? Per descomptat, es diu John Radley. I el teu número d'assegurança. D'ACORD. Dona'm un minut. D'acord, és 546452. D'acord, quin tipus de desperfectes té el cotxe? Els fars estan trencats i els airbags s'han apagat. Seràs capaç de conduir-lo? No ho sé. L'hauré de remolcar. Bé, haurem d'inspeccionar-lo. Seguiré endavant i començaré la reclamació i ho solucionarem tot. Gràcies.</textarea>
-            </div>
 
-            <div class="form-group">
-                <label for="text5">Transcript Ejemplo GALEGO:</label>
-                <textarea class="form-control" id="text5" readonly onclick="copyText(this.value)"
-                    style="width: 100%; resize: none; overflow: auto; height: 100px;">Ola, acabo de ter un accidente de tráfico e quería denuncialo. Ok, espero que esteas ben, que pasou? Ía pola I-18 e choquei contra outro coche. Estás ben? Si, estou un pouco impresionado. Iso é comprensible. Podes darme o teu nome completo? Claro, son Sarah Standl. Sabes o que provocou o accidente? Creo que podería ter un bache. Ben, onde ocorreu o accidente? Na estrada I-18. Alguén máis resultou ferido? Non creo. Pero non estou seguro. Ben, teremos que investigar. Podes darme información sobre os outros condutores? Por suposto, o seu nome é John Radley. E o teu número de seguro. OK. Dame un minuto. Vale, é 546452. Vale, que tipo de danos ten o coche? Os faros están rotos e apagáronse os airbags. Podes conducilo? Non sei. Vou ter que remolcalo. Ben, teremos que inspeccionalo. Seguirei e presentarei a reclamación e solucionarémolo todo. Grazas.</textarea>
-            </div>
-        </div>
-        <div class="col-md-6">
+</div>
+<!-- container -->
 
-            <div class="form-group">
-                <label for="text">Transcript:</label>
-                <textarea class="form-control" id="text" name="text" rows="10">@Model?.Text</textarea>
-            </div>
-            <label for="text">Prompt:</label>
-            <div class="form-group">
-                <textarea class="form-control" id="prompt" name="prompt" rows="12">@(Model?.Prompt ?? @"Extract the following information from the phone conversation use will send in a bulleted points format:
-                                1. Call Reason
-                                2. Name of drivers involved
-            Use the same language of the transcript to complete the fields.") </textarea>
-            </div>
-            <div id="loadingPanel" style="display: none;">Loading...</div>
-            <button type="submit" class="btn btn-primary" onclick="submitForm()">Analyze call</button>
-
-        </div>
-    </div>
-</form>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_CallCenterScriptsPartial");}
+}

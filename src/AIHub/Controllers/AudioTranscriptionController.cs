@@ -120,10 +120,13 @@ public class AudioTranscriptionController : Controller
 
 
         //Show transcript results
+        model.Message = output_result4;
         ViewBag.Message = "TRANSCRIPTION RESULTS: \n\n"+output_result4;
 
 
-        return View("AudioTranscription", model);
+        //return View("AudioTranscription", model);
+        return Ok(model);
+
     }
         public class SpeechToTextResponse
     {
@@ -169,7 +172,9 @@ public class AudioTranscriptionController : Controller
         await TranscribeAudio(blobUrl.ToString(), imageFile);
         ViewBag.Waiting = null;
 
-        return View("AudioTranscription", model);
+        // return View("AudioTranscription", model);
+
+        return Ok(model);
     }
 
 
