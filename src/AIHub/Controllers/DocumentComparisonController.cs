@@ -9,6 +9,7 @@ public class DocumentComparisonController : Controller
     private string AOAIendpoint;
     private string AOAIsubscriptionKey;
     private string storageconnstring;
+    private string AOAIDeploymentName;
     private readonly BlobServiceClient blobServiceClient;
     private readonly BlobContainerClient containerClient;
     private readonly IEnumerable<BlobItem> blobs;
@@ -32,6 +33,7 @@ public class DocumentComparisonController : Controller
         AOAIendpoint = _config.GetValue<string>("DocumentComparison:OpenAIEndpoint");
         AOAIsubscriptionKey = _config.GetValue<string>("DocumentComparison:OpenAISubscriptionKey");
         storageconnstring = _config.GetValue<string>("Storage:ConnectionString");
+        AOAIDeploymentName = _config.GetValue<string>("BrandAnalyzer:DeploymentName");
         BlobServiceClient blobServiceClient = new BlobServiceClient(storageconnstring);
         containerClient = blobServiceClient.GetBlobContainerClient(_config.GetValue<string>("DocumentComparison:ContainerName"));
         sasUri = containerClient.GenerateSasUri(Azure.Storage.Sas.BlobContainerSasPermissions.Read, DateTimeOffset.UtcNow.AddHours(1));
@@ -133,13 +135,13 @@ public class DocumentComparisonController : Controller
 
             // ### If streaming is not selected
             Response<ChatCompletions> responseWithoutStream = await client_oai.GetChatCompletionsAsync(
-                "DemoBuild",
                 new ChatCompletionsOptions()
                 {
+                    DeploymentName = AOAIDeploymentName,
                     Messages =
                     {
-                        new ChatMessage(ChatRole.System, @"You are specialized in analyze different versions of the same PDF document. The first Document OCR result is: <<<"+output_result[0]+">>> and the second Document OCR result is: <<<"+output_result[1]+">>>"),
-                        new ChatMessage(ChatRole.User, @"User question: "+prompt ),
+                        new ChatRequestSystemMessage(@"You are specialized in analyze different versions of the same PDF document. The first Document OCR result is: <<<"+output_result[0]+">>> and the second Document OCR result is: <<<"+output_result[1]+">>>"),
+                        new ChatRequestUserMessage(@"User question: "+prompt ),
                     },
                     Temperature = (float)0.7,
                     MaxTokens = 1000,

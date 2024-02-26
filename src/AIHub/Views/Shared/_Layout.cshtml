@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - AOAI Demo Center</title>
     
-    <link rel="icon" type="image/x-icon" href="~/images/favicon.svg" />
+    <link rel="icon" type="image/x-icon" href="~/images/favicon.ico" />
     
     <script src="/js/config.js"></script>
     <link rel="stylesheet" href="/css/main.min.css" type="text/css" id="app-style"/>
@@ -60,7 +60,7 @@
                     </button>
 
                     <!-- Topbar Search Form -->
-                    <div class="app-search dropdown d-none d-lg-block">
+                    @* <div class="app-search dropdown d-none d-lg-block">
                         <form>
                             <div class="input-group">
                                 <input type="search" class="form-control dropdown-toggle" placeholder="Search..." id="top-search">
@@ -68,7 +68,7 @@
                                 <button class="input-group-text btn btn-primary" type="submit">Search</button>
                             </div>
                         </form>                            
-                    </div>
+                    </div> *@
                 </div>
 
                 <ul class="topbar-menu d-flex align-items-center gap-3">
@@ -95,11 +95,11 @@
                                 <img src="~/images/users/profile.jpg" alt="user-image" width="32" class="rounded-circle">
                             </span>
                             <span class="d-lg-flex flex-column gap-1 d-none">
-                                <h5 class="my-0">Manuel Sánchez</h5>
-                                <h6 class="my-0 fw-normal">Senior Azure Lead</h6>
+                                <h5 class="my-0">John Doe</h5>
+                                <h6 class="my-0 fw-normal">Chief Financial Officer</h6>
                             </span>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-end dropdown-menu-animated profile-dropdown">
+                        @* <div class="dropdown-menu dropdown-menu-end dropdown-menu-animated profile-dropdown">
                             <!-- item-->
                             <div class=" dropdown-header noti-title">
                                 <h6 class="text-overflow m-0">Welcome !</h6>
@@ -134,7 +134,7 @@
                                 <i class="mdi mdi-logout me-1"></i>
                                 <span>Logout</span>
                             </a>
-                        </div>
+                        </div> *@
                     </li>
                 </ul>
             </div>
@@ -187,9 +187,9 @@
                 <!--- Sidemenu -->
                 <ul class="side-nav">
 
-                    <li class="side-nav-title">MBG - Azure OpenAI Demo Center</li>
+                    <li class="side-nav-title"><center>Azure OpenAI Demo Center</center></li>
 
-                    <li class="side-nav-item">
+                    @* <li class="side-nav-item">
                         <a data-bs-toggle="collapse" href="#sidebarDashboards" aria-expanded="false" aria-controls="sidebarDashboards" class="side-nav-link">
                             <i class="uil-home-alt"></i>
                             <span> Dashboards </span>
@@ -219,10 +219,9 @@
                                 </li>
                             </ul>
                         </div>
-                    </li>
+                    </li> *@
 
-                    <li class="side-nav-title">Servicies</li>
-
+                    <li class="side-nav-title">Services</li>
                     <li class="side-nav-item">
                         <a class="side-nav-link" href="@Url.Action("AudioTranscription", "AudioTranscription")">
                             <i class="uil-intercom"></i>
@@ -278,6 +277,13 @@
                     </li>
 
                     <li class="side-nav-item">
+                        <a class="side-nav-link" href="@Url.Action("DocumentComparison", "DocumentComparison")">
+                            <i class="uil-file-search-alt"></i>
+                            <span> Document Comparison </span>
+                        </a>
+                    </li>
+
+                    <li class="side-nav-item">
                         <a class="side-nav-link" href="@Url.Action("ImageAnalyzer", "ImageAnalyzer")">
                             <i class="uil-image-search"></i>
                             <span> Image Analyzer </span>
@@ -306,7 +312,7 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-6">
-                            <script>document.write(new Date().getFullYear())</script> © Copyright - Microsoft CSU Team local Spain & NTT DATA EMEAL TEAM
+                            <script>document.write(new Date().getFullYear())</script> © Copyright - Microsoft
                         </div>
                         <div class="col-md-6">
                             <div class="text-md-end footer-links d-none d-md-block">
