@@ -55,13 +55,13 @@ public class CallCenterController : Controller
 
             // ### If streaming is not selected
             Response<ChatCompletions> responseWithoutStream = await client_oai.GetChatCompletionsAsync(
-                AOAIDeploymentName,
                 new ChatCompletionsOptions()
                 {
+                    DeploymentName = AOAIDeploymentName,
                     Messages =
                     {
-                        new ChatMessage(ChatRole.System, model.Prompt),
-                        new ChatMessage(ChatRole.User, @"Call transcript: "+model.Text),
+                        new ChatRequestSystemMessage(model.Prompt),
+                        new ChatRequestUserMessage(@"Call transcript: "+model.Text),
                     },
                     Temperature = (float)0.1,
                     MaxTokens = 1000,

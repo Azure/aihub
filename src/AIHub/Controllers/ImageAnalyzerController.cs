@@ -181,13 +181,13 @@ public class ImageAnalyzerController : Controller
 
             // ### If streaming is not selected
             Response<ChatCompletions> responseWithoutStream = await client_oai.GetChatCompletionsAsync(
-                AOAIDeploymentName,
                 new ChatCompletionsOptions()
                 {
+                    DeploymentName = AOAIDeploymentName,
                     Messages =
                     {
-                        new ChatMessage(ChatRole.System, @"The user will provide a list of descriptions of an image. I want you to create a unified and complete description of the image based of the list provided. Each suggested description is separated by a \ symbol. Also, it will provide the text detected in the image, try to associate the text detected (if any) with the rest of the captions of the image. If you are not sure, say to user something like 'MIGHT BE'. "),
-                        new ChatMessage(ChatRole.User, @"Descriptions: "+output_result + ". & OCR: "+output_result_2 ),
+                        new ChatRequestSystemMessage(@"The user will provide a list of descriptions of an image. I want you to create a unified and complete description of the image based of the list provided. Each suggested description is separated by a \ symbol. Also, it will provide the text detected in the image, try to associate the text detected (if any) with the rest of the captions of the image. If you are not sure, say to user something like 'MIGHT BE'. "),
+                        new ChatRequestUserMessage(@"Descriptions: "+output_result + ". & OCR: "+output_result_2 ),
                     },
                     Temperature = (float)0.7,
                     MaxTokens = 1000,

@@ -139,13 +139,13 @@ public class FormAnalyzerController : Controller
 
             // ### If streaming is not selected
             Response<ChatCompletions> responseWithoutStream = await client_oai.GetChatCompletionsAsync(
-                AOAIDeploymentName,
                 new ChatCompletionsOptions()
                 {
+                    DeploymentName = AOAIDeploymentName,
                     Messages =
                     {
-                        new ChatMessage(ChatRole.System, @"You are specialized in understanding PDFs and answering questions about it. Document OCR result is: "+output_result),
-                        new ChatMessage(ChatRole.User, @"User question: "+prompt ),
+                        new ChatRequestSystemMessage(@"You are specialized in understanding PDFs and answering questions about it. Document OCR result is: "+output_result),
+                        new ChatRequestUserMessage(@"User question: "+prompt ),
                     },
                     Temperature = (float)0.7,
                     MaxTokens = 1000,

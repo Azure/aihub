@@ -101,13 +101,13 @@ public class BrandAnalyzerController : Controller
 
             // ### If streaming is not selected
             Response<ChatCompletions> responseWithoutStream = await client_oai.GetChatCompletionsAsync(
-                AOAIDeploymentName,
                 new ChatCompletionsOptions()
                 {
+                    DeploymentName = AOAIDeploymentName,
                     Messages =
                     {
-                        new ChatMessage(ChatRole.System, @"I will provide a list results from opinons on the internet about "+model.CompanyName+" Bing search. If "+model.CompanyName+" is not a company what the user is asking for, answer to provide a new Company name. The user will ask you what they want to get from the compay opinions. \n Results: "+ input_context),
-                        new ChatMessage(ChatRole.User, model.Prompt),
+                        new ChatRequestSystemMessage(@"I will provide a list results from opinons on the internet about "+model.CompanyName+" Bing search. If "+model.CompanyName+" is not a company what the user is asking for, answer to provide a new Company name. The user will ask you what they want to get from the compay opinions. \n Results: "+ input_context),
+                        new ChatRequestUserMessage(model.Prompt),
                     },
                     Temperature = (float)0.7,
                     MaxTokens = 1000,
