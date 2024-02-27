@@ -3,43 +3,36 @@
 
 // Write your JavaScript code.
 
-var contentSafetyDropdown = document.getElementById('contentSafetyDropdown');
-var contentSafetyDropdownMenu = document.getElementById('contentSafetyDropdownMenu');
+// var contentSafetyDropdown = document.getElementById('contentSafetyDropdown');
+// var dropdownMenu = document.querySelector('.dropdown-menu');
 
-contentSafetyDropdown.addEventListener('click', function () {
-    contentSafetyDropdownMenu.classList.toggle('show');
-});
+// contentSafetyDropdown.addEventListener('click', function () {
+//     dropdownMenu.classList.toggle('show');
+// });
 
-var documentComparisonDropdown = document.getElementById('documentComparisonDropdown');
-var documentComparisonDropdownMenu = document.getElementById('documentComparisonDropdownMenu');
+// function submitForm() {
+//     Disable the button
+//     var btn = document.querySelector('button[type="submit"]');
+//     btn.disabled = true;
 
-documentComparisonDropdown.addEventListener('click', function () {
-    documentComparisonDropdownMenu.classList.toggle('show');
-});
+//     Show the loading panel
+//     var loadingPanel = document.getElementById('loadingPanel');
+//     loadingPanel.style.display = 'block';
 
-function submitForm() {
-    // Disable the button
-    var btn = document.querySelector('button[type="submit"]');
-    btn.disabled = true;
+//     Submit the form
+//     var form = document.querySelector('form');
+//     form.submit();
+// }
+// window.onload = function () {
+//     Enable the button
+//     var btn = document.querySelector('button[type="submit"]');
+//     btn.disabled = false;
 
-    // Show the loading panel
-    var loadingPanel = document.getElementById('loadingPanel');
-    loadingPanel.style.display = 'block';
+//     Hide the loading panel
+//     var loadingPanel = document.getElementById('loadingPanel');
+//     loadingPanel.style.display = 'none';
+// }
 
-    // Submit the form
-    var form = document.querySelector('form');
-    form.submit();
-}
-window.onload = function () {
-    // Enable the button
-    var btn = document.querySelector('button[type="submit"]');
-    btn.disabled = false;
-
-    // Hide the loading panel
-    var loadingPanel = document.getElementById('loadingPanel');
-    loadingPanel.style.display = 'none';
-}
-
-function copyText(text) {
-    document.getElementById("text").value = text;
-}
+// function copyText(text) {
+//     document.getElementById("text").value = text;
+// }

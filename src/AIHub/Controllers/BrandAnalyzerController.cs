@@ -10,6 +10,7 @@ public class BrandAnalyzerController : Controller
     private string AOAIendpoint;
     private string AOAIsubscriptionKey;
     private string storageconnstring;
+    private string AOAIDeploymentName;
 
 
     public BrandAnalyzerController(IConfiguration config)
@@ -19,6 +20,7 @@ public class BrandAnalyzerController : Controller
         BingsubscriptionKey = _config.GetValue<string>("BrandAnalyzer:BingKey");
         AOAIendpoint = _config.GetValue<string>("BrandAnalyzer:OpenAIEndpoint");
         AOAIsubscriptionKey = _config.GetValue<string>("BrandAnalyzer:OpenAISubscriptionKey");
+        AOAIDeploymentName = _config.GetValue<string>("BrandAnalyzer:DeploymentName");
         model = new BrandAnalyzerModel();
 
     }
@@ -99,13 +101,13 @@ public class BrandAnalyzerController : Controller
 
             // ### If streaming is not selected
             Response<ChatCompletions> responseWithoutStream = await client_oai.GetChatCompletionsAsync(
-                "DemoBuild",
                 new ChatCompletionsOptions()
                 {
+                    DeploymentName = AOAIDeploymentName,
                     Messages =
                     {
-                        new ChatMessage(ChatRole.System, @"I will provide a list results from opinons on the internet about "+model.CompanyName+" Bing search. If "+model.CompanyName+" is not a company what the user is asking for, answer to provide a new Company name. The user will ask you what they want to get from the compay opinions. \n Results: "+ input_context),
-                        new ChatMessage(ChatRole.User, model.Prompt),
+                        new ChatRequestSystemMessage(@"I will provide a list results from opinons on the internet about "+model.CompanyName+" Bing search. If "+model.CompanyName+" is not a company what the user is asking for, answer to provide a new Company name. The user will ask you what they want to get from the compay opinions. \n Results: "+ input_context),
+                        new ChatRequestUserMessage(model.Prompt),
                     },
                     Temperature = (float)0.7,
                     MaxTokens = 1000,
@@ -116,6 +118,7 @@ public class BrandAnalyzerController : Controller
 
             ChatCompletions completions = responseWithoutStream.Value;
             ChatChoice results_analisis = completions.Choices[0];
+            model.Message = results_analisis.Message.Content;
             ViewBag.Message =
                    //"Hate severity: " + (response.Value.HateResult?.Severity ?? 0);
                    results_analisis.Message.Content
@@ -127,6 +130,7 @@ public class BrandAnalyzerController : Controller
         }
 
         return View("BrandAnalyzer", model);
+        //return Ok(model);
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
