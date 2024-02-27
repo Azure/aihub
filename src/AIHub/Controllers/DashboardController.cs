@@ -3,18 +3,10 @@
 public class DashboardController : Controller
 {
     private readonly ILogger<DashboardController> _logger;
-    private readonly IConfiguration _config;
-    private readonly ContentSafetyClient _client;
-
-    private string endpoint;
-    private string subscriptionKey;
-    private string storageconnstring;
-
 
     public DashboardController(ILogger<DashboardController> logger)
     {
         _logger = logger;
-
     }
 
     public IActionResult Banking()

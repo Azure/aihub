@@ -3,18 +3,10 @@
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
-    private readonly IConfiguration _config;
-    private readonly ContentSafetyClient _client;
-
-    private string endpoint;
-    private string subscriptionKey;
-    private string storageconnstring;
-
 
     public HomeController(ILogger<HomeController> logger)
     {
         _logger = logger;
-
     }
 
     public IActionResult Index()
