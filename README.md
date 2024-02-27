@@ -1,16 +1,5 @@
-# Project
+# AI Hub
 
-> This repo has been populated by an initial template to help get you started. Please
-> make sure to update the content to build a great experience for community-building.
-
-As the maintainer of this project, please make a few updates:
-
-- Improving this README.MD file to provide a great experience
-- Updating SUPPORT.MD with content about this project's support experience
-- Understanding the security reporting process in SECURITY.MD
-- Remove this section from the README
-
-# Official Documentation
 Learn more at the official documentation: [AI Hub](https://azure.github.io/aihub/)
 
 ## High-level Architecture
@@ -29,7 +18,6 @@ Feel the power of artificial intelligence and cloud computing to provide a smart
 Learn more at the official documentation: [What is Azure Cognitive Search?](https://learn.microsoft.com/en-us/azure/search/search-what-is-azure-search).
 
 Do you want to implement this solution? [Activate GenAI with Azure](https://azure.github.io/activate-genai/).
-
 
 ### Call Center Analytics
 Analyze call center call trancripts (that might come from your Call Center technology, or having transcribed with Azure Speech Services).
