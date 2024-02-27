@@ -87,7 +87,7 @@ variable "ca_chat_image" {
 }
 
 variable "ca_prep_docs_image" {
-  default = "ghcr.io/azure/activate-genai/aihub-prepdocs:1.0.0-preview.0"
+  default = "ghcr.io/azure/aihub/aihub-prepdocs:1.0.0-preview.0"
 }
 
 variable "ca_aihub_image" {
