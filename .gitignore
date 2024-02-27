@@ -408,3 +408,10 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 src/AIHub/appsettings.Development.json
+
+# Local .terraform directories
+**/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*

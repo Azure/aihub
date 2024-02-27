@@ -1,0 +1,14 @@
+variable "resource_group_name" {}
+variable "resource_group_id" {}
+variable "subscription_id" {}
+variable "location" {}
+variable "ca_name" {}
+variable "cae_id" {}
+variable "managed_identity_id" {}
+variable "managed_identity_client_id" {}
+variable "tenant_id" {}
+variable "image_name" {}
+variable "storage_account_name" {}
+variable "storage_account_key" {}
+variable "search_service_name" {}
+variable "openai_service_name" {}

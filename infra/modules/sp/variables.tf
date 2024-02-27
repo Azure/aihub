@@ -1,0 +1,1 @@
+variable "sp_name" {}
