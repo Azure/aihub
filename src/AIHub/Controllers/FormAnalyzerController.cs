@@ -2,44 +2,35 @@ namespace MVCWeb.Controllers;
 
 public class FormAnalyzerController : Controller
 {
-    private readonly ILogger<HomeController> _logger;
-    private readonly IConfiguration _config;
     private string FormRecogEndpoint;
     private string FormRecogSubscriptionKey;
     private string AOAIendpoint;
     private string AOAIsubscriptionKey;
     private string storageconnstring;
     private string AOAIDeploymentName;
-    private readonly BlobServiceClient blobServiceClient;
     private readonly BlobContainerClient containerClient;
     private readonly IEnumerable<BlobItem> blobs;
     private Uri sasUri;
 
-
-    //Results
-    string result_image_front;
-    string result_message_front;
-
-
-
     private FormAnalyzerModel model;
+    HttpClient httpClient;
 
 
-    public FormAnalyzerController(IConfiguration config)
+    public FormAnalyzerController(IConfiguration config, IHttpClientFactory httpClientFactory)
     {
-        _config = config;
-        FormRecogEndpoint = _config.GetValue<string>("FormAnalyzer:FormRecogEndpoint");
-        FormRecogSubscriptionKey = _config.GetValue<string>("FormAnalyzer:FormRecogSubscriptionKey");
-        AOAIendpoint = _config.GetValue<string>("FormAnalyzer:OpenAIEndpoint");
-        AOAIsubscriptionKey = _config.GetValue<string>("FormAnalyzer:OpenAISubscriptionKey");
-        storageconnstring = _config.GetValue<string>("Storage:ConnectionString");
+        FormRecogEndpoint = config.GetValue<string>("FormAnalyzer:FormRecogEndpoint") ?? throw new ArgumentNullException("FormRecogEndpoint");
+        FormRecogSubscriptionKey = config.GetValue<string>("FormAnalyzer:FormRecogSubscriptionKey") ?? throw new ArgumentNullException("FormRecogSubscriptionKey");
+        AOAIendpoint = config.GetValue<string>("FormAnalyzer:OpenAIEndpoint") ?? throw new ArgumentNullException("OpenAIEndpoint");
+        AOAIsubscriptionKey = config.GetValue<string>("FormAnalyzer:OpenAISubscriptionKey") ?? throw new ArgumentNullException("OpenAISubscriptionKey");
+        storageconnstring = config.GetValue<string>("Storage:ConnectionString") ?? throw new ArgumentNullException("ConnectionString");
         BlobServiceClient blobServiceClient = new BlobServiceClient(storageconnstring);
-        containerClient = blobServiceClient.GetBlobContainerClient(_config.GetValue<string>("FormAnalyzer:ContainerName"));
+        containerClient = blobServiceClient.GetBlobContainerClient(config.GetValue<string>("FormAnalyzer:ContainerName"));
         sasUri = containerClient.GenerateSasUri(Azure.Storage.Sas.BlobContainerSasPermissions.Read, DateTimeOffset.UtcNow.AddHours(1));
-        AOAIDeploymentName = _config.GetValue<string>("FormAnalyzer:DeploymentName");
+        AOAIDeploymentName = config.GetValue<string>("FormAnalyzer:DeploymentName") ?? throw new ArgumentNullException("DeploymentName");
         // Obtiene una lista de blobs en el contenedor
         blobs = containerClient.GetBlobs();
         model = new FormAnalyzerModel();
+        httpClient = httpClientFactory.CreateClient();
     }
 
     public IActionResult FormAnalyzer()
@@ -50,23 +41,19 @@ public class FormAnalyzerController : Controller
     [HttpPost]
     public async Task<IActionResult> AnalyzeForm(string image_url, string prompt)
     {
-
-
-        //1. Get Image
+        // 1. Get Image
         string image = image_url + sasUri.Query;
         Console.WriteLine(image);
-        //ViewBag.PdfUrl = "http://docs.google.com/gview?url="+image+"&embedded=true";
         ViewBag.PdfUrl = image;
         model.PdfUrl = image;
         string output_result;
 
-        HttpClient client = new HttpClient();
-        client.BaseAddress = new Uri(FormRecogEndpoint);
+        httpClient.BaseAddress = new Uri(FormRecogEndpoint);
 
         // Add an Accept header for JSON format.
-        client.DefaultRequestHeaders.Accept.Add(
+        httpClient.DefaultRequestHeaders.Accept.Add(
         new MediaTypeWithQualityHeaderValue("application/json"));
-        client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", FormRecogSubscriptionKey);
+        httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", FormRecogSubscriptionKey);
 
         var content = new
         {
@@ -76,39 +63,33 @@ public class FormAnalyzerController : Controller
         // Crear un HttpContent con el JSON y el tipo de contenido
         HttpContent content_body = new StringContent(json, Encoding.UTF8, "application/json");
         // List data response.
-        HttpResponseMessage response = await client.PostAsync(FormRecogEndpoint, content_body);  // Blocking call! Program will wait here until a response is received or a timeout occurs.
+        HttpResponseMessage response = await httpClient.PostAsync(FormRecogEndpoint, content_body);  // Blocking call! Program will wait here until a response is received or a timeout occurs.
         response.EnsureSuccessStatusCode();
 
-        //string responseBody = await response.Content.ReadAsStringAsync();
-        string operation_location_url = response.Headers.GetValues("Operation-Location").FirstOrDefault();
+        string operation_location_url = response.Headers.GetValues("Operation-Location").First();
 
-
-        client.Dispose();
-
-
-        //llamar a GET OPERATION
-        HttpClient client2 = new HttpClient();
-        client2.BaseAddress = new Uri(operation_location_url);
+        // llamar a GET OPERATION
+        httpClient.BaseAddress = new Uri(operation_location_url);
 
         // Add an Accept header for JSON format.
-        client2.DefaultRequestHeaders.Accept.Add(
+        httpClient.DefaultRequestHeaders.Accept.Add(
         new MediaTypeWithQualityHeaderValue("application/json"));
-        client2.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", FormRecogSubscriptionKey);
+        httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", FormRecogSubscriptionKey);
 
         // Crear un HttpContent con el JSON y el tipo de contenido
         // List data response.
-        HttpResponseMessage response2 = await client2.GetAsync(operation_location_url);  // Blocking call! Program will wait here until a response is received or a timeout occurs.
+        HttpResponseMessage response2 = await httpClient.GetAsync(operation_location_url);  // Blocking call! Program will wait here until a response is received or a timeout occurs.
         Console.WriteLine(response2);
         response2.EnsureSuccessStatusCode();
         var responseBody = await response2.Content.ReadAsStringAsync();
-        var responsejson = JsonConvert.DeserializeObject<dynamic>(await response2.Content.ReadAsStringAsync());
+        var responsejson = JsonConvert.DeserializeObject<dynamic>(await response2.Content.ReadAsStringAsync())!;
 
         //var analyzeresult = responseBody.analyzeResult;            
         while (responsejson.status != "succeeded")
         {
             Thread.Sleep(10000);
-            response2 = await client2.GetAsync(operation_location_url);
-            responsejson = JsonConvert.DeserializeObject<dynamic>(await response2.Content.ReadAsStringAsync());
+            response2 = await httpClient.GetAsync(operation_location_url);
+            responsejson = JsonConvert.DeserializeObject<dynamic>(await response2.Content.ReadAsStringAsync())!;
         }
         output_result = responsejson.analyzeResult.content.ToString();
 
@@ -118,27 +99,24 @@ public class FormAnalyzerController : Controller
         // Parse the response as JSON
         // var operationLocation= await response.Headers.ReadAsStringAsync();
 
-        client2.Dispose();
-
-
         try
         {
-            OpenAIClient client_oai = null;
+            OpenAIClient aoaiClient;
             if (string.IsNullOrEmpty(AOAIsubscriptionKey))
             {
-                client_oai = new OpenAIClient(
+                aoaiClient = new OpenAIClient(
                     new Uri(AOAIendpoint),
                     new DefaultAzureCredential());
             }
             else
             {
-                client_oai = new OpenAIClient(
+                aoaiClient = new OpenAIClient(
                     new Uri(AOAIendpoint),
                     new AzureKeyCredential(AOAIsubscriptionKey));
             }
 
-            // ### If streaming is not selected
-            Response<ChatCompletions> responseWithoutStream = await client_oai.GetChatCompletionsAsync(
+            // If streaming is not selected
+            Response<ChatCompletions> responseWithoutStream = await aoaiClient.GetChatCompletionsAsync(
                 new ChatCompletionsOptions()
                 {
                     DeploymentName = AOAIDeploymentName,
@@ -157,30 +135,15 @@ public class FormAnalyzerController : Controller
             ChatCompletions completions = responseWithoutStream.Value;
             ChatChoice results_analisis = completions.Choices[0];
             model.Message = results_analisis.Message.Content;
-            ViewBag.Message =
-                   //"Hate severity: " + (response.Value.HateResult?.Severity ?? 0);
-                   results_analisis.Message.Content
-                   ;
-            
-            /* result_image_front=image;
-            Console.WriteLine("1) "+result_image_front);
-            Console.WriteLine("2) "+result_message_front);
-             /* ViewBag.Message = 
-                  results_analisis.Message.Content
-                  ; */
-            //ViewBag.Image=result_image_front+".jpg";
+            ViewBag.Message = results_analisis.Message.Content;
 
             model.Image = model.Image + sasUri.Query;
-
         }
-        catch (RequestFailedException ex)
+        catch (RequestFailedException)
         {
             throw;
         }
 
-        // var result = await _service.GetBuildingHomeAsync(); 
-        // return Ok(result); 
-        //return View("FormAnalyzer", model);
         return Ok(model);
     }
 
@@ -188,15 +151,14 @@ public class FormAnalyzerController : Controller
     [HttpPost]
     public async Task<IActionResult> UploadFile(IFormFile imageFile, string prompt)
     {
-        //Check no image
-
+        // Check no image
         if (CheckNullValues(imageFile))
         {
             ViewBag.Message = "You must upload an image";
             return View("FormAnalyzer");
         }
 
-        //Upload file to azure storage account
+        // Upload file to azure storage account
         string url = imageFile.FileName.ToString();
         Console.WriteLine(url);
         url = url.Replace(" ", "");
@@ -208,7 +170,7 @@ public class FormAnalyzerController : Controller
         };
         await blobClient.UploadAsync(imageFile.OpenReadStream(), new BlobUploadOptions { HttpHeaders = httpHeaders });
 
-        //Get the url of the file
+        // Get the url of the file
         Uri blobUrl = blobClient.Uri;
 
         if (CheckImageExtension(blobUrl.ToString()))
@@ -217,16 +179,12 @@ public class FormAnalyzerController : Controller
             return View("FormAnalyzer", model);
         }
 
-
-        //Call EvaluateImage with the url
+        // Call EvaluateImage with the url
         await AnalyzeForm(blobUrl.ToString(), prompt);
         ViewBag.Waiting = null;
 
-        //return View("FormAnalyzer", model);
         return Ok(model);
     }
-
-
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()

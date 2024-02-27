@@ -3,9 +3,6 @@ namespace MVCWeb.Controllers;
 public class ContentSafetyController : Controller
 {
     private readonly ILogger<HomeController> _logger;
-    private readonly ContentSafetyClient _client;
-    private readonly IConfiguration _config;
-    private readonly BlobServiceClient blobServiceClient;
     private readonly BlobContainerClient containerClient;
     private readonly IEnumerable<BlobItem> blobs;
     public static readonly int[] VALID_THRESHOLD_VALUES = { -1, 0, 2, 3, 4, 5, 6 };
@@ -15,30 +12,15 @@ public class ContentSafetyController : Controller
     private string storageconnstring;
     private ContentSafetyModel model;
     private readonly Uri sasUri;
-    public enum Category
-    {
-        Hate = 0,
-        SelfHarm = 1,
-        Sexual = 2,
-        Violence = 3
-    }
-
-    // Enumeration for actions
-    public enum Action
-    {
-        Accept = 0,
-        Reject = 1
-    }
 
     public ContentSafetyController(IConfiguration config, ILogger<HomeController> logger)
     {
-        _config = config;
         _logger = logger;
-        endpoint = _config.GetValue<string>("ContentModerator:Endpoint");
-        subscriptionKey = _config.GetValue<string>("ContentModerator:SubscriptionKey");
-        storageconnstring = _config.GetValue<string>("Storage:ConnectionString");
+        endpoint = config.GetValue<string>("ContentModerator:Endpoint") ?? throw new ArgumentNullException("Endpoint");
+        subscriptionKey = config.GetValue<string>("ContentModerator:SubscriptionKey") ?? throw new ArgumentNullException("SubscriptionKey");
+        storageconnstring = config.GetValue<string>("Storage:ConnectionString") ?? throw new ArgumentNullException("ConnectionString");
         BlobServiceClient blobServiceClient = new BlobServiceClient(storageconnstring);
-        containerClient = blobServiceClient.GetBlobContainerClient(_config.GetValue<string>("Storage:ContainerName"));
+        containerClient = blobServiceClient.GetBlobContainerClient(config.GetValue<string>("Storage:ContainerName"));
         sasUri = containerClient.GenerateSasUri(Azure.Storage.Sas.BlobContainerSasPermissions.Read, DateTimeOffset.UtcNow.AddHours(1));
         // Obtiene una lista de blobs en el contenedor
         blobs = containerClient.GetBlobs();
@@ -69,7 +51,7 @@ public class ContentSafetyController : Controller
         ContentSafetyClient client = new ContentSafetyClient(new Uri(endpoint), new AzureKeyCredential(subscriptionKey));
 
         ContentSafetyImageData image = new ContentSafetyImageData(new Uri(imageUrl));
-        
+
         var request = new AnalyzeImageOptions(image);
 
         Response<AnalyzeImageResult> response;
@@ -80,7 +62,7 @@ public class ContentSafetyController : Controller
             {
                 model.Approve = false;
             }
-             if (response.Value.CategoriesAnalysis.FirstOrDefault(a => a.Category == ImageCategory.SelfHarm)?.Severity > model.SelfHarm)
+            if (response.Value.CategoriesAnalysis.FirstOrDefault(a => a.Category == ImageCategory.SelfHarm)?.Severity > model.SelfHarm)
             {
                 model.Approve = false;
             }
@@ -117,7 +99,6 @@ public class ContentSafetyController : Controller
             return View("ImageModerator", model);
         }
 
-        //return View("ImageModerator", model);
         return Ok(model);
     }
 
@@ -129,7 +110,6 @@ public class ContentSafetyController : Controller
             ViewBag.Message = "You must enter a value for each threshold";
             return View("TextModerator", model);
         }
-        //check if text is null
         if (string.IsNullOrEmpty(HttpContext.Request.Form["text"]))
         {
             ViewBag.Message = "You must enter a text to evaluate";
@@ -150,12 +130,12 @@ public class ContentSafetyController : Controller
         try
         {
             response = client.AnalyzeText(request);
-            
+
             if (response.Value.CategoriesAnalysis.FirstOrDefault(a => a.Category == TextCategory.Hate)?.Severity > model.Hate)
             {
                 model.Approve = false;
             }
-             if (response.Value.CategoriesAnalysis.FirstOrDefault(a => a.Category == TextCategory.SelfHarm)?.Severity > model.SelfHarm)
+            if (response.Value.CategoriesAnalysis.FirstOrDefault(a => a.Category == TextCategory.SelfHarm)?.Severity > model.SelfHarm)
             {
                 model.Approve = false;
             }
@@ -185,29 +165,29 @@ public class ContentSafetyController : Controller
         return View("TextModerator", model);
     }
 
-    //Upload a file to my azure storage account
+    // Upload a file to my azure storage account
     [HttpPost]
     public async Task<IActionResult> UploadFile(IFormFile imageFile)
     {
-        //Check if the file is null
+        // Check if the file is null
         if (imageFile == null || imageFile.Length == 0)
         {
             ViewBag.Message = "You must select an image to upload";
             return View("ImageModerator", model);
         }
-        //Check if the file is an image
+        // Check if the file is an image
         if (!imageFile.ContentType.Contains("image"))
         {
             ViewBag.Message = "You must select an image to upload";
             return View("ImageModerator", model);
         }
-        //check if the file is too big
+        // check if the file is too big
         if (imageFile.Length > 3000000)
         {
             ViewBag.Message = "The image is too big. File must be less than 3MB";
             return View("ImageModerator", model);
         }
-        //Check if the threshold values are null
+        // Check if the threshold values are null
         if (CheckNullValues(HttpContext))
         {
             ViewBag.Message = "You must enter a value for each threshold";
@@ -218,36 +198,33 @@ public class ContentSafetyController : Controller
         model.SelfHarm = Convert.ToInt32(HttpContext.Request.Form["shtext"]);
         model.Hate = Convert.ToInt32(HttpContext.Request.Form["hatetext"]);
 
-
-        //Upload file to azure storage account
+        // Upload file to azure storage account
         BlobClient blobClient = containerClient.GetBlobClient(imageFile.FileName);
         await blobClient.UploadAsync(imageFile.OpenReadStream(), true);
 
-        //Get the url of the file
+        // Get the url of the file
         Uri blobUrl = blobClient.Uri;
 
-        //Call EvaluateImage with the url
+        // Call EvaluateImage with the url
         EvaluateImage(blobUrl.ToString());
 
-        //Return the result
-        //return View("ImageModerator", model);
         return Ok(model);
     }
 
-    //Load the image from the storage account
+    // Load the image from the storage account
     public IActionResult LoadImage(string imageName)
     {
-        //Get the blob
+        // Get the blob
         BlobClient blobClient = containerClient.GetBlobClient(imageName);
 
-        //Get the image
+        // Get the image
         var image = blobClient.OpenReadAsync().Result;
 
-        //Return the image
+        // Return the image
         return File(image, "image/jpeg");
     }
 
-    //Check httpcontext for null values
+    // Check httpcontext for null values
     private bool CheckNullValues(HttpContext httpContext)
     {
         if (string.IsNullOrEmpty(httpContext.Request.Form["severitytext"]))

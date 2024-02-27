@@ -2,27 +2,23 @@ namespace MVCWeb.Controllers;
 
 public class BrandAnalyzerController : Controller
 {
-    private readonly ILogger<HomeController> _logger;
-    private readonly IConfiguration _config;
     private BrandAnalyzerModel model;
     private string Bingendpoint;
     private string BingsubscriptionKey;
     private string AOAIendpoint;
     private string AOAIsubscriptionKey;
-    private string storageconnstring;
     private string AOAIDeploymentName;
+    private HttpClient httpClient;
 
-
-    public BrandAnalyzerController(IConfiguration config)
+    public BrandAnalyzerController(IConfiguration config, IHttpClientFactory clientFactory)
     {
-        _config = config;
-        Bingendpoint = _config.GetValue<string>("BrandAnalyzer:BingEndpoint");
-        BingsubscriptionKey = _config.GetValue<string>("BrandAnalyzer:BingKey");
-        AOAIendpoint = _config.GetValue<string>("BrandAnalyzer:OpenAIEndpoint");
-        AOAIsubscriptionKey = _config.GetValue<string>("BrandAnalyzer:OpenAISubscriptionKey");
-        AOAIDeploymentName = _config.GetValue<string>("BrandAnalyzer:DeploymentName");
+        Bingendpoint = config.GetValue<string>("BrandAnalyzer:BingEndpoint") ?? throw new ArgumentNullException("BingEndpoint");
+        BingsubscriptionKey = config.GetValue<string>("BrandAnalyzer:BingKey") ?? throw new ArgumentNullException("BingKey");
+        AOAIendpoint = config.GetValue<string>("BrandAnalyzer:OpenAIEndpoint") ?? throw new ArgumentNullException("OpenAIEndpoint");
+        AOAIsubscriptionKey = config.GetValue<string>("BrandAnalyzer:OpenAISubscriptionKey") ?? throw new ArgumentNullException("OpenAISubscriptionKey");
+        AOAIDeploymentName = config.GetValue<string>("BrandAnalyzer:DeploymentName") ?? throw new ArgumentNullException("DeploymentName");
         model = new BrandAnalyzerModel();
-
+        httpClient = clientFactory.CreateClient();
     }
 
     public IActionResult BrandAnalyzer()
@@ -33,7 +29,6 @@ public class BrandAnalyzerController : Controller
     [HttpPost]
     public async Task<IActionResult> AnalyzeCompany()
     {
-
         model.CompanyName = HttpContext.Request.Form["companyName"];
         model.Prompt = HttpContext.Request.Form["prompt"];
         string input_context = "";
@@ -45,16 +40,15 @@ public class BrandAnalyzerController : Controller
         }
 
         string query_bing = model.CompanyName + " opiniones de usuarios";
-        HttpClient client = new HttpClient();
-        client.BaseAddress = new Uri(Bingendpoint);
+        httpClient.BaseAddress = new Uri(Bingendpoint);
 
         // Add an Accept header for JSON format.
-        client.DefaultRequestHeaders.Accept.Add(
+        httpClient.DefaultRequestHeaders.Accept.Add(
         new MediaTypeWithQualityHeaderValue("application/json"));
-        client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", BingsubscriptionKey);
+        httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", BingsubscriptionKey);
         string uri = Bingendpoint + "?q=" + query_bing + "&mkt=es-ES&count=100";
         // List data response.
-        HttpResponseMessage response = client.GetAsync(uri).Result;  // Blocking call! Program will wait here until a response is received or a timeout occurs.
+        HttpResponseMessage response = httpClient.GetAsync(uri).Result;  // Blocking call! Program will wait here until a response is received or a timeout occurs.
         response.EnsureSuccessStatusCode();
         string responseBody = await response.Content.ReadAsStringAsync();
         // Above three lines can be replaced with new helper method below
@@ -65,7 +59,7 @@ public class BrandAnalyzerController : Controller
         // Parse the response as JSON
         try
         {
-            var responsejson = JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync());
+            var responsejson = JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync())!;
 
             // Get the web pages from the response
             var news = responsejson.webPages.value;
@@ -80,27 +74,25 @@ public class BrandAnalyzerController : Controller
             Console.WriteLine(e.Message);
         }
 
-        client.Dispose();
-
         try
         {
 
-            OpenAIClient client_oai = null;
+            OpenAIClient aoaiClient;
             if (string.IsNullOrEmpty(AOAIsubscriptionKey))
             {
-                client_oai = new OpenAIClient(
+                aoaiClient = new OpenAIClient(
                     new Uri(AOAIendpoint),
                     new DefaultAzureCredential());
             }
             else
             {
-                client_oai = new OpenAIClient(
+                aoaiClient = new OpenAIClient(
                     new Uri(AOAIendpoint),
                     new AzureKeyCredential(AOAIsubscriptionKey));
             }
 
-            // ### If streaming is not selected
-            Response<ChatCompletions> responseWithoutStream = await client_oai.GetChatCompletionsAsync(
+            // If streaming is not selected
+            Response<ChatCompletions> responseWithoutStream = await aoaiClient.GetChatCompletionsAsync(
                 new ChatCompletionsOptions()
                 {
                     DeploymentName = AOAIDeploymentName,
@@ -119,18 +111,14 @@ public class BrandAnalyzerController : Controller
             ChatCompletions completions = responseWithoutStream.Value;
             ChatChoice results_analisis = completions.Choices[0];
             model.Message = results_analisis.Message.Content;
-            ViewBag.Message =
-                   //"Hate severity: " + (response.Value.HateResult?.Severity ?? 0);
-                   results_analisis.Message.Content
-                   ;
+            ViewBag.Message = results_analisis.Message.Content;
         }
-        catch (RequestFailedException ex)
+        catch (RequestFailedException)
         {
             throw;
         }
 
         return View("BrandAnalyzer", model);
-        //return Ok(model);
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -139,7 +127,7 @@ public class BrandAnalyzerController : Controller
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 
-    private bool CheckNullValues(string companyName)
+    private bool CheckNullValues(string? companyName)
     {
         if (string.IsNullOrEmpty(companyName))
         {
