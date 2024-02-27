@@ -87,8 +87,8 @@ jobs:
       - name: Build and push Docker image for prep-docs
         uses: docker/build-push-action@v3
         with:
-          context: ./prepdocs/
-          file: ./prepdocs/Dockerfile
+          context: ./src/prepdocs/
+          file: ./src/prepdocs/Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ env.REGISTRY }}/${{ env.GITHUB_REPOSITORY_LOWER_CASE }}/${{ env.DOCS_IMAGE_NAME }}:${{ env.MINVERVERSIONOVERRIDE }}
           labels: ${{ steps.meta-docs.outputs.labels }}
