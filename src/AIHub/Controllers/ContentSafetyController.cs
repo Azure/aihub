@@ -15,11 +15,6 @@ public class ContentSafetyController : Controller
     private string storageconnstring;
     private ContentSafetyModel model;
     private readonly Uri sasUri;
-    //private int severity = 0;
-    //private int violence = 0;
-    //private int selfHarm = 0;
-    //private int hate = 0;
-
     public enum Category
     {
         Hate = 0,
@@ -50,7 +45,6 @@ public class ContentSafetyController : Controller
         model = new ContentSafetyModel();
 
     }
-
     public IActionResult TextModerator()
     {
         return View();
@@ -74,37 +68,47 @@ public class ContentSafetyController : Controller
 
         ContentSafetyClient client = new ContentSafetyClient(new Uri(endpoint), new AzureKeyCredential(subscriptionKey));
 
-        ImageData image = new ImageData() { BlobUrl = new Uri(imageUrl) };
+        ContentSafetyImageData image = new ContentSafetyImageData(new Uri(imageUrl));
+        
         var request = new AnalyzeImageOptions(image);
-
 
         Response<AnalyzeImageResult> response;
         try
         {
             response = client.AnalyzeImage(request);
-            if (response.Value.HateResult?.Severity > model.Hate)
+            if (response.Value.CategoriesAnalysis.FirstOrDefault(a => a.Category == ImageCategory.Hate)?.Severity > model.Hate)
             {
                 model.Approve = false;
             }
-            if (response.Value.SelfHarmResult?.Severity > model.SelfHarm)
+             if (response.Value.CategoriesAnalysis.FirstOrDefault(a => a.Category == ImageCategory.SelfHarm)?.Severity > model.SelfHarm)
             {
                 model.Approve = false;
             }
-            if (response.Value.SexualResult?.Severity > model.Severity)
+            if (response.Value.CategoriesAnalysis.FirstOrDefault(a => a.Category == ImageCategory.Sexual)?.Severity > model.Severity)
             {
                 model.Approve = false;
             }
-            if (response.Value.ViolenceResult?.Severity > model.Violence)
+            if (response.Value.CategoriesAnalysis.FirstOrDefault(a => a.Category == ImageCategory.Violence)?.Severity > model.Violence)
             {
                 model.Approve = false;
             }
+
+            model.Message = "Resultado de la moderación: \n" +
+                        (model.Approve.Value ? "APROBADO" : "RECHAZADO") + "\n" +
+                    "Hate severity: " + (response.Value.CategoriesAnalysis.FirstOrDefault(a => a.Category == ImageCategory.Hate)?.Severity ?? 0) + "\n" +
+                    "SelfHarm severity: " + (response.Value.CategoriesAnalysis.FirstOrDefault(a => a.Category == ImageCategory.SelfHarm)?.Severity ?? 0) + "\n" +
+                    "Sexual severity: " + (response.Value.CategoriesAnalysis.FirstOrDefault(a => a.Category == ImageCategory.Sexual)?.Severity ?? 0) + "\n" +
+                    "Violence severity: " + (response.Value.CategoriesAnalysis.FirstOrDefault(a => a.Category == ImageCategory.Violence)?.Severity ?? 0);
+
             ViewBag.Message = "Resultado de la moderación: \n" +
                         (model.Approve.Value ? "APROBADO" : "RECHAZADO") + "\n" +
-                    "Hate severity: " + (response.Value.HateResult?.Severity ?? 0) + "\n" +
-                    "SelfHarm severity: " + (response.Value.SelfHarmResult?.Severity ?? 0) + "\n" +
-                    "Sexual severity: " + (response.Value.SexualResult?.Severity ?? 0) + "\n" +
-                    "Violence severity: " + (response.Value.ViolenceResult?.Severity ?? 0);
+                    "Hate severity: " + (response.Value.CategoriesAnalysis.FirstOrDefault(a => a.Category == ImageCategory.Hate)?.Severity ?? 0) + "\n" +
+                    "SelfHarm severity: " + (response.Value.CategoriesAnalysis.FirstOrDefault(a => a.Category == ImageCategory.SelfHarm)?.Severity ?? 0) + "\n" +
+                    "Sexual severity: " + (response.Value.CategoriesAnalysis.FirstOrDefault(a => a.Category == ImageCategory.Sexual)?.Severity ?? 0) + "\n" +
+                    "Violence severity: " + (response.Value.CategoriesAnalysis.FirstOrDefault(a => a.Category == ImageCategory.Violence)?.Severity ?? 0);
+            model.Image = imageUrl + sasUri.Query;
             ViewBag.Image = imageUrl + sasUri.Query;
+
         }
         catch (RequestFailedException ex)
         {
@@ -113,7 +117,8 @@ public class ContentSafetyController : Controller
             return View("ImageModerator", model);
         }
 
-        return View("ImageModerator", model);
+        //return View("ImageModerator", model);
+        return Ok(model);
     }
 
     [HttpPost]
@@ -145,28 +150,30 @@ public class ContentSafetyController : Controller
         try
         {
             response = client.AnalyzeText(request);
-            if (response.Value.HateResult?.Severity > model.Hate)
+            
+            if (response.Value.CategoriesAnalysis.FirstOrDefault(a => a.Category == TextCategory.Hate)?.Severity > model.Hate)
             {
                 model.Approve = false;
             }
-            if (response.Value.SelfHarmResult?.Severity > model.SelfHarm)
+             if (response.Value.CategoriesAnalysis.FirstOrDefault(a => a.Category == TextCategory.SelfHarm)?.Severity > model.SelfHarm)
             {
                 model.Approve = false;
             }
-            if (response.Value.SexualResult?.Severity > model.Severity)
+            if (response.Value.CategoriesAnalysis.FirstOrDefault(a => a.Category == TextCategory.Sexual)?.Severity > model.Severity)
             {
                 model.Approve = false;
             }
-            if (response.Value.ViolenceResult?.Severity > model.Violence)
+            if (response.Value.CategoriesAnalysis.FirstOrDefault(a => a.Category == TextCategory.Violence)?.Severity > model.Violence)
             {
                 model.Approve = false;
             }
+
             ViewBag.Message = "Resultado de la moderación: \n" +
                         (model.Approve.Value ? "APROBADO" : "RECHAZADO") + "\n" +
-                        "Hate severity: " + (response.Value.HateResult?.Severity ?? 0) + "\n" +
-                        "SelfHarm severity: " + (response.Value.SelfHarmResult?.Severity ?? 0) + "\n" +
-                        "Sexual severity: " + (response.Value.SexualResult?.Severity ?? 0) + "\n" +
-                        "Violence severity: " + (response.Value.ViolenceResult?.Severity ?? 0);
+                        "Hate severity: " + (response.Value.CategoriesAnalysis.FirstOrDefault(a => a.Category == TextCategory.Hate)?.Severity ?? 0) + "\n" +
+                        "SelfHarm severity: " + (response.Value.CategoriesAnalysis.FirstOrDefault(a => a.Category == TextCategory.SelfHarm)?.Severity ?? 0) + "\n" +
+                        "Sexual severity: " + (response.Value.CategoriesAnalysis.FirstOrDefault(a => a.Category == TextCategory.Sexual)?.Severity ?? 0) + "\n" +
+                        "Violence severity: " + (response.Value.CategoriesAnalysis.FirstOrDefault(a => a.Category == TextCategory.Violence)?.Severity ?? 0);
         }
         catch (RequestFailedException ex)
         {
@@ -223,7 +230,8 @@ public class ContentSafetyController : Controller
         EvaluateImage(blobUrl.ToString());
 
         //Return the result
-        return View("ImageModerator", model);
+        //return View("ImageModerator", model);
+        return Ok(model);
     }
 
     //Load the image from the storage account

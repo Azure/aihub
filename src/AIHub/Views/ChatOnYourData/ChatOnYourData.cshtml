@@ -1,0 +1,40 @@
+@inject IConfiguration Configuration
+@{
+    ViewData["Title"] = "Chat On Your Data";
+}
+
+<!-- Start Content-->
+<div class="container-fluid">
+    
+    <!-- start page title -->
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box">
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item">Services</li>
+                        <li class="breadcrumb-item active">Chat On Your Data</li>
+                    </ol>
+                </div>
+                <h4 class="page-title">Chat On Your Data</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" id="showresult">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+
+                    <div id="chat-frame" class="ratio ratio-16x9">
+                        <iframe id="bigframe" src="@Configuration["ChatOnYourData:Link"]" frameborder="0"></iframe>
+                    </div>
+
+                </div>
+            </div> 
+        </div>
+    </div>
+ 
+
+</div>
+<!-- container -->

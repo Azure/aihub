@@ -1,9 +1,9 @@
 :root {
-    --main-color: #1e8aa9;
-    --border-color: #1861ac;
-    --layout-background-color: #016386;
+    --main-color: #070F26;
+    --border-color: #0072BC;
+    --layout-background-color: #070F26;
     --layout-text-color: #ffffff;
-    --btn-focus-color: #258cfb;
-    --btn-hover-color: #115568;
-    --homeblock-hover-outline-color: rgba(30, 138, 169, 1);
+    --btn-focus-color: #0072BC;
+    --btn-hover-color: #0072BC;
+    --homeblock-hover-outline-color:#0072BC;
 }

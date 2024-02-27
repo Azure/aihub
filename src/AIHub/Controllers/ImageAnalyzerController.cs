@@ -10,6 +10,7 @@ public class ImageAnalyzerController : Controller
     private string AOAIendpoint;
     private string AOAIsubscriptionKey;
     private string storageconnstring;
+    private string AOAIDeploymentName;
     private readonly BlobServiceClient blobServiceClient;
     private readonly BlobContainerClient containerClient;
     private readonly IEnumerable<BlobItem> blobs;
@@ -37,6 +38,7 @@ public class ImageAnalyzerController : Controller
         BlobServiceClient blobServiceClient = new BlobServiceClient(storageconnstring);
         containerClient = blobServiceClient.GetBlobContainerClient(_config.GetValue<string>("Storage:ContainerName"));
         sasUri = containerClient.GenerateSasUri(Azure.Storage.Sas.BlobContainerSasPermissions.Read, DateTimeOffset.UtcNow.AddHours(1));
+        AOAIDeploymentName = _config.GetValue<string>("ImageAnalyzer:DeploymentName");
         // Obtiene una lista de blobs en el contenedor
         blobs = containerClient.GetBlobs();
         model = new ImageAnalyzerModel();
@@ -44,7 +46,7 @@ public class ImageAnalyzerController : Controller
 
     public IActionResult ImageAnalyzer()
     {
-        return View();
+        return View(new ImageAnalyzerModel());
     }
 
     [HttpPost]
@@ -179,13 +181,13 @@ public class ImageAnalyzerController : Controller
 
             // ### If streaming is not selected
             Response<ChatCompletions> responseWithoutStream = await client_oai.GetChatCompletionsAsync(
-                "DemoBuild",
                 new ChatCompletionsOptions()
                 {
+                    DeploymentName = AOAIDeploymentName,
                     Messages =
                     {
-                        new ChatMessage(ChatRole.System, @"The user will provide a list of descriptions of an image. I want you to create a unified and complete description of the image based of the list provided. Each suggested description is separated by a \ symbol. Also, it will provide the text detected in the image, try to associate the text detected (if any) with the rest of the captions of the image. If you are not sure, say to user something like 'MIGHT BE'. "),
-                        new ChatMessage(ChatRole.User, @"Descriptions: "+output_result + ". & OCR: "+output_result_2 ),
+                        new ChatRequestSystemMessage(@"The user will provide a list of descriptions of an image. I want you to create a unified and complete description of the image based of the list provided. Each suggested description is separated by a \ symbol. Also, it will provide the text detected in the image, try to associate the text detected (if any) with the rest of the captions of the image. If you are not sure, say to user something like 'MIGHT BE'. "),
+                        new ChatRequestUserMessage(@"Descriptions: "+output_result + ". & OCR: "+output_result_2 ),
                     },
                     Temperature = (float)0.7,
                     MaxTokens = 1000,
@@ -196,11 +198,13 @@ public class ImageAnalyzerController : Controller
 
             ChatCompletions completions = responseWithoutStream.Value;
             ChatChoice results_analisis = completions.Choices[0];
+            model.Message = results_analisis.Message.Content;
             ViewBag.Message =
                    //"Hate severity: " + (response.Value.HateResult?.Severity ?? 0);
                    results_analisis.Message.Content
                    ;
             ViewBag.Image = model.Image + sasUri.Query;
+            model.Image = model.Image + sasUri.Query;
             Console.WriteLine(ViewBag.Message);
             Console.WriteLine(ViewBag.Image);
 
@@ -220,7 +224,8 @@ public class ImageAnalyzerController : Controller
 
         // var result = await _service.GetBuildingHomeAsync(); 
         // return Ok(result); 
-        return View("ImageAnalyzer", model);
+        //return View("ImageAnalyzer", model);
+        return Ok(model);
     }
 
     //Upload a file to my azure storage account
@@ -252,22 +257,21 @@ public class ImageAnalyzerController : Controller
             return View("ImageAnalyzer");
         }
 
-
         //Call EvaluateImage with the url
         await DenseCaptionImage(blobUrl.ToString());
         ViewBag.Waiting = null;
 
-        return View("ImageAnalyzer");
+        // return View("ImageAnalyzer", model);
+        return Ok(model);
     }
-
-
-
+    
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 
+   
     private bool CheckNullValues(IFormFile imageFile)
     {
         if (imageFile == null)

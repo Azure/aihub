@@ -1,80 +1,105 @@
+@model FormAnalyzerModel
 @{
     ViewData["Title"] = "Form Analyzer";
 }
 
-<div class="text-center">
-    <svg style="fill: var(--main-color)" xmlns="http://www.w3.org/2000/svg" height="4em"
-        viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.2 by @@fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
-        <path
-            d="M320 464c8.8 0 16-7.2 16-16V160H256c-17.7 0-32-14.3-32-32V48H64c-8.8 0-16 7.2-16 16V448c0 8.8 7.2 16 16 16H320zM0 64C0 28.7 28.7 0 64 0H229.5c17 0 33.3 6.7 45.3 18.7l90.5 90.5c12 12 18.7 28.3 18.7 45.3V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V64z" />
-    </svg>
-    <h1 class="sectionTitle">Form Analyzer</h1>
-    <p class="sectionSubTitle">Analiza tus documentos usando GPT4 y Azure Document Intelligence.</p>
-    <p class="sectionDetails">Sólo necesitas adjuntar un documento (.pdf).</p>
+<!-- Start Content-->
+<div class="container-fluid">
+    
+    <!-- start page title -->
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box">
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item">Services</li>
+                        <li class="breadcrumb-item active">Form Analyzer</li>
+                    </ol>
+                </div>
+                <h4 class="page-title">Form Analyzer</h4>
+            </div>
+        </div>
+    </div>
+
+    <!-- end page title -->
+    <div class="row">
+
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="header-title">Form Analyzer with Azure OpenAI Services</h4>
+                    <p class="text-muted font-14">Gain valuable insights and extract meaningful information from your documents with the powerful combination of GPT-4 and Azure Document Intelligence.</p>
+                    <form asp-controller="FormAnalyzer" asp-action="UploadFile" method="post" enctype="multipart/form-data" id="dropaiimage" class="dropzone" data-plugin="dropzone" data-previews-container="#file-previews" data-upload-preview-template="#uploadPreviewTemplate">
+                        <div class="mb-3">
+                            <label class="form-label">Prompt:</label>
+                            <textarea class="form-control" id="prompt" name="prompt" maxlength="225" rows="3"> @(Model?.Prompt ?? "Summarize document") </textarea>
+                        </div>
+                        <div class="tab-content form-control">
+                            <div class="tab-pane show active" id="file-upload-preview">
+
+                                    <div class="fallback">
+                                        <input name="file" type="file" id="imageFile" name="imageFile"/>
+                                    </div>
+                                    <div class="dz-message needsclick">
+                                        <i class="h1 text-muted ri-upload-cloud-2-line"></i>
+                                        <h3>Drop files here or click to upload. </h3>
+                                        <span class="text-muted font-13"><strong>You just need to upload a document (.pdf).</strong> </span>
+                                    </div>
+                        
+                                <!-- Preview -->
+                                <div class="dropzone-previews mt-3" id="file-previews"></div>
+
+                            </div> <!-- end preview-->
+                        </div> <!-- end tab-content-->
+                    </form>
+                </div>
+                <!-- end card-body -->
+            </div>
+            <!-- end card-->
+        </div>
+    </div>
+
+    <div class="row d-none" id="loader">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <strong>Loading...</strong>
+                        <div class="spinner-border ms-auto" role="status" aria-hidden="true"></div>
+                    </div>
+                </div>
+                <!-- end card-body -->
+            </div>
+            <!-- end card-->
+        </div>
+    </div>
+
+    <!-- end row -->    
+    <!--- show results -->
+    <div class="row d-none" id="showresult">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="row g-0 align-items-center">
+                    <div class="col-md-5">
+                        <div id="pdf-frame" class="ratio ratio-16x9">
+                            @* <iframe id="bigframe" frameborder="0"></iframe> *@
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <div class="card-body">
+                            <h2 class="header-title mt-0 mb-3">Form Analyze Result <span class="badge bg-success rounded-pill">Analysis Success</span></h2>
+                            <p class="text-muted font-16 mb-3" id="show-message-result"></p>
+                        </div> 
+                    </div>
+                </div>
+            </div> 
+        </div>
+    </div>
+ 
 
 </div>
+<!-- container -->
 
-@if (ViewBag.Message != null)
-{
-    <div class="row justify-content-center mt-5">
-        <div class="col-md-6">
-            <div class="alert alert-primary" role="alert">
-                @Html.Raw(ViewBag.Message.Replace("\n", "<br />"))
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="alert alert-primary" role="alert">
-                <iframe src="@ViewBag.PdfUrl" style="width:100%;height:500px;" frameborder="0"></iframe>
-            </div>
-        </div>
-    </div>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_FormAnalyzerScriptsPartial");}
 }
-<form asp-controller="FormAnalyzer" asp-action="UploadFile" method="post" enctype="multipart/form-data">
-    @* <div class="row justify-content-center mt-5">
-    <span class="form-group">
-    <label for="fname">Upload your image to analyze:</label><br>
-    <input type="text" class="form-control" id="image_url" name="image_url" value="" style="width: 70%;"/>
-    <input type="file" class="form-control-file" id="imageFile" name="imageFile" />
-    </div>
-    <button type="submit" class="btn btn-primary">Upload Image</button>
-    </div> *@
-
-    <div class="col-md-6">
-
-        <div class="form-group">
-            <label for="imageFile">Image File:</label><br>
-            <input type="file" class="form-control-file" id="imageFile" name="imageFile" />
-            </br>
-            <label for="imageFile">Prompt:</label><br>
-            <textarea class="form-control" id="prompt" name="prompt"
-                rows="3"> @(Model?.Prompt ?? "Summarize document") </textarea>
-        </div>
-        <div id="loadingPanel" style="display: none;">Loading...</div>
-        <button type="submit" class="btn btn-primary" onclick="submitForm()">Upload PDF</button>
-
-    </div>
-    <script>
-        function submitForm() {
-            // Disable the button
-            var btn = document.querySelector('button[type="submit"]');
-            btn.disabled = true;
-
-            // Show the loading panel
-            var loadingPanel = document.getElementById('loadingPanel');
-            loadingPanel.style.display = 'block';
-
-            // Submit the form
-            var form = document.querySelector('form');
-            form.submit();
-        }
-        window.onload = function () {
-            // Enable the button
-            var btn = document.querySelector('button[type="submit"]');
-            btn.disabled = false;
-
-            // Hide the loading panel
-            var loadingPanel = document.getElementById('loadingPanel');
-            loadingPanel.style.display = 'none';
-        }
-    </script>
-</form>

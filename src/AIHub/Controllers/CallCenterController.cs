@@ -8,6 +8,7 @@ public class CallCenterController : Controller
     private string endpoint;
     private string subscriptionKey;
     private string storageconnstring;
+    private string AOAIDeploymentName;
 
 
     public CallCenterController(IConfiguration config)
@@ -15,6 +16,7 @@ public class CallCenterController : Controller
         _config = config;
         endpoint = _config.GetValue<string>("CallCenter:OpenAIEndpoint");
         subscriptionKey = _config.GetValue<string>("CallCenter:OpenAISubscriptionKey");
+        AOAIDeploymentName = _config.GetValue<string>("CallCenter:DeploymentName");
         model = new CallCenterModel();
 
     }
@@ -53,13 +55,13 @@ public class CallCenterController : Controller
 
             // ### If streaming is not selected
             Response<ChatCompletions> responseWithoutStream = await client_oai.GetChatCompletionsAsync(
-                "DemoBuild",
                 new ChatCompletionsOptions()
                 {
+                    DeploymentName = AOAIDeploymentName,
                     Messages =
                     {
-                        new ChatMessage(ChatRole.System, model.Prompt),
-                        new ChatMessage(ChatRole.User, @"Call transcript: "+model.Text),
+                        new ChatRequestSystemMessage(model.Prompt),
+                        new ChatRequestUserMessage(@"Call transcript: "+model.Text),
                     },
                     Temperature = (float)0.1,
                     MaxTokens = 1000,
