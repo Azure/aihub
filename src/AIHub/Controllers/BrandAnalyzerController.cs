@@ -59,7 +59,7 @@ public class BrandAnalyzerController : Controller
         // Parse the response as JSON
         try
         {
-            var responsejson = JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync())!;
+            var responsejson = JsonSerializer.Deserialize<dynamic>(await response.Content.ReadAsStringAsync())!;
 
             // Get the web pages from the response
             var news = responsejson.webPages.value;

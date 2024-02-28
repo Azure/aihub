@@ -73,7 +73,7 @@ public class ImageAnalyzerController : Controller
         // Parse the response as JSON
         try
         {
-            var responsejson = JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync())!;
+            var responsejson = JsonSerializer.Deserialize<dynamic>(await response.Content.ReadAsStringAsync())!;
             // Get the web pages from the response
             var dense_descriptions = responsejson.denseCaptionsResult.values;
             // Iterate over the news items and print them
@@ -116,7 +116,7 @@ public class ImageAnalyzerController : Controller
         // Parse the response as JSON
         try
         {
-            var responsejson2 = JsonConvert.DeserializeObject<dynamic>(await response2.Content.ReadAsStringAsync())!;
+            var responsejson2 = JsonSerializer.Deserialize<dynamic>(await response2.Content.ReadAsStringAsync())!;
             Console.WriteLine(responsejson2.ToString());
             // Get the web pages from the response
             var ocr = responsejson2.readResult.content;
