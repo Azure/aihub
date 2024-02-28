@@ -100,7 +100,7 @@ resource "azapi_resource" "ca_back" {
               },
               {
                 name  = "BrandAnalyzer__DeploymentName",
-                value = "DemoBuild"
+                value = var.chat_gpt_deployment
               },
               {
                 name  = "CallCenter__OpenAIEndpoint",
@@ -112,7 +112,7 @@ resource "azapi_resource" "ca_back" {
               },
               {
                 name  = "CallCenter__DeploymentName",
-                value = "DemoBuild"
+                value = var.chat_gpt_deployment
               },
               {
                 name  = "ImageAnalyzer__VisionEndpoint",
@@ -140,7 +140,7 @@ resource "azapi_resource" "ca_back" {
               },
               {
                 name  = "ImageAnalyzer__DeploymentName",
-                value = "DemoBuild"
+                value = var.chat_gpt_deployment
               },
               {
                 name  = "FormAnalyzer__FormRecogEndpoint",
@@ -164,7 +164,7 @@ resource "azapi_resource" "ca_back" {
               },
               {
                 name  = "FormAnalyzer__DeploymentName",
-                value = "DemoBuild"
+                value = var.chat_gpt_deployment
               },
               {
                 name      = "Storage__ConnectionString",
