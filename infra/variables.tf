@@ -6,6 +6,10 @@ variable "location" {
   default = "westeurope"
 }
 
+variable "location_azopenai" {
+  default = "swedencentral"
+}
+
 variable "log_name" {
   default = "log-activate-genai"
 }
@@ -103,7 +107,7 @@ variable "enable_entra_id_authentication" {
 }
 
 variable "enable_apim" {
-  default = true
+  default = false
 }
 
 variable "deploy_bing" {

@@ -8,30 +8,14 @@ resource "azurerm_cognitive_account" "openai" {
   custom_subdomain_name         = var.azopenai_name
 }
 
-resource "azurerm_cognitive_deployment" "gpt_35_turbo" {
-  name                 = "gpt-35-turbo"
-  cognitive_account_id = azurerm_cognitive_account.openai.id
-  rai_policy_name      = "Microsoft.Default"
-  model {
-    format  = "OpenAI"
-    name    = "gpt-35-turbo"
-    version = "0301"
-  }
-
-  scale {
-    type     = "Standard"
-    capacity = 120
-  }
-}
-
-resource "azurerm_cognitive_deployment" "demo_build" {
+resource "azurerm_cognitive_deployment" "this" {
   name                 = "DemoBuild"
   cognitive_account_id = azurerm_cognitive_account.openai.id
   rai_policy_name      = "Microsoft.Default"
   model {
     format  = "OpenAI"
     name    = "gpt-35-turbo"
-    version = "0301"
+    version = "0613"
   }
 
   scale {

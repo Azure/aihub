@@ -120,7 +120,7 @@ module "st" {
 
 module "openai" {
   source              = "./modules/openai"
-  location            = azurerm_resource_group.rg.location
+  location            = var.location_azopenai
   resource_group_name = azurerm_resource_group.rg.name
   azopenai_name       = local.azopenai_name
   principal_id        = module.mi.principal_id
@@ -158,7 +158,7 @@ module "ca_chat" {
   cae_id                         = module.cae.cae_id
   managed_identity_id            = module.mi.mi_id
   chat_gpt_deployment            = module.openai.gpt_deployment_name
-  chat_gpt_model                 = module.openai.gpt_deployment_name
+  chat_gpt_model                 = module.openai.gpt_deployment_model_name
   embeddings_deployment          = module.openai.embedding_deployment_name
   embeddings_model               = module.openai.embedding_deployment_name
   storage_account_name           = module.st.storage_account_name
@@ -198,7 +198,7 @@ module "ca_aihub" {
   cae_id                     = module.cae.cae_id
   managed_identity_id        = module.mi.mi_id
   chat_gpt_deployment        = module.openai.gpt_deployment_name
-  chat_gpt_model             = module.openai.gpt_deployment_name
+  chat_gpt_model             = module.openai.gpt_deployment_model_name
   embeddings_deployment      = module.openai.embedding_deployment_name
   embeddings_model           = module.openai.embedding_deployment_name
   storage_account_name       = module.st.storage_account_name
