@@ -81,7 +81,7 @@ public class DocumentComparisonController : Controller
             HttpResponseMessage response2 = await httpClient.GetAsync(operation_location_url);  // Blocking call! Program will wait here until a response is received or a timeout occurs.
             Console.WriteLine(response2);
             response2.EnsureSuccessStatusCode();
-            dynamic responsejson = JsonConvert.DeserializeObject<dynamic>(await response2.Content.ReadAsStringAsync())!;
+            dynamic responsejson = JsonSerializer.Deserialize<dynamic>(await response2.Content.ReadAsStringAsync())!;
 
             while (responsejson.status != "succeeded")
             {
@@ -89,7 +89,7 @@ public class DocumentComparisonController : Controller
                 {
                     Thread.Sleep(10000);
                     response2 = await httpClient.GetAsync(operation_location_url);
-                    responsejson = JsonConvert.DeserializeObject<dynamic>(await response2.Content.ReadAsStringAsync())!;
+                    responsejson = JsonSerializer.Deserialize<dynamic>(await response2.Content.ReadAsStringAsync())!;
                 }
             }
             output_result[i] = responsejson.analyzeResult.content.ToString();
