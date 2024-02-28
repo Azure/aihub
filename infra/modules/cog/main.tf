@@ -32,6 +32,7 @@ resource "azurerm_cognitive_account" "speech" {
 }
 
 resource "azapi_resource" "bing" {
+  count                     = var.deploy_bing ? 1 : 0
   name                      = var.bing_name
   location                  = "global"
   parent_id                 = var.resource_group_id

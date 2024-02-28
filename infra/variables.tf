@@ -106,6 +106,10 @@ variable "enable_apim" {
   default = true
 }
 
+variable "deploy_bing" {
+  default = false
+}
+
 variable "bing_key" {
   default = "<replace with a valid bing key>"
 }
