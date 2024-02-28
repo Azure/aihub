@@ -82,14 +82,14 @@ public class FormAnalyzerController : Controller
         Console.WriteLine(response2);
         response2.EnsureSuccessStatusCode();
         var responseBody = await response2.Content.ReadAsStringAsync();
-        var responsejson = JsonConvert.DeserializeObject<dynamic>(await response2.Content.ReadAsStringAsync())!;
+        var responsejson = JsonSerializer.Deserialize<dynamic>(await response2.Content.ReadAsStringAsync())!;
 
         //var analyzeresult = responseBody.analyzeResult;            
         while (responsejson.status != "succeeded")
         {
             Thread.Sleep(10000);
             response2 = await httpClient.GetAsync(operation_location_url);
-            responsejson = JsonConvert.DeserializeObject<dynamic>(await response2.Content.ReadAsStringAsync())!;
+            responsejson = JsonSerializer.Deserialize<dynamic>(await response2.Content.ReadAsStringAsync())!;
         }
         output_result = responsejson.analyzeResult.content.ToString();
 
