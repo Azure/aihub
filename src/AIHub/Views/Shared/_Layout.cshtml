@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - AOAI Demo Center</title>
+    <title>@ViewData["Title"] - Azure AI Hub</title>
     
     <link rel="icon" type="image/x-icon" href="~/images/favicon.ico" />
     
@@ -28,6 +28,7 @@
                         <a href="index.html" class="logo-light">
                             <span class="logo-lg">
                                 <img src="/images/brand-logo.svg" alt="logo">
+                                <img id="logo" src="/images/favicon.ico" class="img-fluid rounded-start" alt="logo">
                             </span>
                             <span class="logo-sm">
                                 <img src="/images/brand-logo-sm.svg" alt="small logo">
@@ -38,6 +39,7 @@
                         <a href="index.html" class="logo-dark">
                             <span class="logo-lg">
                                 <img src="/images/brand-logo.svg" alt="dark logo">
+                                 <img id="logo" src="/images/favicon.ico" class="img-fluid rounded-start" alt="logo">
                             </span>
                             <span class="logo-sm">
                                 <img src="/images/brand-logo-sm.svg" alt="small logo">
@@ -148,6 +150,7 @@
             <a asp-controller="Home" asp-action="Index" class="logo logo-light">
                 <span class="logo-lg">
                     <img src="/images/brand-logo.svg" alt="logo">
+                    <img id="logo" src="/images/favicon.ico" class="img-fluid rounded-start" alt="logo">
                 </span>
                 <span class="logo-sm">
                     <img src="/images/brand-logo-sm.svg" alt="small logo">
@@ -158,6 +161,7 @@
             <a asp-controller="Home" asp-action="Index" class="logo logo-dark">
                 <span class="logo-lg">
                     <img src="/images/brand-logo.svg" alt="dark logo">
+                    <img id="logo" src="/images/favicon.ico" class="img-fluid rounded-start" alt="logo">
                 </span>
                 <span class="logo-sm">
                     <img src="/images/brand-logo-sm.svg" alt="small logo">
@@ -180,14 +184,19 @@
                 <div class="leftbar-user">
                     <a href="pages-profile.html">
                         <img src="~/images/users/profile.jpg" alt="user-image" height="42" class="rounded-circle shadow-sm">
-                        <span class="leftbar-user-name mt-2">Manuel Sánchez</span>
+                        <span class="leftbar-user-name mt-2">John Doe</span>
                     </a>
                 </div>
 
                 <!--- Sidemenu -->
                 <ul class="side-nav">
 
-                    <li class="side-nav-title"><center>Azure OpenAI Demo Center</center></li>
+                    <li class="side-nav-title"><center>Responsible AI & Innovation Center</center></li>
+                    <a class="side-nav-link" href="https://news.microsoft.com/es-es/2024/02/20/microsoft-crea-un-centro-de-innovacion-en-ia-responsable-para-ayudar-a-las-organizaciones-espanolas-en-el-despliegue-de-proyectos-de-inteligencia-artificial/">
+                        <i class="uil-link"></i>
+                    <span> Know about about RAIIC </span>
+                     </a>
+
 
                     @* <li class="side-nav-item">
                         <a data-bs-toggle="collapse" href="#sidebarDashboards" aria-expanded="false" aria-controls="sidebarDashboards" class="side-nav-link">
@@ -221,18 +230,17 @@
                         </div>
                     </li> *@
 
-                    <li class="side-nav-title">Services</li>
+                    <li class="side-nav-title">Use Cases</li>
+                    <li class="side-nav-item">
+                        <a class="side-nav-link" href="@Url.Action("ChatOnYourData", "ChatOnYourData")">
+                            <i class="uil-comments-alt"></i>
+                            <span> Chat on your Data </span>
+                        </a>
+                    </li>
                     <li class="side-nav-item">
                         <a class="side-nav-link" href="@Url.Action("AudioTranscription", "AudioTranscription")">
                             <i class="uil-intercom"></i>
                             <span> Audio Transcription </span>
-                        </a>
-                    </li>
-
-                    <li class="side-nav-item">
-                        <a class="side-nav-link" href="@Url.Action("BrandAnalyzer", "BrandAnalyzer")">
-                            <i class="uil-store-alt"></i>
-                            <span> Brand Analyzer </span>
                         </a>
                     </li>
 
@@ -243,13 +251,33 @@
                         </a>
                     </li>
 
-                    <li class="side-nav-item">
-                        <a class="side-nav-link" href="@Url.Action("ChatOnYourData", "ChatOnYourData")">
-                            <i class="uil-comments-alt"></i>
-                            <span> Chat on your Data </span>
+                   <li class="side-nav-item">
+                        <a class="side-nav-link" href="@Url.Action("ImageAnalyzer", "ImageAnalyzer")">
+                            <i class="uil-image-search"></i>
+                            <span> Image Analyzer </span>
                         </a>
                     </li>
 
+                    <li class="side-nav-item">
+                        <a class="side-nav-link" href="@Url.Action("FormAnalyzer", "FormAnalyzer")">
+                            <i class="uil-file-search-alt"></i>
+                            <span> Form Analyzer </span>
+                        </a>
+                    </li>
+
+                    <li class="side-nav-item">
+                        <a class="side-nav-link" href="@Url.Action("DocumentComparison", "DocumentComparison")">
+                            <i class="uil-file-search-alt"></i>
+                            <span> Document Comparison </span>
+                            <span class="badge bg-primary text-white float-end">New</span>
+                        </a>
+                    </li>
+                    <li class="side-nav-item">
+                        <a class="side-nav-link" href="@Url.Action("BrandAnalyzer", "BrandAnalyzer")">
+                            <i class="uil-store-alt"></i>
+                            <span> Brand Analyzer </span>
+                        </a>
+                    </li>                    
                     <li class="side-nav-item">
                         <a data-bs-toggle="collapse" href="#sidebarProjects" aria-expanded="false" aria-controls="sidebarProjects" class="side-nav-link">
                             <i class="uil-comment-shield"></i>
@@ -269,26 +297,6 @@
                         </div>
                     </li>
 
-                    <li class="side-nav-item">
-                        <a class="side-nav-link" href="@Url.Action("FormAnalyzer", "FormAnalyzer")">
-                            <i class="uil-file-search-alt"></i>
-                            <span> Form Analyzer </span>
-                        </a>
-                    </li>
-
-                    <li class="side-nav-item">
-                        <a class="side-nav-link" href="@Url.Action("DocumentComparison", "DocumentComparison")">
-                            <i class="uil-file-search-alt"></i>
-                            <span> Document Comparison </span>
-                        </a>
-                    </li>
-
-                    <li class="side-nav-item">
-                        <a class="side-nav-link" href="@Url.Action("ImageAnalyzer", "ImageAnalyzer")">
-                            <i class="uil-image-search"></i>
-                            <span> Image Analyzer </span>
-                        </a>
-                    </li>
 
                 </ul>
                 <!--- End Sidemenu -->
