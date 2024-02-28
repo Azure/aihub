@@ -91,11 +91,11 @@ variable "ca_chat_image" {
 }
 
 variable "ca_prep_docs_image" {
-  default = "ghcr.io/azure/aihub/aihub-prepdocs:1.0.0-preview.0"
+  default = "ghcr.io/azure/aihub/aihub-prepdocs:1.0.1-preview.16"
 }
 
 variable "ca_aihub_image" {
-  default = "ghcr.io/azure/aihub/aihub:1.0.0-preview.0"
+  default = "ghcr.io/azure/aihub/aihub:1.0.1-preview.16"
 }
 
 variable "use_random_suffix" {
