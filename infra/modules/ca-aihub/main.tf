@@ -116,11 +116,11 @@ resource "azapi_resource" "ca_back" {
               },
               {
                 name  = "ImageAnalyzer__VisionEndpoint",
-                value = "${var.cognitive_service_endpoint}computervision/imageanalysis:analyze?api-version=2023-02-01-preview&features=denseCaptions&language=en&gender-neutral-caption=False"
+                value = "${var.cognitive_service_endpoint}"
               },
               {
                 name  = "ImageAnalyzer__OCREndpoint",
-                value = "${var.cognitive_service_endpoint}computervision/imageanalysis:analyze?api-version=2023-02-01-preview&features=read&gender-neutral-caption=False"
+                value = "${var.cognitive_service_endpoint}"
               },
               {
                 name      = "ImageAnalyzer__VisionSubscriptionKey",
@@ -144,7 +144,7 @@ resource "azapi_resource" "ca_back" {
               },
               {
                 name  = "FormAnalyzer__FormRecogEndpoint",
-                value = "${var.cognitive_service_endpoint}formrecognizer/documentModels/prebuilt-layout:analyze?api-version=2023-07-31"
+                value = "${var.cognitive_service_endpoint}"
               },
               {
                 name      = "FormAnalyzer__FormRecogSubscriptionKey",

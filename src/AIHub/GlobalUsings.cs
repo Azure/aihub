@@ -7,6 +7,8 @@ global using Azure.Identity;
 global using Azure.Storage.Blobs;
 global using Azure.Storage.Blobs.Models;
 global using Azure.AI.OpenAI;
+global using Azure.AI.Vision.ImageAnalysis;
+global using Azure.AI.FormRecognizer.DocumentAnalysis;
 global using System.Net.Http.Headers;
 global using System.Text;
 global using System.Text.Json;
