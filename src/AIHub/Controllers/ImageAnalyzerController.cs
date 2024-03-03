@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace MVCWeb.Controllers;
 
 public class ImageAnalyzerController : Controller
@@ -13,9 +15,8 @@ public class ImageAnalyzerController : Controller
     private readonly IEnumerable<BlobItem> blobs;
     private Uri sasUri;
     private ImageAnalyzerModel model;
-    private HttpClient httpClient;
 
-    public ImageAnalyzerController(IConfiguration config, IHttpClientFactory httpClientFactory)
+    public ImageAnalyzerController(IConfiguration config)
     {
         Visionendpoint = config.GetValue<string>("ImageAnalyzer:VisionEndpoint") ?? throw new ArgumentNullException("VisionEndpoint");
         OCRendpoint = config.GetValue<string>("ImageAnalyzer:OCREndpoint") ?? throw new ArgumentNullException("OCREndpoint");
@@ -30,7 +31,6 @@ public class ImageAnalyzerController : Controller
         // Obtiene una lista de blobs en el contenedor
         blobs = containerClient.GetBlobs();
         model = new ImageAnalyzerModel();
-        httpClient = httpClientFactory.CreateClient();
     }
 
     public IActionResult ImageAnalyzer()
@@ -43,91 +43,29 @@ public class ImageAnalyzerController : Controller
     {
         // 1. Get Image
         model.Image = image_url;
-        // 2. Dense Captioning
-        string output_result = "";
+        // 2. Dense Captioning and OCR
+        var sb = new StringBuilder();
 
-        httpClient.BaseAddress = new Uri(Visionendpoint);
-        // Add an Accept header for JSON format.
-        httpClient.DefaultRequestHeaders.Accept.Add(
-        new MediaTypeWithQualityHeaderValue("application/json"));
-        httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", VisionsubscriptionKey);
+        ImageAnalysisClient client = new(
+            new Uri(Visionendpoint),
+            new AzureKeyCredential(VisionsubscriptionKey));
 
-        var content = new
+        ImageAnalysisResult result = client.Analyze(
+            new Uri(model.Image + sasUri.Query),
+            VisualFeatures.DenseCaptions | VisualFeatures.Read,
+            new ImageAnalysisOptions { GenderNeutralCaption = false, Language = "en" });
+
+        foreach (var caption in result.DenseCaptions.Values)
         {
-            url = model.Image + sasUri.Query
-        };
-
-        var json = System.Text.Json.JsonSerializer.Serialize(content);
-
-        // Crear un HttpContent con el JSON y el tipo de contenido
-        HttpContent content_body = new StringContent(json, Encoding.UTF8, "application/json");
-        // List data response.
-        HttpResponseMessage response = await httpClient.PostAsync(Visionendpoint, content_body);  // Blocking call! Program will wait here until a response is received or a timeout occurs.
-        response.EnsureSuccessStatusCode();
-        string responseBody = await response.Content.ReadAsStringAsync();
-        // Above three lines can be replaced with new helper method below
-        // string responseBody = await client.GetStringAsync(uri);
-
-        response.EnsureSuccessStatusCode();
-
-        // Parse the response as JSON
-        try
-        {
-            var responsejson = JsonSerializer.Deserialize<dynamic>(await response.Content.ReadAsStringAsync())!;
-            // Get the web pages from the response
-            var dense_descriptions = responsejson.denseCaptionsResult.values;
-            // Iterate over the news items and print them
-            foreach (var i in dense_descriptions)
-            {
-                output_result = output_result + i.text;
-            };
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
+            sb.Append(caption.Text);
         }
 
-        // 3. OCR
-        string output_result_2 = "";
-        httpClient.BaseAddress = new Uri(OCRendpoint);
-        // Add an Accept header for JSON format.
-        httpClient.DefaultRequestHeaders.Accept.Add(
-        new MediaTypeWithQualityHeaderValue("application/json"));
-        httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", VisionsubscriptionKey);
+        var captions = sb.ToString();
 
-        var content2 = new
+        var ocr = "there is no text in the image";
+        if (result.Read.Blocks.Count > 0)
         {
-            url = model.Image + sasUri.Query
-        };
-
-        var json2 = System.Text.Json.JsonSerializer.Serialize(content2);
-
-        // Crear un HttpContent con el JSON y el tipo de contenido
-        HttpContent content_body2 = new StringContent(json2, Encoding.UTF8, "application/json");
-        // List data response.
-        HttpResponseMessage response2 = await httpClient.PostAsync(OCRendpoint, content_body2);  // Blocking call! Program will wait here until a response is received or a timeout occurs.
-        response2.EnsureSuccessStatusCode();
-        string responseBody2 = await response2.Content.ReadAsStringAsync();
-        // Above three lines can be replaced with new helper method below
-        // string responseBody = await client.GetStringAsync(uri);
-
-        response2.EnsureSuccessStatusCode();
-
-        // Parse the response as JSON
-        try
-        {
-            var responsejson2 = JsonSerializer.Deserialize<dynamic>(await response2.Content.ReadAsStringAsync())!;
-            Console.WriteLine(responsejson2.ToString());
-            // Get the web pages from the response
-            var ocr = responsejson2.readResult.content;
-            if (ocr != "") output_result_2 = ocr;
-            else output_result_2 = "there is no text in the image";
-
-            // Iterate over the news items and print them           
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
+            ocr = result.Read.Blocks[0].ToString();
         }
 
         // 4. Tags 
@@ -164,7 +102,7 @@ public class ImageAnalyzerController : Controller
                     Messages =
                     {
                         new ChatRequestSystemMessage(@"The user will provide a list of descriptions of an image. I want you to create a unified and complete description of the image based of the list provided. Each suggested description is separated by a \ symbol. Also, it will provide the text detected in the image, try to associate the text detected (if any) with the rest of the captions of the image. If you are not sure, say to user something like 'MIGHT BE'. "),
-                        new ChatRequestUserMessage(@"Descriptions: "+output_result + ". & OCR: "+output_result_2 ),
+                        new ChatRequestUserMessage($"Descriptions: {captions}. & OCR: {ocr}" ),
                     },
                     Temperature = (float)0.7,
                     MaxTokens = 1000,
