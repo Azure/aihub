@@ -18,5 +18,6 @@ public class ContentSafetyModel
     public string? Image { get; set; }
     public string? Message { get; set; }
     public bool? Approve { get; set; }
+    public string? Prompt { get; set; }
 
 }

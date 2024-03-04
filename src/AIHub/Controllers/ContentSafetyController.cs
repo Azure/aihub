@@ -10,21 +10,25 @@ public class ContentSafetyController : Controller
     private string endpoint;
     private string subscriptionKey;
     private string storageconnstring;
+    private string jailbreakEndpoint;
     private ContentSafetyModel model;
     private readonly Uri sasUri;
+    private HttpClient httpClient;
 
-    public ContentSafetyController(IConfiguration config, ILogger<HomeController> logger)
+    public ContentSafetyController(IConfiguration config, ILogger<HomeController> logger, IHttpClientFactory clientFactory)
     {
         _logger = logger;
         endpoint = config.GetValue<string>("ContentModerator:Endpoint") ?? throw new ArgumentNullException("Endpoint");
         subscriptionKey = config.GetValue<string>("ContentModerator:SubscriptionKey") ?? throw new ArgumentNullException("SubscriptionKey");
         storageconnstring = config.GetValue<string>("Storage:ConnectionString") ?? throw new ArgumentNullException("ConnectionString");
+        jailbreakEndpoint = config.GetValue<string>("ContentModerator:JailbreakDetectionEndpoint") ?? throw new ArgumentNullException("JailbreakDetectionEndpoint");
         BlobServiceClient blobServiceClient = new BlobServiceClient(storageconnstring);
         containerClient = blobServiceClient.GetBlobContainerClient(config.GetValue<string>("Storage:ContainerName"));
         sasUri = containerClient.GenerateSasUri(Azure.Storage.Sas.BlobContainerSasPermissions.Read, DateTimeOffset.UtcNow.AddHours(1));
         // Obtiene una lista de blobs en el contenedor
         blobs = containerClient.GetBlobs();
         model = new ContentSafetyModel();
+        httpClient = clientFactory.CreateClient();
 
     }
     public IActionResult TextModerator()
@@ -37,10 +41,64 @@ public class ContentSafetyController : Controller
         return View();
     }
 
+    public IActionResult JailbreakDetection()
+    {
+        return View();
+    }
+
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+    }
+
+    //Jailbreak Promp evaluation
+    [HttpPost]
+    public async Task<IActionResult> EvaluatePrompt()
+    {
+        if (string.IsNullOrEmpty(HttpContext.Request.Form["text"]))
+        {
+            ViewBag.Message = "You must enter a prompt to evaluate";
+            return View("JailbreakDetection", model);
+        }
+        model.Prompt = HttpContext.Request.Form["text"];
+        model.Approve = true;
+
+        try
+        {
+            var request = new HttpRequestMessage(HttpMethod.Post, endpoint + jailbreakEndpoint);
+            request.Headers.Add("Ocp-Apim-Subscription-Key", subscriptionKey);
+
+            var content = new
+            {
+                text = model.Prompt
+            };
+            var json = System.Text.Json.JsonSerializer.Serialize(content);
+            // Crear un HttpContent con el JSON y el tipo de contenido
+            HttpContent content_body = new StringContent(json, Encoding.UTF8, "application/json");
+
+            request.Content = content_body;
+            var response = await httpClient.SendAsync(request);
+            //response.EnsureSuccessStatusCode();
+            String response_final = await response.Content.ReadAsStringAsync();
+            if (response_final.Contains("true"))
+            {
+                ViewBag.Message = "JAILBREAKING ATTEMPT ** DETECTED **";
+            }
+            else
+            {
+                ViewBag.Message = "JAILBREAKING ATTEMPT ** NOT DETECTED **";
+
+            }
+        }
+        catch (RequestFailedException ex)
+        {
+            _logger.LogError(ex, "An error occurred while evaluating the content." + ex.Message);
+            ViewBag.Message = "An error occurred while evaluating the content. Please try again later.";
+            return View("JailbreakDetection", model);
+        }
+
+        return View("JailbreakDetection", model);
     }
 
     [HttpPost]
