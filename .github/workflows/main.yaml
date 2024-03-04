@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: main - handsonlab
+name: aihub
 
 on:
   workflow_dispatch:
@@ -10,6 +10,7 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
   DOCS_IMAGE_NAME: aihub-prepdocs
+  AIHUB_ARTIFACT_NAME: aihub-tf-module
 
 jobs:
   build:
@@ -94,36 +95,67 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ env.REGISTRY }}/${{ env.GITHUB_REPOSITORY_LOWER_CASE }}/${{ env.DOCS_IMAGE_NAME }}:${{ env.MINVERVERSIONOVERRIDE }}
           labels: ${{ steps.meta-docs.outputs.labels }}
-    
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    environment:
-      name: 'Production'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.AIHUB_ARTIFACT_NAME }}
+          path: |
+            ./infra/modules/
+            ./infra/*.tf
+            ./infra/*.md
+    
+  release:
+    name: Create Release
+    needs: build
+    if: github.event_name != 'pull_request' && startswith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions: write-all
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
-      - name: Download artifact from build job
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+  
+      - name: release
+        uses: actions/create-release@v1
+        id: create_release
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ env.MINVERVERSIONOVERRIDE }}
+          body: ${{ steps.changelog.outputs.clean_changelog }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+  publish:
+    name: Publish binaries
+    needs: release
+    permissions: write-all
+    if: github.event_name != 'pull_request' && startswith(github.ref, 'refs/tags/v')
+    env:
+      ARTIFACT_DIR: ${{ github.workspace }}/release
+      PROJECT_NAME: aihub
+    runs-on: ubuntu-latest
+    steps:
+      - name: download artifacts - ${{ env.AIHUB_ARTIFACT_NAME }}
         uses: actions/download-artifact@v3
         with:
-          name: .net-app
-          
-      - name: Login to Azure
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          name: ${{ env.AIHUB_ARTIFACT_NAME }}
+          path: ${{ env.ARTIFACT_DIR }}/${{ env.AIHUB_ARTIFACT_NAME }}
 
-      - uses: azure/appservice-settings@v1
-        with:
-          app-name: ${{ vars.APPSERVICE_NAME }}
-          mask-inputs: true
-          slot-name: 'Production'
-          app-settings-json: '${{ secrets.APPSERVICE_SETTINGS }}' 
+      - name: Creating Zip
+        run: zip -r ${{ env.AIHUB_ARTIFACT_NAME }}.zip ${{ env.ARTIFACT_DIR }}/${{ env.AIHUB_ARTIFACT_NAME }}/*
 
-      - name: Deploy to Azure Web App
-        id: deploy-to-webapp
-        uses: azure/webapps-deploy@v2
+      - name: upload artifacts
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         with:
-          app-name: ${{ vars.APPSERVICE_NAME }}
-          slot-name: 'Production'
-          package: .
+          upload_url: ${{ needs.release.outputs.upload_url }}
+          asset_path: ${{ env.AIHUB_ARTIFACT_NAME }}.zip
+          asset_name: ${{ env.AIHUB_ARTIFACT_NAME }}.zip
+          asset_content_type: application/octet-stream
