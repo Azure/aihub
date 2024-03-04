@@ -1,4 +1,7 @@
-﻿@inject IConfiguration Configuration
+﻿
+@inject IConfiguration Configuration
+
+
 <!DOCTYPE html >
 <html lang="en">
 
@@ -258,6 +261,7 @@
                         <a class="side-nav-link" href="@Url.Action("ImageAnalyzer", "ImageAnalyzer")">
                             <i class="uil-image-search"></i>
                             <span> Image Analyzer </span>
+                            <span class="badge badge-outline-info rounded-pill float-end">Updated</span>
                         </a>
                     </li>
 
@@ -272,7 +276,7 @@
                         <a class="side-nav-link" href="@Url.Action("DocumentComparison", "DocumentComparison")">
                             <i class="uil-copy"></i>
                             <span> Document Comparison </span>
-                            <span class="badge bg-primary text-white float-end">New</span>
+                            <span class="badge badge-outline-success rounded-pill float-end">New</span>
                         </a>
                     </li>
                     <li class="side-nav-item">
@@ -285,8 +289,6 @@
                         <a data-bs-toggle="collapse" href="#sidebarProjects" aria-expanded="false" aria-controls="sidebarProjects" class="side-nav-link">
                             <i class="uil-comment-shield"></i>
                             <span> Content Safety </span>
-                            @* <span class="menu-arrow"></span> *@
-                            <span class="badge bg-primary text-white float-end">New</span>
                         </a>
                         <div class="collapse" id="sidebarProjects">
                             <ul class="side-nav-second-level">
@@ -299,6 +301,13 @@
                             </ul>
                         </div>
                     </li>
+                    <li class="side-nav-item">
+                        <a class="side-nav-link" href="@Url.Action("JailBreakDetection", "JailBreakDetection")">
+                            <i class="uil-shield-slash"></i>
+                            <span> Jail Break Detection </span>
+                            <span class="badge badge-outline-success rounded-pill float-end">New</span>
+                        </a>
+                    </li>  
 
 
                 </ul>
