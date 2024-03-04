@@ -1,0 +1,145 @@
+@{
+    ViewData["Title"] = "Content Safety - Jailbreak Detection";
+}
+
+<!-- Start Content-->
+<div class="container-fluid">
+
+    <!-- start page title -->
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box">
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item">Services</li>
+                        <li class="breadcrumb-item active">Content Safety</li>
+                    </ol>
+                </div>
+                <h4 class="page-title">Jailbreak Detection</h4>
+            </div>
+        </div>
+    </div>
+    <!-- end page title -->
+    <form asp-controller="ContentSafety" asp-action="EvaluateText" method="post">
+        <div class="row">
+            <div class="col-xxl-9">
+                <div class="row">
+
+                    <div class="col-sm-6 col-xl-3 mb-3">
+                        <div class="card mb-0 h-100">
+                            <div class="card-body">
+                                <h4 class="header-title">Severity:</h4>
+                                <div class="mb-3">
+                                    <input type="text" id="severitytext" name="severitytext" data-plugin="range-slider" data-min="0" data-max="6" data-from="1" value="@(Model?.Severity ?? 1)" />
+                                </div>
+                            </div>
+                        </div>
+                    </div> 
+
+                    <div class="col-sm-6 col-xl-3 mb-3">
+                        <div class="card mb-0 h-100">
+                            <div class="card-body">
+                                <h4 class="header-title">Violence:</h4>
+                                <div class="mb-3">
+                                    <input type="text" id="violencetext" name="violencetext" data-plugin="range-slider" data-min="0" data-max="6" data-from="1" value="@(Model?.Violence ?? 1)" />
+                                </div>
+                            </div>
+                        </div>
+                    </div> 
+
+                    <div class="col-sm-6 col-xl-3 mb-3">
+                        <div class="card mb-0 h-100">
+                            <div class="card-body">
+                                <h4 class="header-title">Self-harm:</h4>
+                                <div class="mb-3">
+                                    <input type="text" id="shtext" name="shtext" data-plugin="range-slider" data-min="0" data-max="6" data-from="1" value="@(Model?.SelfHarm ?? 1)" />
+                                </div>
+                            </div>
+                        </div>
+                    </div> 
+
+                    <div class="col-sm-6 col-xl-3 mb-3">
+                        <div class="card mb-0 h-100">
+                            <div class="card-body">
+                                <h4 class="header-title">Hate:</h4>
+                                <div class="mb-3">
+                                    <input type="text" id="hatetext" name="hatetext" data-plugin="range-slider" data-min="0" data-max="6" data-from="1" value="@(Model?.Hate ?? 1)" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div> <!-- end row -->
+
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="tab-pane show active" id="basic-form-preview" role="tabpanel">
+                                    <div class="mb-3">
+                                        <label for="text" class="form-label">Text:</label>
+                                        <textarea class="form-control" id="text" name="text" maxlength="225" rows="3">@Model?.Text</textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary" onclick="submitForm()">Evaluate Text</button>
+                                    <button type="button" class="btn btn-info btn-right" onclick="loadExample2()">Example 2</button>
+                                    <button type="button" class="btn btn-info btn-right" onclick="loadExample1()">Example 1</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xxl-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <h4 class="fw-semibold mt-0 mb-3">Content Safety Info:</h4>
+                            <img id="contentsafeinfo" src="/images/ContentSafety.png" class="img-fluid rounded-start" alt="picture">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="row d-none" id="loader">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <strong>Loading...</strong>
+                        <div class="spinner-border ms-auto" role="status" aria-hidden="true"></div>
+                    </div>
+                </div>
+                <!-- end card-body -->
+            </div>
+            <!-- end card-->
+        </div>
+    </div>
+
+    @if (ViewBag.Message != null)
+    {
+    <!-- end row -->    
+    <!--- show results -->
+    <div class="row" id="showresult">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="row g-0 align-items-center">
+                    <div class="col-md-12">
+                        <div class="card-body">
+                            <h2 class="header-title mt-0 mb-3">Text Analyze Result <span class="badge bg-success rounded-pill">Analysis Success</span></h2>
+                            <p class="text-muted font-16 mb-3" id="show-message-result">@Html.Raw(ViewBag.Message.Replace("\n", "<br />"))</p>
+                        </div> 
+                    </div>
+                </div>
+            </div> 
+        </div>
+    </div>
+    }
+
+</div>
+<!-- container -->
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_CSTextModeratorScriptsPartial");}
+}
