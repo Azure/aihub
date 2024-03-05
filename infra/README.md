@@ -2,14 +2,12 @@
 
 ## Deploying the infrastructure
 
-Run the following commands to deploy the infrastructure:
+Run the following command to deploy the infrastructure:
 
 ```bash
-cd infra
-terraform init
-terraform apply
+az login
+az account set -s <target subscription_id or subscription_name>
+powershell -Command "iwr -useb https://raw.githubusercontent.com/azure/aihub/master/install/install.ps1 | iex"
 ```
 
 ## Manual steps
-
-TODO: Describe these steps
