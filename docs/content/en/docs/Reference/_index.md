@@ -1,7 +1,7 @@
 ---
 title: Resources & References
 description: Check out other resources and references
-weight: 9
+weight: 5
 ---
 
 ## Sample Repos:

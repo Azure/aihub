@@ -7,6 +7,8 @@ weight: 1
 ## Description
 **AI Hub** solution is a new offering that has different delivery modes. You can use it as a presales activity to demonstrate to customer the various Azure Open AI features that are accessible with minimal coding effort or you can deliver it as a Non-technical Hands on. This is intended for executives or other non-technical leads.  The goal is to show different solutions where customers can test and proceed with further steps such as VBD engagements or new AOAI opportunities.
 
+![AI Hub home screenshot](/aihub/img/home.jpg)
+
 ## Pre-requisites
 To use this solution, you will need the following:
 - An Azure subscription

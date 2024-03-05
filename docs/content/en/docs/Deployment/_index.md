@@ -1,7 +1,7 @@
 ---
 title: Deployment
 description: AI Hub &mdash; Steps to deploy the complete solution.
-weight: 1
+weight: 3
 ---
 
 ## High-level Architecture
