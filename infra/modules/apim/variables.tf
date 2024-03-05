@@ -9,5 +9,3 @@ variable "appi_instrumentation_key" {}
 variable "openai_service_name" {}
 variable "openai_service_endpoint" {}
 variable "tenant_id" {}
-
-variable "enable_apim" {}

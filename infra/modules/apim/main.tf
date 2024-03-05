@@ -4,7 +4,6 @@ locals {
 }
 
 resource "azurerm_public_ip" "apim_public_ip" {
-  count               = var.enable_apim ? 1 : 0
   name                = "pip-apim"
   location            = var.location
   resource_group_name = var.resource_group_name
@@ -16,15 +15,14 @@ resource "azurerm_public_ip" "apim_public_ip" {
 }
 
 resource "azurerm_api_management" "apim" {
-  count                = var.enable_apim ? 1 : 0
   name                 = var.apim_name
   location             = var.location
   resource_group_name  = var.resource_group_name
   publisher_name       = var.publisher_name
   publisher_email      = var.publisher_email
   sku_name             = "Developer_1"
-  virtual_network_type = "External" # Use "Internal" for a fully private APIM
-  public_ip_address_id = azurerm_public_ip.apim_public_ip[0].id // Required to deploy APIM in STv2 platform
+  virtual_network_type = "External"                          # Use "Internal" for a fully private APIM
+  public_ip_address_id = azurerm_public_ip.apim_public_ip.id // Required to deploy APIM in STv2 platform
 
   virtual_network_configuration {
     subnet_id = var.apim_subnet_id
@@ -32,10 +30,9 @@ resource "azurerm_api_management" "apim" {
 }
 
 resource "azurerm_api_management_backend" "openai" {
-  count               = var.enable_apim ? 1 : 0
   name                = "openai-api"
   resource_group_name = var.resource_group_name
-  api_management_name = azurerm_api_management.apim[0].name
+  api_management_name = azurerm_api_management.apim.name
   protocol            = "http"
   url                 = local.backend_url
   tls {
@@ -45,9 +42,8 @@ resource "azurerm_api_management_backend" "openai" {
 }
 
 resource "azurerm_api_management_logger" "appi_logger" {
-  count               = var.enable_apim ? 1 : 0
   name                = local.logger_name
-  api_management_name = azurerm_api_management.apim[0].name
+  api_management_name = azurerm_api_management.apim.name
   resource_group_name = var.resource_group_name
   resource_id         = var.appi_resource_id
 
@@ -58,10 +54,9 @@ resource "azurerm_api_management_logger" "appi_logger" {
 
 // https://learn.microsoft.com/en-us/semantic-kernel/deploy/use-ai-apis-with-api-management#setup-azure-api-management-instance-with-azure-openai-api
 resource "azurerm_api_management_api" "openai" {
-  count                 = var.enable_apim ? 1 : 0
   name                  = "openai-api"
   resource_group_name   = var.resource_group_name
-  api_management_name   = azurerm_api_management.apim[0].name
+  api_management_name   = azurerm_api_management.apim.name
   revision              = "1"
   display_name          = "Azure Open AI API"
   path                  = "openai"
@@ -76,18 +71,16 @@ resource "azurerm_api_management_api" "openai" {
 }
 
 resource "azurerm_api_management_named_value" "tenant_id" {
-  count               = var.enable_apim ? 1 : 0
   name                = "tenant-id"
   resource_group_name = var.resource_group_name
-  api_management_name = azurerm_api_management.apim[0].name
+  api_management_name = azurerm_api_management.apim.name
   display_name        = "TENANT_ID"
   value               = var.tenant_id
 }
 
 resource "azurerm_api_management_api_policy" "policy" {
-  count               = var.enable_apim ? 1 : 0
-  api_name            = azurerm_api_management_api.openai[0].name
-  api_management_name = azurerm_api_management.apim[0].name
+  api_name            = azurerm_api_management_api.openai.name
+  api_management_name = azurerm_api_management.apim.name
   resource_group_name = var.resource_group_name
 
   xml_content = <<XML
@@ -124,11 +117,10 @@ resource "azurerm_api_management_api_policy" "policy" {
 
 # https://github.com/aavetis/azure-openai-logger/blob/main/README.md
 resource "azurerm_api_management_diagnostic" "diagnostics" {
-  count                    = var.enable_apim ? 1 : 0
   identifier               = "applicationinsights"
   resource_group_name      = var.resource_group_name
-  api_management_name      = azurerm_api_management.apim[0].name
-  api_management_logger_id = azurerm_api_management_logger.appi_logger[0].id
+  api_management_name      = azurerm_api_management.apim.name
+  api_management_logger_id = azurerm_api_management_logger.appi_logger.id
 
   sampling_percentage       = 100
   always_log_errors         = true

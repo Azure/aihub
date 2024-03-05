@@ -50,6 +50,7 @@ module "nsg" {
 }
 
 module "apim" {
+  count                    = var.enable_apim ? 1 : 0
   source                   = "./modules/apim"
   location                 = azurerm_resource_group.rg.location
   resource_group_name      = azurerm_resource_group.rg.name
@@ -57,7 +58,6 @@ module "apim" {
   apim_subnet_id           = module.vnet.apim_subnet_id
   publisher_name           = var.publisher_name
   publisher_email          = var.publisher_email
-  enable_apim              = var.enable_apim
   appi_resource_id         = module.appi.appi_id
   appi_instrumentation_key = module.appi.appi_key
   openai_service_name      = module.openai.openai_service_name
