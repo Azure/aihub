@@ -24,10 +24,10 @@ public class CallCenterController : Controller
     [HttpPost]
     public async Task<IActionResult> AnalyzeCall()
     {
-        model.Text = HttpContext.Request.Form["text"];
+        model.Transcript = HttpContext.Request.Form["Transcript"];
         model.Prompt = HttpContext.Request.Form["prompt"];
 
-        if (CheckNullValues(model.Text, model.Prompt))
+        if (CheckNullValues(model.Transcript, model.Prompt))
         {
             ViewBag.Message = "You must enter both a transcript and a prompt";
             return View("CallCenter", model);
@@ -56,7 +56,7 @@ public class CallCenterController : Controller
                     Messages =
                     {
                         new ChatRequestSystemMessage(model.Prompt),
-                        new ChatRequestUserMessage(@"Call transcript: "+model.Text),
+                        new ChatRequestUserMessage(@"Call transcript: "+model.Transcript),
                     },
                     Temperature = (float)0.1,
                     MaxTokens = 1000,
