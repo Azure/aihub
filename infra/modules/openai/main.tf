@@ -40,6 +40,22 @@ resource "azurerm_cognitive_deployment" "embedding" {
   }
 }
 
+resource "azurerm_cognitive_deployment" "gpt4" {
+  name                 = "gpt4"
+  cognitive_account_id = azurerm_cognitive_account.openai.id
+  rai_policy_name      = "Microsoft.Default"
+  model {
+    format  = "OpenAI"
+    name    = "gpt-4"
+    version = "0613"
+  }
+
+  scale {
+    type     = "Standard"
+    capacity = 120
+  }
+}
+
 resource "azurerm_role_assignment" "openai_user" {
   scope                = azurerm_cognitive_account.openai.id
   role_definition_name = "Cognitive Services OpenAI User"

@@ -30,7 +30,7 @@ Dropzone.options.dropaiimage = {
 
                 var ifrm = document.createElement("iframe");
                 ifrm.setAttribute("src", response.pdfUrl);
-                document.getElementById("pdf-frame")
+                document.getElementById("pdf-frame").appendChild(ifrm);
             } catch (e) {
                 console.error("Error parsing the response:", e);
             }

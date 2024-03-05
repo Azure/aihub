@@ -22,7 +22,7 @@ public class DocumentComparisonController : Controller
         AOAIendpoint = config.GetValue<string>("DocumentComparison:OpenAIEndpoint") ?? throw new ArgumentNullException("OpenAIEndpoint");
         AOAIsubscriptionKey = config.GetValue<string>("DocumentComparison:OpenAISubscriptionKey") ?? throw new ArgumentNullException("OpenAISubscriptionKey");
         storageconnstring = config.GetValue<string>("Storage:ConnectionString") ?? throw new ArgumentNullException("ConnectionString");
-        AOAIDeploymentName = config.GetValue<string>("BrandAnalyzer:DeploymentName") ?? throw new ArgumentNullException("DeploymentName");
+        AOAIDeploymentName = config.GetValue<string>("DocumentComparison:DeploymentName") ?? throw new ArgumentNullException("DeploymentName");
         BlobServiceClient blobServiceClient = new BlobServiceClient(storageconnstring);
         containerClient = blobServiceClient.GetBlobContainerClient(config.GetValue<string>("DocumentComparison:ContainerName"));
         sasUri = containerClient.GenerateSasUri(Azure.Storage.Sas.BlobContainerSasPermissions.Read, DateTimeOffset.UtcNow.AddHours(1));
@@ -38,61 +38,24 @@ public class DocumentComparisonController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> DocumentComparison(string[] document_urls, string prompt)
+    public async Task<IActionResult> DocumentComparison(string[] document_urls, string[] tab_names, string prompt)
     {
         //1. Get Documents
+        model.PdfUrl1 = document_urls[0] + sasUri.Query;
+        model.PdfUrl2 = document_urls[1] + sasUri.Query;
         ViewBag.PdfUrl1 = document_urls[0] + sasUri.Query;
         ViewBag.PdfUrl2 = document_urls[1] + sasUri.Query;
+        model.tabName1= tab_names[0];
+        model.tabName2= tab_names[1];
+
         string[] output_result = new string[2];
 
         //2. Call Form Recognizer
         for (int i = 0; i < document_urls.Length; i++)
         {
-            httpClient.BaseAddress = new Uri(FormRecogEndpoint);
-            // Add an Accept header for JSON format.
-            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", FormRecogSubscriptionKey);
-
-            var content = new
-            {
-                urlSource = document_urls[i] + sasUri.Query
-            };
-
-            var json = System.Text.Json.JsonSerializer.Serialize(content);
-            // Crear un HttpContent con el JSON y el tipo de contenido
-            HttpContent content_body = new StringContent(json, Encoding.UTF8, "application/json");
-            // List data response.
-            HttpResponseMessage response = await httpClient.PostAsync(FormRecogEndpoint, content_body);  // Blocking call! Program will wait here until a response is received or a timeout occurs.
-            response.EnsureSuccessStatusCode();
-
-            // string responseBody = await response.Content.ReadAsStringAsync();
-            string? operation_location_url = response.Headers.GetValues("Operation-Location").First();
-
-            // llamar a GET OPERATION
-            httpClient.BaseAddress = new Uri(operation_location_url);
-
-            // Add an Accept header for JSON format.
-            httpClient.DefaultRequestHeaders.Accept.Add(
-            new MediaTypeWithQualityHeaderValue("application/json"));
-            httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", FormRecogSubscriptionKey);
-
-            // Crear un HttpContent con el JSON y el tipo de contenido
-            // List data response.
-            HttpResponseMessage response2 = await httpClient.GetAsync(operation_location_url);  // Blocking call! Program will wait here until a response is received or a timeout occurs.
-            Console.WriteLine(response2);
-            response2.EnsureSuccessStatusCode();
-            dynamic responsejson = JsonSerializer.Deserialize<dynamic>(await response2.Content.ReadAsStringAsync())!;
-
-            while (responsejson.status != "succeeded")
-            {
-                if (response2 != null)
-                {
-                    Thread.Sleep(10000);
-                    response2 = await httpClient.GetAsync(operation_location_url);
-                    responsejson = JsonSerializer.Deserialize<dynamic>(await response2.Content.ReadAsStringAsync())!;
-                }
-            }
-            output_result[i] = responsejson.analyzeResult.content.ToString();
+            var client = new DocumentAnalysisClient(new Uri(FormRecogEndpoint), new AzureKeyCredential(FormRecogSubscriptionKey));
+            var operation = await client.AnalyzeDocumentFromUriAsync(WaitUntil.Completed, "prebuilt-layout", new Uri(document_urls[i] + sasUri.Query));
+            output_result[i] = operation.Value.Content;
         }
 
         try
@@ -130,26 +93,29 @@ public class DocumentComparisonController : Controller
 
             ChatCompletions completions = responseWithoutStream.Value;
             ChatChoice results_analisis = completions.Choices[0];
+            model.Message = results_analisis.Message.Content;
             ViewBag.Message = results_analisis.Message.Content;
-
         }
         catch (RequestFailedException)
         {
             throw;
         }
 
-        return View("DocumentComparison", model);
+        return Ok(model);
     }
 
     // Upload a file to my azure storage account
     [HttpPost]
-    public async Task<IActionResult> UploadFile(List<IFormFile> documentFiles, string prompt)
+    public async Task<IActionResult> UploadFile()
     {
+
+        List<IFormFile> documentFiles = Request.Form.Files.ToList();
+
         // pre-validations
         if (documentFiles == null || !documentFiles.Count.Equals(2))
         {
             ViewBag.Message = "You must upload exactly two documents";
-            return View("DocumentComparison");
+            return View("DocumentComparison", model);
         }
 
         foreach (var documentFile in documentFiles)
@@ -162,10 +128,12 @@ public class DocumentComparisonController : Controller
         }
 
         string[] urls = new string[2];
+        string[] tabNames = new string[2];
         for (int i = 0; i < documentFiles.Count; i++)
         {
             string url = documentFiles[i].FileName.ToString();
             url = url.Replace(" ", "");
+            tabNames[i] = url;
             BlobClient blobClient = containerClient.GetBlobClient(url);
             var httpHeaders = new BlobHttpHeaders
             {
@@ -176,10 +144,10 @@ public class DocumentComparisonController : Controller
         }
 
         // Call EvaluateImage with the url
-        await DocumentComparison(urls, prompt);
+        await DocumentComparison(urls, tabNames, Request.Form["prompt"].ToString());
         ViewBag.Waiting = null;
 
-        return View("DocumentComparison", model);
+        return Ok(model);
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
