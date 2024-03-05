@@ -5,7 +5,7 @@ description: >
   PBI Data Report .....
 categories: [Azure, PowerBI]
 tags: [docs, powerbi ]
-weight: 7
+weight: 8
 ---
 
 lorem ipsum dolor sit amet

@@ -40,6 +40,11 @@ Analyze and chat with your documents using GPT4 and Azure Document Intelligence.
 Just upload a .pdf document and the Form Analyzer will extract the text and analyze it with Azure Document Intelligence, and then you can chat with the document using GPT4.
 You can also modify the prompt to extract cusntom information from the document. 
 
+### Document Comparison
+Compare different versions of your documents with the powerful combination of GPT-4 and Azure Document Intelligence.
+
+Just upload two .pdf documents to extract the content using OCR capabilities of Azure Document Intelligence, and then you can ask the differences between both documents with the power of GPT4.
+
 ### Content Safety
 
 In today's digital age, online platforms are increasingly becoming hubs for user-generated content, ranging from text and images to videos. While this surge in content creation fosters a vibrant online community, it also brings forth challenges related to content moderation and ensuring a safe environment for users. Azure AI Content Safety offers a robust solution to address these concerns, providing a comprehensive set of tools to analyze and filter content for potential safety risks.

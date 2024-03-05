@@ -5,7 +5,7 @@ description: >
   Analyze and moderate text or image, by adding the thresholds for different flags.
 categories: [Azure, OpenAI]
 tags: [docs, text, image content-safety, azure, ai, content, safety]
-weight: 6
+weight: 7
 ---
 
 In today's digital age, online platforms are increasingly becoming hubs for user-generated content, ranging from text and images to videos. While this surge in content creation fosters a vibrant online community, it also brings forth challenges related to content moderation and ensuring a safe environment for users. Azure AI Content Safety offers a robust solution to address these concerns, providing a comprehensive set of tools to analyze and filter content for potential safety risks.
