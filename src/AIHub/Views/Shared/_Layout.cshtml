@@ -76,7 +76,7 @@
                     </div> *@
                 </div>
 
-                <ul class="topbar-menu d-flex align-items-center gap-3">
+                <ul class="topbar-menu d-flex align-items-center">
                     <li class="dropdown d-lg-none">
                         <a class="nav-link dropdown-toggle arrow-none" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
                             <i class="ri-search-line font-22"></i>
@@ -88,14 +88,14 @@
                         </div>
                     </li>
 
-                    <li class="d-none d-md-inline-block">
+                    <li class="d-none d-md-inline-block px-2">
                         <a class="nav-link" href="" data-toggle="fullscreen">
                             <i class="ri-fullscreen-line font-22"></i>
                         </a>
                     </li>
 
                     <li class="dropdown">
-                        <a class="nav-link dropdown-toggle arrow-none nav-user px-2" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle arrow-none nav-user px-1" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
                             <span class="account-user-avatar">
                                 <img src="~/images/users/profile.jpg" alt="user-image" width="32" class="rounded-circle">
                             </span>
@@ -140,6 +140,12 @@
                                 <span>Logout</span>
                             </a>
                         </div> *@
+                    </li>
+
+                    <li class="nav-link arrow-none nav-user px-2">
+                        <a class="nav-link" href="http://www.microsoft.com" target="blank">
+                            <span class="logo-lg"><img src="/images/company-logo.png" alt="Microsoft"></span>
+                        </a>
                     </li>
                 </ul>
             </div>
@@ -339,7 +345,7 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-6">
-                            <script>document.write(new Date().getFullYear())</script> © Copyright - Microsoft
+                            <script>document.write(new Date().getFullYear())</script> © Copyright - <i class="mdi mdi-microsoft"></i> Microsoft
                         </div>
                         <div class="col-md-6">
                             <div class="text-md-end footer-links d-none d-md-block">
