@@ -3,6 +3,7 @@ global using Microsoft.AspNetCore.Mvc;
 global using MVCWeb.Models;
 global using Azure.AI.ContentSafety;
 global using Azure;
+global using Azure.Core;
 global using Azure.Identity;
 global using Azure.Storage.Blobs;
 global using Azure.Storage.Blobs.Models;

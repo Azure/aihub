@@ -48,7 +48,15 @@ public class ImageAnalyzerController : Controller
 
         using (httpClient = new HttpClient())
         {
-            httpClient.DefaultRequestHeaders.Add("api-key", AOAIsubscriptionKey);
+            if (string.IsNullOrEmpty(AOAIsubscriptionKey))
+            {
+                var credential = new DefaultAzureCredential();
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", credential.GetToken(new TokenRequestContext(["https://api.openai.com/.default"])).Token);
+            }
+            else
+            {
+                httpClient.DefaultRequestHeaders.Add("api-key", AOAIsubscriptionKey);
+            }
             var payload = new
             {
                 enhancements = new

@@ -83,8 +83,8 @@ resource "azapi_resource" "ca_back" {
                 secretRef = "content-safety-key"
               },
               {
-                name      = "ContentModerator__JailbreakDetectionEndpoint",
-                value     = "contentsafety/text:detectJailbreak?api-version=2023-10-15-preview"
+                name  = "ContentModerator__JailbreakDetectionEndpoint",
+                value = "contentsafety/text:detectJailbreak?api-version=2023-10-15-preview"
               },
               {
                 name  = "BrandAnalyzer__BingEndpoint",
@@ -132,7 +132,7 @@ resource "azapi_resource" "ca_back" {
               },
               {
                 name  = "ImageAnalyzer__DeploymentName",
-                value = var.chat_gpt_deployment
+                value = var.chat_gpt4_vision_deployment
               },
               {
                 name  = "FormAnalyzer__FormRecogEndpoint",
