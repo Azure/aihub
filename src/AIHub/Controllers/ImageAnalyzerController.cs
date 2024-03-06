@@ -45,7 +45,7 @@ public class ImageAnalyzerController : Controller
     [HttpPost]
     public async Task<IActionResult> DenseCaptionImage(string image_url, string prompt)
     {
-        string GPT4V_ENDPOINT = AOAIendpoint + gpt4Vision;
+        string GPT4V_ENDPOINT = $"{AOAIendpoint }openai/deployments/{AOAIDeploymentName}/extensions/chat/completions?api-version=2023-07-01-preview";
         image_url = image_url + sasUri.Query;
 
         using (httpClient = new HttpClient())

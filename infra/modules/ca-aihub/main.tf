@@ -119,10 +119,6 @@ resource "azapi_resource" "ca_back" {
                 value = var.chat_gpt_deployment
               },
               {
-                name  = "ImageAnalyzer__GPT4Vision",
-                value = var.gpt4vision_endpoint
-              },
-              {
                 name  = "ImageAnalyzer__OpenAIEndpoint",
                 value = "${var.openai_endpoint}"
               },

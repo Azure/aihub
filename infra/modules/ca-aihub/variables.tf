@@ -20,7 +20,6 @@ variable "chat_gpt4_vision_model" {}
 variable "embeddings_deployment" {}
 variable "embeddings_model" {}
 variable "openai_endpoint" {}
-variable "gpt4vision_endpoint" {}
 
 variable "chat_fqdn" {}
 variable "pbi_report_link" {}
