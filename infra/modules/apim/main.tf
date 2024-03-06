@@ -129,30 +129,34 @@ resource "azurerm_api_management_diagnostic" "diagnostics" {
   http_correlation_protocol = "W3C"
 
   frontend_request {
-    body_bytes = 8192
-    headers_to_log = [
-      "custom-headers"
-    ]
+    body_bytes     = 8192
+    headers_to_log = []
+    data_masking {
+      query_params {
+        mode  = "Hide"
+        value = "*"
+      }
+    }
   }
 
   frontend_response {
-    body_bytes = 8192
-    headers_to_log = [
-      "custom-headers"
-    ]
+    body_bytes     = 8192
+    headers_to_log = []
   }
 
   backend_request {
-    body_bytes = 8192
-    headers_to_log = [
-      "custom-headers"
-    ]
+    body_bytes     = 8192
+    headers_to_log = []
+    data_masking {
+      query_params {
+        mode  = "Hide"
+        value = "*"
+      }
+    }
   }
 
   backend_response {
-    body_bytes = 8192
-    headers_to_log = [
-      "custom-headers"
-    ]
+    body_bytes     = 8192
+    headers_to_log = []
   }
 }
