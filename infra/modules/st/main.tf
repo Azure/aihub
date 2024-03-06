@@ -47,6 +47,12 @@ resource "azurerm_storage_container" "image-moderator" {
   storage_account_name  = azurerm_storage_account.sa.name
 }
 
+resource "azurerm_storage_container" "document-comparison" {
+  name                  = "document-comparison"
+  container_access_type = "private"
+  storage_account_name  = azurerm_storage_account.sa.name
+}
+
 resource "azurerm_storage_share" "share" {
   name                 = "staging"
   storage_account_name = azurerm_storage_account.sa.name
