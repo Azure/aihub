@@ -9,7 +9,7 @@ resource "azurerm_cognitive_account" "openai" {
 }
 
 resource "azurerm_cognitive_deployment" "gpt_35_turbo" {
-  name                 = "DemoBuild"
+  name                 = "gpt-35-turbo"
   cognitive_account_id = azurerm_cognitive_account.openai.id
   rai_policy_name      = "Microsoft.Default"
   model {

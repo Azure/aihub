@@ -168,7 +168,31 @@ resource "azapi_resource" "ca_back" {
               },
               {
                 name  = "FormAnalyzer__DeploymentName",
-                value = var.chat_gpt_deployment
+                value = var.chat_gpt4_deployment
+              },
+              {
+                name  = "DocumentComparison__FormRecogEndpoint",
+                value = "${var.cognitive_service_endpoint}"
+              },
+              {
+                name      = "DocumentComparison__FormRecogSubscriptionKey",
+                secretRef = "cognitive-service-key"
+              },
+              {
+                name  = "DocumentComparison__OpenAIEndpoint",
+                value = "${var.openai_endpoint}"
+              },
+              {
+                name  = "DocumentComparison__OpenAISubscriptionKey",
+                value = ""
+              },
+              {
+                name  = "DocumentComparison__ContainerName",
+                value = "document-comparison"
+              },
+              {
+                name  = "DocumentComparison__DeploymentName",
+                value = var.chat_gpt4_deployment
               },
               {
                 name      = "Storage__ConnectionString",
