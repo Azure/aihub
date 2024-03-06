@@ -51,7 +51,7 @@ public class ImageAnalyzerController : Controller
             if (string.IsNullOrEmpty(AOAIsubscriptionKey))
             {
                 var credential = new DefaultAzureCredential();
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", credential.GetToken(new TokenRequestContext(["https://api.openai.com/.default"])).Token);
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", credential.GetToken(new TokenRequestContext(["https://cognitiveservices.azure.com/.default"])).Token);
             }
             else
             {
