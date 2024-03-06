@@ -20,7 +20,7 @@ resource "azurerm_cognitive_deployment" "this" {
 
   scale {
     type     = "Standard"
-    capacity = 120
+    capacity = 40
   }
 }
 
@@ -36,7 +36,7 @@ resource "azurerm_cognitive_deployment" "embedding" {
 
   scale {
     type     = "Standard"
-    capacity = 120
+    capacity = 40
   }
 }
 
@@ -52,7 +52,7 @@ resource "azurerm_cognitive_deployment" "gpt4" {
 
   scale {
     type     = "Standard"
-    capacity = 120
+    capacity = 40
   }
 }
 
