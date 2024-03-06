@@ -95,7 +95,7 @@ variable "ca_prep_docs_image" {
 }
 
 variable "ca_aihub_image" {
-  default = "ghcr.io/azure/aihub/aihub:1.0.2-preview.17"
+  default = "ghcr.io/azure/aihub/aihub:1.0.2-preview.19"
 }
 
 variable "use_random_suffix" {

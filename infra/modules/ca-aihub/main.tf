@@ -83,6 +83,10 @@ resource "azapi_resource" "ca_back" {
                 secretRef = "content-safety-key"
               },
               {
+                name      = "ContentModerator__JailbreakDetectionEndpoint",
+                value     = "contentsafety/text:detectJailbreak?api-version=2023-10-15-preview"
+              },
+              {
                 name  = "BrandAnalyzer__BingEndpoint",
                 value = "https://api.bing.microsoft.com/v7.0/search"
               },

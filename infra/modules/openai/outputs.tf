@@ -7,11 +7,27 @@ output "openai_endpoint" {
 }
 
 output "gpt_deployment_name" {
-  value = azurerm_cognitive_deployment.this.name
+  value = azurerm_cognitive_deployment.gpt_35_turbo.name
 }
 
 output "gpt_deployment_model_name" {
-  value = azurerm_cognitive_deployment.this.model[0].name
+  value = azurerm_cognitive_deployment.gpt_35_turbo.model[0].name
+}
+
+output "gpt4_vision_deployment_name" {
+  value = azurerm_cognitive_deployment.gpt4_vision.name
+}
+
+output "gpt4_vision_deployment_model_name" {
+  value = azurerm_cognitive_deployment.gpt4_vision.model[0].name
+}
+
+output "gpt4_deployment_name" {
+  value = azurerm_cognitive_deployment.gpt4.name
+}
+
+output "gpt4_deployment_model_name" {
+  value = azurerm_cognitive_deployment.gpt4.model[0].name
 }
 
 output "embedding_deployment_name" {
