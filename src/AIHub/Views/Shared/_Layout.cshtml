@@ -105,8 +105,8 @@
                                     class="rounded-circle">
                             </span>
                             <span class="d-lg-flex flex-column gap-1 d-none">
-                                <h5 class="my-0">John Doe</h5>
-                                <h6 class="my-0 fw-normal">Chief Financial Officer</h6>
+                                <h5 class="my-0">@(String.IsNullOrEmpty(Context.User.Identity.Name) ? Environment.UserName : Context.User.Identity.Name)</h5>
+                                @* <h6 class="my-0 fw-normal">Chief Financial Officer</h6> *@
                             </span>
                         </a>
                         @* <div class="dropdown-menu dropdown-menu-end dropdown-menu-animated profile-dropdown">
@@ -150,6 +150,7 @@
                     <li class="nav-link arrow-none nav-user px-2">
                         <!--<a class="nav-link" href="http://www.microsoft.com" target="blank">-->
                         <span class="logo-lg"><img src="/images/customer/customer-logo.png"></span>
+                        
                         <!--</a>-->
                     </li>
                 </ul>
