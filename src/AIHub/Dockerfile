@@ -1,10 +1,9 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-
+ARG MINVERVERSIONOVERRIDE
+ENV MINVERVERSIONOVERRIDE=${MINVERVERSIONOVERRIDE}
 COPY ./AIHub.csproj ./AIHub.csproj
 RUN dotnet restore ./AIHub.csproj
-
-# Copy everything else and build website
 COPY ./ ./app/
 WORKDIR /src/app/
 RUN dotnet publish -c release
