@@ -14,7 +14,6 @@ public class ImageAnalyzerController : Controller
     private string AOAIsubscriptionKey;
     private string storageconnstring;
     private string AOAIDeploymentName;
-    private string gpt4Vision;
     private readonly BlobContainerClient containerClient;
     private readonly IEnumerable<BlobItem> blobs;
     private Uri sasUri;
@@ -30,7 +29,6 @@ public class ImageAnalyzerController : Controller
         containerClient = blobServiceClient.GetBlobContainerClient(config.GetValue<string>("Storage:ContainerName"));
         sasUri = containerClient.GenerateSasUri(Azure.Storage.Sas.BlobContainerSasPermissions.Read, DateTimeOffset.UtcNow.AddHours(1));
         AOAIDeploymentName = config.GetValue<string>("ImageAnalyzer:DeploymentName") ?? throw new ArgumentNullException("DeploymentName");
-        gpt4Vision = config.GetValue<string>("ImageAnalyzer:GPT4Vision") ?? throw new ArgumentNullException("GPT4Vision");
         // Obtain the blobs list in the container
         blobs = containerClient.GetBlobs();
         httpClient = clientFactory.CreateClient();
@@ -45,7 +43,7 @@ public class ImageAnalyzerController : Controller
     [HttpPost]
     public async Task<IActionResult> DenseCaptionImage(string image_url, string prompt)
     {
-        string GPT4V_ENDPOINT = $"{AOAIendpoint }openai/deployments/{AOAIDeploymentName}/extensions/chat/completions?api-version=2023-07-01-preview";
+        string GPT4V_ENDPOINT = $"{AOAIendpoint}openai/deployments/{AOAIDeploymentName}/extensions/chat/completions?api-version=2023-07-01-preview";
         image_url = image_url + sasUri.Query;
 
         using (httpClient = new HttpClient())
