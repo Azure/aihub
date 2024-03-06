@@ -47,7 +47,7 @@ resource "azurerm_cognitive_deployment" "gpt_4" {
   model {
     format  = "OpenAI"
     name    = "gpt-4"
-    version = "1106-preview"
+    version = "1106-Preview"
   }
 
   scale {
