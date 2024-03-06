@@ -46,7 +46,7 @@ resource "azurerm_cognitive_deployment" "gpt_4_32k" {
   rai_policy_name      = "Microsoft.Default"
   model {
     format  = "OpenAI"
-    name    = "gpt-4-32-k"
+    name    = "gpt-4-32k"
     version = "0613"
   }
 
