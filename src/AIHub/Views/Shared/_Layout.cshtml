@@ -1,20 +1,19 @@
-﻿
-@inject IConfiguration Configuration
+﻿@inject IConfiguration Configuration
 
 
-<!DOCTYPE html >
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Azure AI Hub</title>
-    
+
     <link rel="icon" type="image/x-icon" href="~/images/favicon.ico" />
-    
+
     <script src="/js/config.js"></script>
-    <link rel="stylesheet" href="/css/main.min.css" type="text/css" id="app-style"/>
-    <link rel="stylesheet" href="/css/icons.min.css" type="text/css"/>
+    <link rel="stylesheet" href="/css/main.min.css" type="text/css" id="app-style" />
+    <link rel="stylesheet" href="/css/icons.min.css" type="text/css" />
 </head>
 
 <body>
@@ -31,7 +30,8 @@
                         <a href="index.html" class="logo-light">
                             <span class="logo-lg">
                                 <img src="/images/aihub-logo.png" alt="AI Hub">
-                                @* <img id="logo" src="/images/favicon.ico" class="img-fluid rounded-start" alt="logo"> *@
+                                @* <img id="logo" src="/images/favicon.ico" class="img-fluid rounded-start" alt="logo">
+                                *@
                             </span>
                             <span class="logo-sm">
                                 <img src="/images/aihub-logo-icon.png" alt="AI Hub">
@@ -42,7 +42,8 @@
                         <a href="index.html" class="logo-dark">
                             <span class="logo-lg">
                                 <img src="/images/aihub-logo.png" alt="AI Hub">
-                                 @* <img id="logo" src="/images/favicon.ico" class="img-fluid rounded-start" alt="logo"> *@
+                                @* <img id="logo" src="/images/favicon.ico" class="img-fluid rounded-start" alt="logo">
+                                *@
                             </span>
                             <span class="logo-sm">
                                 <img src="/images/aihub-logo-icon.png" alt="AI Hub">
@@ -66,24 +67,26 @@
 
                     <!-- Topbar Search Form -->
                     @* <div class="app-search dropdown d-none d-lg-block">
-                        <form>
-                            <div class="input-group">
-                                <input type="search" class="form-control dropdown-toggle" placeholder="Search..." id="top-search">
-                                <span class="mdi mdi-magnify search-icon"></span>
-                                <button class="input-group-text btn btn-primary" type="submit">Search</button>
-                            </div>
-                        </form>                            
+                    <form>
+                    <div class="input-group">
+                    <input type="search" class="form-control dropdown-toggle" placeholder="Search..." id="top-search">
+                    <span class="mdi mdi-magnify search-icon"></span>
+                    <button class="input-group-text btn btn-primary" type="submit">Search</button>
+                    </div>
+                    </form>
                     </div> *@
                 </div>
 
                 <ul class="topbar-menu d-flex align-items-center">
                     <li class="dropdown d-lg-none">
-                        <a class="nav-link dropdown-toggle arrow-none" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle arrow-none" data-bs-toggle="dropdown" href="#" role="button"
+                            aria-haspopup="false" aria-expanded="false">
                             <i class="ri-search-line font-22"></i>
                         </a>
                         <div class="dropdown-menu dropdown-menu-animated dropdown-lg p-0">
                             <form class="p-3">
-                                <input type="search" class="form-control" placeholder="Search ..." aria-label="Recipient's username">
+                                <input type="search" class="form-control" placeholder="Search ..."
+                                    aria-label="Recipient's username">
                             </form>
                         </div>
                     </li>
@@ -95,9 +98,11 @@
                     </li>
 
                     <li class="dropdown">
-                        <a class="nav-link dropdown-toggle arrow-none nav-user px-1" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle arrow-none nav-user px-1" data-bs-toggle="dropdown" href="#"
+                            role="button" aria-haspopup="false" aria-expanded="false">
                             <span class="account-user-avatar">
-                                <img src="~/images/users/profile.jpg" alt="user-image" width="32" class="rounded-circle">
+                                <img src="~/images/users/profile.jpg" alt="user-image" width="32"
+                                    class="rounded-circle">
                             </span>
                             <span class="d-lg-flex flex-column gap-1 d-none">
                                 <h5 class="my-0">John Doe</h5>
@@ -105,46 +110,46 @@
                             </span>
                         </a>
                         @* <div class="dropdown-menu dropdown-menu-end dropdown-menu-animated profile-dropdown">
-                            <!-- item-->
-                            <div class=" dropdown-header noti-title">
-                                <h6 class="text-overflow m-0">Welcome !</h6>
-                            </div>
+                        <!-- item-->
+                        <div class=" dropdown-header noti-title">
+                        <h6 class="text-overflow m-0">Welcome !</h6>
+                        </div>
 
-                            <!-- item-->
-                            <a href="javascript:void(0);" class="dropdown-item">
-                                <i class="mdi mdi-account-circle me-1"></i>
-                                <span>My Account</span>
-                            </a>
+                        <!-- item-->
+                        <a href="javascript:void(0);" class="dropdown-item">
+                        <i class="mdi mdi-account-circle me-1"></i>
+                        <span>My Account</span>
+                        </a>
 
-                            <!-- item-->
-                            <a href="javascript:void(0);" class="dropdown-item">
-                                <i class="mdi mdi-account-edit me-1"></i>
-                                <span>Settings</span>
-                            </a>
+                        <!-- item-->
+                        <a href="javascript:void(0);" class="dropdown-item">
+                        <i class="mdi mdi-account-edit me-1"></i>
+                        <span>Settings</span>
+                        </a>
 
-                            <!-- item-->
-                            <a href="javascript:void(0);" class="dropdown-item">
-                                <i class="mdi mdi-lifebuoy me-1"></i>
-                                <span>Support</span>
-                            </a>
+                        <!-- item-->
+                        <a href="javascript:void(0);" class="dropdown-item">
+                        <i class="mdi mdi-lifebuoy me-1"></i>
+                        <span>Support</span>
+                        </a>
 
-                            <!-- item-->
-                            <a href="javascript:void(0);" class="dropdown-item">
-                                <i class="mdi mdi-lock-outline me-1"></i>
-                                <span>Lock Screen</span>
-                            </a>
+                        <!-- item-->
+                        <a href="javascript:void(0);" class="dropdown-item">
+                        <i class="mdi mdi-lock-outline me-1"></i>
+                        <span>Lock Screen</span>
+                        </a>
 
-                            <!-- item-->
-                            <a href="javascript:void(0);" class="dropdown-item">
-                                <i class="mdi mdi-logout me-1"></i>
-                                <span>Logout</span>
-                            </a>
+                        <!-- item-->
+                        <a href="javascript:void(0);" class="dropdown-item">
+                        <i class="mdi mdi-logout me-1"></i>
+                        <span>Logout</span>
+                        </a>
                         </div> *@
                     </li>
 
                     <li class="nav-link arrow-none nav-user px-2">
                         <!--<a class="nav-link" href="http://www.microsoft.com" target="blank">-->
-                            <span class="logo-lg"><img src="/images/customer/customer-logo.png"></span>
+                        <span class="logo-lg"><img src="/images/customer/customer-logo.png"></span>
                         <!--</a>-->
                     </li>
                 </ul>
@@ -192,7 +197,8 @@
                 <!-- Leftbar User -->
                 <div class="leftbar-user">
                     <a href="pages-profile.html">
-                        <img src="~/images/users/profile.jpg" alt="user-image" height="42" class="rounded-circle shadow-sm">
+                        <img src="~/images/users/profile.jpg" alt="user-image" height="42"
+                            class="rounded-circle shadow-sm">
                         <span class="leftbar-user-name mt-2">John Doe</span>
                     </a>
                 </div>
@@ -200,46 +206,50 @@
                 <!--- Sidemenu -->
                 <ul class="side-nav">
 
-                    <li class="side-nav-title"><center>Responsible AI & Innovation Center</center></li>
-                    
+                    <li class="side-nav-title">
+                        <center>Responsible AI & Innovation Center</center>
+                    </li>
+
                     <li class="side-nav-item">
-                        <a class="side-nav-link" target="_blank" href="https://news.microsoft.com/es-es/2024/02/20/microsoft-crea-un-centro-de-innovacion-en-ia-responsable-para-ayudar-a-las-organizaciones-espanolas-en-el-despliegue-de-proyectos-de-inteligencia-artificial/">
+                        <a class="side-nav-link" target="_blank"
+                            href="https://news.microsoft.com/es-es/2024/02/20/microsoft-crea-un-centro-de-innovacion-en-ia-responsable-para-ayudar-a-las-organizaciones-espanolas-en-el-despliegue-de-proyectos-de-inteligencia-artificial/">
                             <i class="uil-link"></i>
-                        <span> Know about about RAIIC </span>
+                            <span> Know about about RAIIC </span>
                         </a>
                     </li>
 
 
                     @* <li class="side-nav-item">
-                        <a data-bs-toggle="collapse" href="#sidebarDashboards" aria-expanded="false" aria-controls="sidebarDashboards" class="side-nav-link">
-                            <i class="uil-home-alt"></i>
-                            <span> Dashboards </span>
-                        </a>
-                        <div class="collapse" id="sidebarDashboards">
-                            <ul class="side-nav-second-level">
-                                <li>
-                                    <a asp-controller="Home" asp-action="Index">Home</a>
-                                </li>
-                                <li>
-                                    <a asp-controller="Dashboard" asp-action="Banking">Banking</a>
-                                </li>
-                                <li>
-                                    <a asp-controller="Dashboard" asp-action="Industry">Industry</a>
-                                </li>
-                                <li>
-                                    <a asp-controller="Dashboard" asp-action="Insurance">Insurance</a>
-                                </li>
-                                <li>
-                                    <a href="Public Sector.html">Public Sector</a>
-                                </li>
-                                <li>
-                                    <a href="Telco.html">Telco</a>
-                                </li>
-                                <li>
-                                    <a asp-controller="Dashboard" asp-action="Utilities">Utilities</a>
-                                </li>
-                            </ul>
-                        </div>
+                    <a data-bs-toggle="collapse" href="#sidebarDashboards" aria-expanded="false"
+                    aria-controls="sidebarDashboards" class="side-nav-link">
+                    <i class="uil-home-alt"></i>
+                    <span> Dashboards </span>
+                    </a>
+                    <div class="collapse" id="sidebarDashboards">
+                    <ul class="side-nav-second-level">
+                    <li>
+                    <a asp-controller="Home" asp-action="Index">Home</a>
+                    </li>
+                    <li>
+                    <a asp-controller="Dashboard" asp-action="Banking">Banking</a>
+                    </li>
+                    <li>
+                    <a asp-controller="Dashboard" asp-action="Industry">Industry</a>
+                    </li>
+                    <li>
+                    <a asp-controller="Dashboard" asp-action="Insurance">Insurance</a>
+                    </li>
+                    <li>
+                    <a href="Public Sector.html">Public Sector</a>
+                    </li>
+                    <li>
+                    <a href="Telco.html">Telco</a>
+                    </li>
+                    <li>
+                    <a asp-controller="Dashboard" asp-action="Utilities">Utilities</a>
+                    </li>
+                    </ul>
+                    </div>
                     </li> *@
 
                     <li class="side-nav-title">Use Cases</li>
@@ -263,7 +273,7 @@
                         </a>
                     </li>
 
-                   <li class="side-nav-item">
+                    <li class="side-nav-item">
                         <a class="side-nav-link" href="@Url.Action("ImageAnalyzer", "ImageAnalyzer")">
                             <i class="uil-image-search"></i>
                             <span> Image Analyzer </span>
@@ -271,7 +281,7 @@
                         </a>
                     </li>
                     <li class="side-nav-item">
-                        <a class="side-nav-link" >@*href="@Url.Action("VideoAnalyzer", "VideoAnalyzer")">*@
+                        <a class="side-nav-link">@*href="@Url.Action("VideoAnalyzer", "VideoAnalyzer")">*@
                             <i class=" uil-video"></i>
                             <span> Video Analyzer </span>
                             <span class="badge badge-outline-secondary rounded-pill float-end">Coming soon</span>
@@ -297,9 +307,10 @@
                             <i class="uil-store-alt"></i>
                             <span> Brand Analyzer </span>
                         </a>
-                    </li>                    
+                    </li>
                     <li class="side-nav-item">
-                        <a data-bs-toggle="collapse" href="#sidebarProjects" aria-expanded="false" aria-controls="sidebarProjects" class="side-nav-link">
+                        <a data-bs-toggle="collapse" href="#sidebarProjects" aria-expanded="false"
+                            aria-controls="sidebarProjects" class="side-nav-link">
                             <i class="uil-comment-shield"></i>
                             <span> Content Safety </span>
                         </a>
@@ -320,7 +331,7 @@
                             <span> Jailbreak Detection </span>
                             <span class="badge badge-outline-success rounded-pill float-end">New</span>
                         </a>
-                    </li>  
+                    </li>
 
 
                 </ul>
@@ -345,7 +356,9 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-6">
-                            <script>document.write(new Date().getFullYear())</script> © Copyright - <i class="mdi mdi-microsoft"></i> Microsoft
+                            <script>document.write(new Date().getFullYear())</script> © Copyright - <i
+                                class="mdi mdi-microsoft"></i> Microsoft
+                            - v.@typeof(MVCWeb.Controllers.DashboardController).Assembly.GetName().Version
                         </div>
                         <div class="col-md-6">
                             <div class="text-md-end footer-links d-none d-md-block">
