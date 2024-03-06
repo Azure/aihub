@@ -40,14 +40,14 @@ resource "azurerm_cognitive_deployment" "embedding" {
   }
 }
 
-resource "azurerm_cognitive_deployment" "gpt_4_32k" {
-  name                 = "gpt-4-32k"
+resource "azurerm_cognitive_deployment" "gpt_4" {
+  name                 = "gpt-4"
   cognitive_account_id = azurerm_cognitive_account.openai.id
   rai_policy_name      = "Microsoft.Default"
   model {
     format  = "OpenAI"
-    name    = "gpt-4-32k"
-    version = "0613"
+    name    = "gpt-4"
+    version = "1106-preview"
   }
 
   scale {
