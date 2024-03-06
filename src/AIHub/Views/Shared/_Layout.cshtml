@@ -358,7 +358,7 @@
                         <div class="col-md-6">
                             <script>document.write(new Date().getFullYear())</script> © Copyright - <i
                                 class="mdi mdi-microsoft"></i> Microsoft
-                            - v.@typeof(MVCWeb.Controllers.DashboardController).Assembly.GetName().Version
+                            - v.@FileVersionInfo.GetVersionInfo(typeof(MVCWeb.Controllers.DashboardController).Assembly.Location).ProductVersion
                         </div>
                         <div class="col-md-6">
                             <div class="text-md-end footer-links d-none d-md-block">
