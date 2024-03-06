@@ -1,26 +1,28 @@
 using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
+using System;
+using System.IO;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace MVCWeb.Controllers;
 
 public class ImageAnalyzerController : Controller
 {
-    private string Visionendpoint;
-    private string OCRendpoint;
-    private string VisionsubscriptionKey;
     private string AOAIendpoint;
     private string AOAIsubscriptionKey;
     private string storageconnstring;
     private string AOAIDeploymentName;
+    private string gpt4Vision;
     private readonly BlobContainerClient containerClient;
     private readonly IEnumerable<BlobItem> blobs;
     private Uri sasUri;
     private ImageAnalyzerModel model;
+    private HttpClient httpClient;
 
-    public ImageAnalyzerController(IConfiguration config)
+    public ImageAnalyzerController(IConfiguration config, IHttpClientFactory clientFactory)
     {
-        Visionendpoint = config.GetValue<string>("ImageAnalyzer:VisionEndpoint") ?? throw new ArgumentNullException("VisionEndpoint");
-        OCRendpoint = config.GetValue<string>("ImageAnalyzer:OCREndpoint") ?? throw new ArgumentNullException("OCREndpoint");
-        VisionsubscriptionKey = config.GetValue<string>("ImageAnalyzer:VisionSubscriptionKey") ?? throw new ArgumentNullException("VisionSubscriptionKey");
         AOAIendpoint = config.GetValue<string>("ImageAnalyzer:OpenAIEndpoint") ?? throw new ArgumentNullException("OpenAIEndpoint");
         AOAIsubscriptionKey = config.GetValue<string>("ImageAnalyzer:OpenAISubscriptionKey") ?? throw new ArgumentNullException("OpenAISubscriptionKey");
         storageconnstring = config.GetValue<string>("Storage:ConnectionString") ?? throw new ArgumentNullException("ConnectionString");
@@ -28,8 +30,10 @@ public class ImageAnalyzerController : Controller
         containerClient = blobServiceClient.GetBlobContainerClient(config.GetValue<string>("Storage:ContainerName"));
         sasUri = containerClient.GenerateSasUri(Azure.Storage.Sas.BlobContainerSasPermissions.Read, DateTimeOffset.UtcNow.AddHours(1));
         AOAIDeploymentName = config.GetValue<string>("ImageAnalyzer:DeploymentName") ?? throw new ArgumentNullException("DeploymentName");
-        // Obtiene una lista de blobs en el contenedor
+        gpt4Vision = config.GetValue<string>("ImageAnalyzer:GPT4Vision") ?? throw new ArgumentNullException("GPT4Vision");
+        // Obtain the blobs list in the container
         blobs = containerClient.GetBlobs();
+        httpClient = clientFactory.CreateClient();
         model = new ImageAnalyzerModel();
     }
 
@@ -39,93 +43,73 @@ public class ImageAnalyzerController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> DenseCaptionImage(string image_url)
+    public async Task<IActionResult> DenseCaptionImage(string image_url, string prompt)
     {
-        // 1. Get Image
-        model.Image = image_url;
-        // 2. Dense Captioning and OCR
-        var sb = new StringBuilder();
+        string GPT4V_ENDPOINT = AOAIendpoint + gpt4Vision;
+        image_url = image_url + sasUri.Query;
 
-        ImageAnalysisClient client = new(
-            new Uri(Visionendpoint),
-            new AzureKeyCredential(VisionsubscriptionKey));
-
-        ImageAnalysisResult result = client.Analyze(
-            new Uri(model.Image + sasUri.Query),
-            VisualFeatures.DenseCaptions | VisualFeatures.Read,
-            new ImageAnalysisOptions { GenderNeutralCaption = false, Language = "en" });
-
-        foreach (var caption in result.DenseCaptions.Values)
+        using (httpClient = new HttpClient())
         {
-            sb.Append(caption.Text);
-        }
-
-        var captions = sb.ToString();
-
-        var ocr = "there is no text in the image";
-        if (result.Read.Blocks.Count > 0)
-        {
-            ocr = result.Read.Blocks[0].ToString();
-        }
-
-        // 4. Tags 
-
-
-        // 5. Objects
-
-
-        // 6. Trancript of image
-
-
-        // 7. Describe Image GPT4
-        try
-        {
-            OpenAIClient aoaiClient;
-            if (string.IsNullOrEmpty(AOAIsubscriptionKey))
+            httpClient.DefaultRequestHeaders.Add("api-key", AOAIsubscriptionKey);
+            var payload = new
             {
-                aoaiClient = new OpenAIClient(
-                    new Uri(AOAIendpoint),
-                    new DefaultAzureCredential());
+                enhancements = new
+                {
+                    ocr = new { enabled = true },
+                    grounding = new { enabled = true }
+                },
+                messages = new object[]
+                {
+                  new {
+                      role = "system",
+                      content = new object[] {
+                          new {
+                              type = "text",
+                              text = "You are an AI assistant that helps people find information."
+                          }
+                      }
+                  },
+                  new {
+                      role = "user",
+                      content = new object[] {
+                          new {
+                              type = "image_url",
+                              image_url = new {
+                                  url = image_url
+                              }
+                          },
+                          new {
+                              type = "text",
+                              text = prompt
+                          }
+                      }
+                  }
+                },
+                temperature = 0.7,
+                top_p = 0.95,
+                max_tokens = 800,
+                stream = false
+            };
+            var response = await httpClient.PostAsync(GPT4V_ENDPOINT, new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json"));
+
+
+            if (response.IsSuccessStatusCode)
+            {
+                var responseData = JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync());
+
+                // Get the web pages from the response
+                var response_final = responseData!.choices[0];
+                string final = response_final.message.content;
+                model.Message = final;
+                model.Image = image_url;
             }
             else
             {
-                aoaiClient = new OpenAIClient(
-                    new Uri(AOAIendpoint),
-                    new AzureKeyCredential(AOAIsubscriptionKey));
+                Console.WriteLine($"Error after GPT4V: {response.StatusCode}, {response.ReasonPhrase}");
             }
-
-            // If streaming is not selected
-            Response<ChatCompletions> responseWithoutStream = await aoaiClient.GetChatCompletionsAsync(
-                new ChatCompletionsOptions()
-                {
-                    DeploymentName = AOAIDeploymentName,
-                    Messages =
-                    {
-                        new ChatRequestSystemMessage(@"The user will provide a list of descriptions of an image. I want you to create a unified and complete description of the image based of the list provided. Each suggested description is separated by a \ symbol. Also, it will provide the text detected in the image, try to associate the text detected (if any) with the rest of the captions of the image. If you are not sure, say to user something like 'MIGHT BE'. "),
-                        new ChatRequestUserMessage($"Descriptions: {captions}. & OCR: {ocr}" ),
-                    },
-                    Temperature = (float)0.7,
-                    MaxTokens = 1000,
-                    NucleusSamplingFactor = (float)0.95,
-                    FrequencyPenalty = 0,
-                    PresencePenalty = 0,
-                });
-
-            ChatCompletions completions = responseWithoutStream.Value;
-            ChatChoice results_analisis = completions.Choices[0];
-            model.Message = results_analisis.Message.Content;
-            ViewBag.Message = results_analisis.Message.Content;
-            ViewBag.Image = model.Image + sasUri.Query;
-            model.Image = model.Image + sasUri.Query;
-            Console.WriteLine(ViewBag.Message);
-            Console.WriteLine(ViewBag.Image);
-        }
-        catch (RequestFailedException)
-        {
-            throw;
         }
 
-        return Ok(model);
+        return View("ImageAnalyzer");
     }
 
     // Upload a file to my azure storage account
@@ -138,7 +122,12 @@ public class ImageAnalyzerController : Controller
             ViewBag.Message = "You must upload an image";
             return View("ImageAnalyzer");
         }
-
+        if (string.IsNullOrEmpty(HttpContext.Request.Form["text"]))
+        {
+            ViewBag.Message = "You must enter a prompt to evaluate";
+            return View("ImageAnalyzer", model);
+        }
+        model.Prompt = HttpContext.Request.Form["text"];
         // Upload file to azure storage account
         string url = imageFile.FileName.ToString();
         Console.WriteLine(url);
@@ -156,7 +145,8 @@ public class ImageAnalyzerController : Controller
         }
 
         // Call EvaluateImage with the url
-        await DenseCaptionImage(blobUrl.ToString());
+        Console.WriteLine(blobUrl.ToString());
+        await DenseCaptionImage(blobUrl.ToString(), model.Prompt!);
         ViewBag.Waiting = null;
 
         return Ok(model);

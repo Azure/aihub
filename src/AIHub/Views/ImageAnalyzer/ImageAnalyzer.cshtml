@@ -5,7 +5,7 @@
 
 <!-- Start Content-->
 <div class="container-fluid">
-    
+
     <!-- start page title -->
     <div class="row">
         <div class="col-12">
@@ -28,22 +28,43 @@
                 <div class="card-body">
                     <h4 class="header-title">Image Analyzer with Azure OpenAI Services</h4>
                     <p class="text-muted font-14">
-                        Optimize your visual content strategies using our service, which allows you to analyze your images using the advanced artificial intelligence of GPT-4 and Azure Vision Services. Uncover patterns, gain meaningful insights, and improve your data-driven decision making with accurate and comprehensive data provided by our system. Analyze your image using GPT4 and Azure Vision Services.
+                        Optimize your visual content strategies using our service, which allows you to analyze your
+                        images using the advanced artificial intelligence of GPT-4 and Azure Vision Services. Uncover
+                        patterns, gain meaningful insights, and improve your data-driven decision making with accurate
+                        and comprehensive data provided by our system. Analyze your image using GPT4 and Azure Vision
+                        Services.
                     </p>
 
                     <div class="tab-content">
                         <div class="tab-pane show active" id="file-upload-preview">
-                            <form asp-controller="ImageAnalyzer" asp-action="UploadFile" method="post" enctype="multipart/form-data" id="dropaiimage" class="dropzone" data-plugin="dropzone" data-previews-container="#file-previews" data-upload-preview-template="#uploadPreviewTemplate">
-                                <div class="fallback">
-                                    <input name="file" type="file" id="imageFile" name="imageFile"/>
-                                </div>
+                            <form asp-controller="ImageAnalyzer" asp-action="UploadFile" method="post"
+                                enctype="multipart/form-data" id="dropaiimage" class="dropzone" data-plugin="dropzone"
+                                data-previews-container="#file-previews"
+                                data-upload-preview-template="#uploadPreviewTemplate">
+                                                                
+                                <div class="mb-3">
+                            <label for="text" class="form-label">Prompt:</label>
+                                    <textarea class="form-control" id="text" name="text" maxlength="225"
+                                        rows="3">@(Model.Prompt ?? "Describe the image in detail")</textarea>
+                        </div>
+                        <div class="tab-content form-control">
+                            <div class="tab-pane show active" id="file-upload-preview">
 
-                                <div class="dz-message needsclick">
+                                    <div class="fallback">
+                                        <input type="file" id="dropaiimage" name="dropaiimage" />
+                                    </div>
+                                    <div class="dz-message needsclick">
                                     <i class="h1 text-muted ri-upload-cloud-2-line"></i>
                                     <h3>Drop files here or click to upload. </h3>
-                                    <span class="text-muted font-13"><strong>You just need to upload an image (.jpg, .png).</strong> </span>
+                                    <span class="text-muted font-13"><strong>You just need to upload an image (.jpg,
+                                            .png).</strong> </span>
                                 </div>
+                        
+                                <!-- Preview -->
+                                <div class="dropzone-previews mt-3" id="file-previews"></div>
 
+                            </div> <!-- end preview-->
+                        </div> <!-- end tab-content-->
                             </form>
 
                             <!-- Preview -->
@@ -74,7 +95,7 @@
         </div>
     </div>
 
-    <!-- end row -->    
+    <!-- end row -->
     <!--- show results -->
     <div class="row d-none" id="showresult">
         <div class="col-lg-12">
@@ -85,17 +106,20 @@
                     </div>
                     <div class="col-md-8">
                         <div class="card-body">
-                            <h2 class="header-title mt-0 mb-3">Text Analyze Result <span class="badge bg-success rounded-pill">Analysis Success</span></h2>
+                            <h2 class="header-title mt-0 mb-3">Text Analyze Result <span
+                                    class="badge bg-success rounded-pill">Analysis Success</span></h2>
                             <p class="text-muted font-16 mb-3" id="show-message-result"></p>
-                        </div> 
+                        </div>
                     </div>
                 </div>
-            </div> 
+            </div>
         </div>
     </div>
 </div>
 <!-- container -->
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ImageAnalyzerScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ImageAnalyzerScriptsPartial");
+    }
 }

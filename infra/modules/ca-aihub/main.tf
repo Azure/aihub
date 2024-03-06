@@ -119,16 +119,8 @@ resource "azapi_resource" "ca_back" {
                 value = var.chat_gpt_deployment
               },
               {
-                name  = "ImageAnalyzer__VisionEndpoint",
-                value = "${var.cognitive_service_endpoint}"
-              },
-              {
-                name  = "ImageAnalyzer__OCREndpoint",
-                value = "${var.cognitive_service_endpoint}"
-              },
-              {
-                name      = "ImageAnalyzer__VisionSubscriptionKey",
-                secretRef = "cognitive-service-key"
+                name  = "ImageAnalyzer__GPT4Vision",
+                value = var.gpt4vision_endpoint
               },
               {
                 name  = "ImageAnalyzer__OpenAIEndpoint",
