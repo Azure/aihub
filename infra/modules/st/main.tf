@@ -77,6 +77,7 @@ resource "azurerm_storage_share_file" "customization" {
   name             = each.value
   storage_share_id = azurerm_storage_share.customization.id
   source           = "${path.module}/customization/customer/${each.value}"
+  content_md5      = filemd5("${path.module}/customization/customer/${each.value}")
 }
 
 resource "azurerm_role_assignment" "storage_contributor" {
