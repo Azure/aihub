@@ -7,6 +7,7 @@ variable "managed_identity_client_id" {}
 variable "tenant_id" {}
 variable "image_name" {}
 variable "storage_account_name" {}
+variable "storage_account_key" {}
 variable "storage_container_name" {}
 variable "search_service_name" {}
 variable "search_index_name" {}

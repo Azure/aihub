@@ -211,14 +211,36 @@ resource "azapi_resource" "ca_back" {
                 value = "Development"
               }
             ],
+            volumeMounts = [
+              {
+                volumeName = "customization-volume"
+                mountPath  = "/wwwroot/images/customer"
+              }
+            ]
           },
         ]
         scale = {
           minReplicas = 1
           maxReplicas = 1
-        }
+        },
+        volumes = [
+          {
+            name        = "customization-volume"
+            storageName = "${azurerm_container_app_environment_storage.data.name}"
+            storageType = "AzureFile"
+          }
+        ]
       }
     }
   })
   response_export_values = ["properties.configuration.ingress.fqdn"]
+}
+
+resource "azurerm_container_app_environment_storage" "data" {
+  name                         = "customizationstorage"
+  container_app_environment_id = var.cae_id
+  account_name                 = var.storage_account_name
+  share_name                   = "customization"
+  access_key                   = var.storage_account_key
+  access_mode                  = "ReadWrite"
 }

@@ -53,11 +53,24 @@ resource "azurerm_storage_share" "share" {
   quota                = 5
 }
 
+resource "azurerm_storage_share" "customization" {
+  name                 = "customization"
+  storage_account_name = azurerm_storage_account.sa.name
+  quota                = 5
+}
+
 resource "azurerm_storage_share_file" "docs" {
   for_each         = fileset("${path.module}/../../../azure-search-openai-demo/data", "*")
   name             = each.value
   storage_share_id = azurerm_storage_share.share.id
   source           = "${path.module}/../../../azure-search-openai-demo/data/${each.value}"
+}
+
+resource "azurerm_storage_share_file" "customization" {
+  for_each         = fileset("${path.module}/customization/customer", "*")
+  name             = each.value
+  storage_share_id = azurerm_storage_share.customization.id
+  source           = "${path.module}/customization/customer/${each.value}"
 }
 
 resource "azurerm_role_assignment" "storage_contributor" {

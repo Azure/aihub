@@ -202,6 +202,7 @@ module "ca_aihub" {
   embeddings_deployment      = module.openai.embedding_deployment_name
   embeddings_model           = module.openai.embedding_deployment_name
   storage_account_name       = module.st.storage_account_name
+  storage_account_key        = module.st.key
   storage_container_name     = module.st.storage_container_name
   search_service_name        = module.search.search_service_name
   search_index_name          = module.search.search_index_name
