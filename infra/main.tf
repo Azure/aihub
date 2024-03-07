@@ -132,7 +132,6 @@ module "cog" {
   resource_group_name                = azurerm_resource_group.rg.name
   resource_group_id                  = azurerm_resource_group.rg.id
   bing_name                          = local.bing_name
-  deploy_bing                        = var.deploy_bing
   cognitive_services_name            = local.cognitive_services_name
   content_safety_name                = local.content_safety_name
   speech_name                        = local.speech_name
@@ -220,7 +219,7 @@ module "ca_aihub" {
   speech_key                  = module.cog.speech_key
 
   storage_connection_string = module.st.connection_string
-  bing_key                  = var.bing_key
+  bing_key                  = module.cog.bing_key
 
   tenant_id                      = data.azurerm_subscription.current.tenant_id
   managed_identity_client_id     = module.mi.client_id

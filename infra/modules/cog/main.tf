@@ -31,24 +31,66 @@ resource "azurerm_cognitive_account" "speech" {
   custom_subdomain_name         = var.speech_name
 }
 
-resource "azapi_resource" "bing" {
-  count                     = var.deploy_bing ? 1 : 0
-  name                      = var.bing_name
-  location                  = "global"
-  parent_id                 = var.resource_group_id
-  type                      = "Microsoft.Bing/accounts@2020-06-10"
-  schema_validation_enabled = false // Required for this service otherwise it will fail.
-
-  body = jsonencode({
-    kind = "Bing.Search.v7"
-    sku = {
-      name = "S1"
-    }
-    properties : {
-      statisticsEnabled = true
+resource "azurerm_resource_group_template_deployment" "main" {
+  name                = var.bing_name
+  resource_group_name = var.resource_group_name
+  deployment_mode     = "Incremental"
+  parameters_content = jsonencode({
+    "name" = {
+      value = var.bing_name
+    },
+    "location" = {
+      value = "Global"
+    },
+    "sku" = {
+      value = S1
+    },
+    "kind" = {
+      value = "Bing.Search.v7"
     }
   })
-  response_export_values = ["properties.endpoint"]
+  template_content = <<TEMPLATE
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "type": "String"
+        },
+        "location": {
+            "type": "String"
+        },
+        "sku": {
+            "type": "String"
+        },
+        "kind": {
+          "type": "String"
+        }
+
+    },
+    "resources": [
+        {
+            "apiVersion": "2020-06-10",
+            "name": "[parameters('name')]",
+            "location": "[parameters('location')]",
+            "type": "Microsoft.Bing/accounts",
+            "kind": "[parameters('kind')]",
+            "sku": {
+                "name": "[parameters('sku')]"
+            }
+        }
+    ],
+    "outputs": {
+      "accessKeys": {
+          "type": "object",
+          "value": {
+              "key1": "[listKeys(resourceId('Microsoft.Bing/accounts', parameters('name')), '2020-06-10').key1]",
+              "key2": "[listKeys(resourceId('Microsoft.Bing/accounts', parameters('name')), '2020-06-10').key2]"
+          }
+      }
+   }    
+}
+TEMPLATE
 }
 
 resource "azurerm_role_assignment" "reader" {
