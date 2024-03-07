@@ -66,10 +66,11 @@ resource "azurerm_storage_share" "customization" {
 }
 
 resource "azurerm_storage_share_file" "docs" {
-  for_each         = fileset("${path.module}/../../../azure-search-openai-demo/data", "*")
+  for_each         = fileset("${path.module}/docs", "*")
   name             = each.value
   storage_share_id = azurerm_storage_share.share.id
-  source           = "${path.module}/../../../azure-search-openai-demo/data/${each.value}"
+  source           = "${path.module}/docs/${each.value}"
+  content_md5      = filemd5("${path.module}/docs/${each.value}")
 }
 
 resource "azurerm_storage_share_file" "customization" {
