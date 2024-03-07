@@ -110,6 +110,10 @@ variable "enable_apim" {
   default = false
 }
 
+variable "deploy_bing" {
+  default = false
+}
+
 variable "pbi_report_link" {
   default = ""
 }

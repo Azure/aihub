@@ -32,7 +32,8 @@ resource "azurerm_cognitive_account" "speech" {
 }
 
 resource "azurerm_resource_group_template_deployment" "main" {
-  name                = var.bing_name
+  count               = var.deploy_bing ? 1 : 0
+  name                = "${var.bing_name}-${uuid()}"
   resource_group_name = var.resource_group_name
   deployment_mode     = "Incremental"
   parameters_content = jsonencode({

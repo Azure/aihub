@@ -19,5 +19,5 @@ output "speech_key" {
 }
 
 output "bing_key" {
-  value = jsondecode(azurerm_resource_group_template_deployment.main.output_content).accessKeys.value.key1
+  value = var.deploy_bing ? jsondecode(azurerm_resource_group_template_deployment.main.output_content).accessKeys.value.key1 : ""
 }
