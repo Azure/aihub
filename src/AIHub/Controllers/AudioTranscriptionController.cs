@@ -31,7 +31,7 @@ public class AudioTranscriptionController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> TranscribeAudio(string audio_url, IFormFile imageFile)
+    public async Task<IActionResult> TranscribeAudio(string audio_url)
     {
         string audio = audio_url + sasUri.Query;
 
@@ -42,11 +42,15 @@ public class AudioTranscriptionController : Controller
         request.Content = content;
         var response = await httpClient.SendAsync(request);
         response.EnsureSuccessStatusCode();
-        var responsejson = JsonSerializer.Deserialize<dynamic>(await response.Content.ReadAsStringAsync())!;
-        Console.WriteLine(responsejson);
-        var output_result = responsejson.self.ToString();
+        var responsejson = JsonSerializer.Deserialize<JsonObject>(await response.Content.ReadAsStringAsync())!;
+        Console.WriteLine(responsejson["self"]!.ToString());
+        if (responsejson["self"] == null || responsejson["self"]!.ToString() == string.Empty)
+        {
+            ViewBag.Message = "Error in the transcription process";
+            return View("AudioTranscription", model);
+        }
+        var output_result = responsejson["self"]!.ToString();
         Console.WriteLine("SELF: " + output_result);
-
         // CALL 2: CHECK FOR FINISH
         var request2 = new HttpRequestMessage(HttpMethod.Get, output_result);
         httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", speechSubscriptionKey);
@@ -56,14 +60,14 @@ public class AudioTranscriptionController : Controller
         var response2 = await httpClient.SendAsync(request2);
         response2.EnsureSuccessStatusCode();
         //Console.WriteLine(await response2.Content.ReadAsStringAsync());
-        var responsejson2 = JsonSerializer.Deserialize<dynamic>(await response.Content.ReadAsStringAsync())!;
+        var responsejson2 = JsonSerializer.Deserialize<JsonObject>(await response.Content.ReadAsStringAsync())!;
         Console.WriteLine(responsejson2);
-        while (responsejson2.status != "Succeeded")
+        while (responsejson2["status"]!.ToString() != "Succeeded")
         {
             Thread.Sleep(10000);
             response2 = await httpClient.GetAsync(output_result);
-            responsejson2 = JsonSerializer.Deserialize<dynamic>(await response2.Content.ReadAsStringAsync())!;
-            Console.WriteLine(responsejson2.status);
+            responsejson2 = JsonSerializer.Deserialize<JsonObject>(await response2.Content.ReadAsStringAsync())!;
+            Console.WriteLine(responsejson2["status"]!.ToString());
         }
 
         // CALL 3: GET RESULTS URL
@@ -74,10 +78,10 @@ public class AudioTranscriptionController : Controller
         request3.Content = content3;
         var response3 = await httpClient.SendAsync(request3);
         response3.EnsureSuccessStatusCode();
-        var responsejson3 = JsonSerializer.Deserialize<dynamic>(await response3.Content.ReadAsStringAsync())!;
+        var responsejson3 = JsonSerializer.Deserialize<JsonObject>(await response3.Content.ReadAsStringAsync())!;
         Console.WriteLine(responsejson3);
         // Extract contentUrl field
-        string output_result3 = (string)responsejson3["values"][0]["links"]["contentUrl"];
+        string output_result3 = (string)responsejson3["values"]![0]!["links"]!["contentUrl"]!;
         Console.WriteLine(output_result3);
 
         // CALL 4: GET RESULTS (TRANSCRIPTION)
@@ -140,7 +144,7 @@ public class AudioTranscriptionController : Controller
         }
 
         // Call EvaluateImage with the url
-        await TranscribeAudio(blobUrl.ToString(), audioFile);
+        await TranscribeAudio(blobUrl.ToString());
         ViewBag.Waiting = null;
 
         // return View("AudioTranscription", model);

@@ -1,5 +1,5 @@
-Dropzone.options.dropaiimage = { 
-    paramName: "imageFile", 
+Dropzone.options.dropaiaudio = { 
+    paramName: "audioFile", 
     maxFilesize: 2, // MB
     createImageThumbnails:true,
     previewsContainer: "#file-previews",

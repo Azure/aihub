@@ -4,7 +4,7 @@
 
 <!-- Start Content-->
 <div class="container-fluid">
-    
+
     <!-- start page title -->
     <div class="row">
         <div class="col-12">
@@ -27,20 +27,26 @@
                 <div class="card-body">
                     <h4 class="header-title">Audio Transcription with Azure AI Speech</h4>
                     <p class="text-muted font-14">
-                        Optimize your business efficiency with our Azure AI Speech-to-Text audio analysis service. Automatically convert speech to text with high accuracy and save valuable time on manual transcriptions.
+                        Optimize your business efficiency with our Azure AI Speech-to-Text audio analysis service.
+                        Automatically convert speech to text with high accuracy and save valuable time on manual
+                        transcriptions.
                     </p>
 
                     <div class="tab-content">
                         <div class="tab-pane show active" id="file-upload-preview">
-                            <form asp-controller="AudioTranscription" asp-action="UploadFile" method="post" enctype="multipart/form-data" id="dropaiimage" class="dropzone" data-plugin="dropzone" data-previews-container="#file-previews" data-upload-preview-template="#uploadPreviewTemplate">
+                            <form asp-controller="AudioTranscription" asp-action="UploadFile" method="post"
+                                enctype="multipart/form-data" id="dropaiaudio" class="dropzone" data-plugin="dropzone"
+                                data-previews-container="#file-previews"
+                                data-upload-preview-template="#uploadPreviewTemplate">
                                 <div class="fallback">
-                                    <input name="file" type="file" id="imageFile" name="imageFile"/>
+                                    <input name="file" type="file" id="dropaiaudio" name="dropaiaudio" />
                                 </div>
 
                                 <div class="dz-message needsclick">
                                     <i class="h1 text-muted ri-upload-cloud-2-line"></i>
                                     <h3>Drop files here or click to upload. </h3>
-                                    <span class="text-muted font-13"><strong>You just need to upload an image (.mp3).</strong> </span>
+                                    <span class="text-muted font-13"><strong>You just need to upload an image
+                                            (.mp3).</strong> </span>
                                 </div>
 
                             </form>
@@ -73,7 +79,7 @@
         </div>
     </div>
 
-    <!-- end row -->    
+    <!-- end row -->
     <!--- show results -->
     <div class="row d-none" id="showresult">
         <div class="col-lg-12">
@@ -81,17 +87,20 @@
                 <div class="row g-0 align-items-center">
                     <div class="col-md-12">
                         <div class="card-body">
-                            <h2 class="header-title mt-0 mb-3">Audio Transcription Result <span class="badge bg-success rounded-pill">Transcription Success</span></h2>
+                            <h2 class="header-title mt-0 mb-3">Audio Transcription Result <span
+                                    class="badge bg-success rounded-pill">Transcription Success</span></h2>
                             <p class="text-muted font-16 mb-3" id="show-message-result"></p>
-                        </div> 
+                        </div>
                     </div>
                 </div>
-            </div> 
+            </div>
         </div>
     </div>
 </div>
 <!-- container -->
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_AudioTranscriptionScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_AudioTranscriptionScriptsPartial");
+    }
 }
