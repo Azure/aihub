@@ -13,7 +13,7 @@ terraform {
 }
 
 provider "azurerm" {
-  skip_provider_registration = true
+  skip_provider_registration = false
   features {
     key_vault {
       purge_soft_delete_on_destroy = true
