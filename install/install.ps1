@@ -78,8 +78,8 @@ Remove-Item $zipFilePath -Force
 # Use Terraform to deploy AI Hub
 Write-Output "Deploying AI Hub..."
 Push-Location $AIHubRoot
-Invoke-Expression "terraform init" 
-Invoke-Expression "terraform apply -auto-approve"
+Invoke-Expression "./terraform init" 
+Invoke-Expression "./terraform apply -auto-approve"
 Pop-Location
 
 # Everything is done
