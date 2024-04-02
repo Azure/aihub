@@ -165,7 +165,7 @@ module "ca_chat" {
   storage_container_name         = module.st.storage_container_name
   search_service_name            = module.search.search_service_name
   search_index_name              = module.search.search_index_name
-  openai_endpoint                = var.enable_apim ? module.apim.gateway_url : module.openai.openai_endpoint
+  openai_endpoint                = var.enable_apim ? module.apim[0].gateway_url : module.openai.openai_endpoint
   tenant_id                      = data.azurerm_subscription.current.tenant_id
   managed_identity_client_id     = module.mi.client_id
   enable_entra_id_authentication = var.enable_entra_id_authentication
@@ -210,7 +210,7 @@ module "ca_aihub" {
   storage_container_name      = module.st.storage_container_name
   search_service_name         = module.search.search_service_name
   search_index_name           = module.search.search_index_name
-  openai_endpoint             = var.enable_apim ? module.apim.gateway_url : module.openai.openai_endpoint
+  openai_endpoint             = var.enable_apim ? module.apim[0].gateway_url : module.openai.openai_endpoint
   chat_fqdn                   = module.ca_chat.fqdn
   pbi_report_link             = var.pbi_report_link
   content_safety_endpoint     = module.cog.content_safety_endpoint
