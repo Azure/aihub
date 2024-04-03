@@ -107,7 +107,7 @@ variable "enable_entra_id_authentication" {
 }
 
 variable "enable_apim" {
-  default = false
+  default = true
 }
 
 variable "deploy_bing" {

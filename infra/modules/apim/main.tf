@@ -3,36 +3,41 @@ locals {
   backend_url = "${var.openai_service_endpoint}openai"
 }
 
-resource "azurerm_public_ip" "apim_public_ip" {
-  name                = "pip-apim"
-  location            = var.location
-  resource_group_name = var.resource_group_name
-  allocation_method   = "Static"
-  sku                 = "Standard"
-  ip_tags             = {}
-  zones               = ["1", "2", "3"]
-  domain_name_label   = var.apim_name
+data "azurerm_resource_group" "rg" {
+  name = var.resource_group_name
 }
 
-resource "azurerm_api_management" "apim" {
-  name                 = var.apim_name
-  location             = var.location
-  resource_group_name  = var.resource_group_name
-  publisher_name       = var.publisher_name
-  publisher_email      = var.publisher_email
-  sku_name             = "Developer_1"
-  virtual_network_type = "External"                          # Use "Internal" for a fully private APIM
-  public_ip_address_id = azurerm_public_ip.apim_public_ip.id // Required to deploy APIM in STv2 platform
-
-  virtual_network_configuration {
-    subnet_id = var.apim_subnet_id
+resource "azapi_resource" "apim" {
+  type      = "Microsoft.ApiManagement/service@2023-05-01-preview"
+  name      = var.apim_name
+  parent_id = data.azurerm_resource_group.rg.id
+  location  = var.location
+  identity {
+    type = "SystemAssigned"
   }
+  schema_validation_enabled = false # requiered for now
+  body = jsonencode({
+    sku = {
+      name     = "StandardV2"
+      capacity = 1
+    }
+    properties = {
+      publisherEmail        = var.publisher_email
+      publisherName         = var.publisher_name
+      apiVersionConstraint  = {}
+      developerPortalStatus = "Disabled"
+    }
+  })
+  response_export_values = [
+    "identity.principalId",
+    "properties.gatewayUrl"
+  ]
 }
 
 resource "azurerm_api_management_backend" "openai" {
   name                = "openai-api"
   resource_group_name = var.resource_group_name
-  api_management_name = azurerm_api_management.apim.name
+  api_management_name = azapi_resource.apim.name
   protocol            = "http"
   url                 = local.backend_url
   tls {
@@ -43,7 +48,7 @@ resource "azurerm_api_management_backend" "openai" {
 
 resource "azurerm_api_management_logger" "appi_logger" {
   name                = local.logger_name
-  api_management_name = azurerm_api_management.apim.name
+  api_management_name = azapi_resource.apim.name
   resource_group_name = var.resource_group_name
   resource_id         = var.appi_resource_id
 
@@ -56,7 +61,7 @@ resource "azurerm_api_management_logger" "appi_logger" {
 resource "azurerm_api_management_api" "openai" {
   name                  = "openai-api"
   resource_group_name   = var.resource_group_name
-  api_management_name   = azurerm_api_management.apim.name
+  api_management_name   = azapi_resource.apim.name
   revision              = "1"
   display_name          = "Azure Open AI API"
   path                  = "openai"
@@ -73,14 +78,14 @@ resource "azurerm_api_management_api" "openai" {
 resource "azurerm_api_management_named_value" "tenant_id" {
   name                = "tenant-id"
   resource_group_name = var.resource_group_name
-  api_management_name = azurerm_api_management.apim.name
+  api_management_name = azapi_resource.apim.name
   display_name        = "TENANT_ID"
   value               = var.tenant_id
 }
 
 resource "azurerm_api_management_api_policy" "policy" {
   api_name            = azurerm_api_management_api.openai.name
-  api_management_name = azurerm_api_management.apim.name
+  api_management_name = azapi_resource.apim.name
   resource_group_name = var.resource_group_name
 
   xml_content = <<XML
@@ -128,7 +133,7 @@ resource "azurerm_api_management_api_policy" "policy" {
 resource "azurerm_api_management_diagnostic" "diagnostics" {
   identifier               = "applicationinsights"
   resource_group_name      = var.resource_group_name
-  api_management_name      = azurerm_api_management.apim.name
+  api_management_name      = azapi_resource.apim.name
   api_management_logger_id = azurerm_api_management_logger.appi_logger.id
 
   sampling_percentage       = 100

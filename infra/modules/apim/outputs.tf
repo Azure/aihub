@@ -1,7 +1,7 @@
 output "apim_name" {
-  value = azurerm_api_management.apim.name
+  value = azapi_resource.apim.name
 }
 
 output "gateway_url" {
-  value = azurerm_api_management.apim.gateway_url
+  value = jsondecode(azapi_resource.apim.output).properties.gatewayUrl
 }
