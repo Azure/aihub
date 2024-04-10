@@ -5,7 +5,7 @@ resource "random_id" "random" {
 }
 
 locals {
-  sufix                   = var.use_random_suffix ? substr(lower(random_id.random.hex), 1, 4) : ""
+  sufix                   = var.use_random_suffix ? substr(lower(random_id.random.hex), 1, 5) : ""
   name_sufix              = var.use_random_suffix ? "-${local.sufix}" : ""
   resource_group_name     = "${var.resource_group_name}${local.name_sufix}"
   storage_account_name    = "${var.storage_account_name}${local.sufix}"

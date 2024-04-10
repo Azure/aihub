@@ -1,9 +1,9 @@
 variable "resource_group_name" {
-  default = "rg-activate-genai"
+  default = "rg-aihub"
 }
 
 variable "location" {
-  default = "westeurope"
+  default = "eastus2"
 }
 
 variable "location_azopenai" {
@@ -11,35 +11,35 @@ variable "location_azopenai" {
 }
 
 variable "log_name" {
-  default = "log-activate-genai"
+  default = "log-aihub"
 }
 
 variable "azopenai_name" {
-  default = "cog-openai-activate-genai"
+  default = "cog-openai-aihub"
 }
 
 variable "content_safety_name" {
-  default = "cog-content-safety-activate-genai"
+  default = "cog-content-safety-aihub"
 }
 
 variable "cognitive_services_name" {
-  default = "cog-cognitive-activate-genai"
+  default = "cog-cognitive-aihub"
 }
 
 variable "speech_name" {
-  default = "cog-speech-activate-genai"
+  default = "cog-speech-aihub"
 }
 
 variable "bing_name" {
-  default = "cog-bing-activate-genai"
+  default = "cog-bing-aihub"
 }
 
 variable "search_name" {
-  default = "srch-activate-genai"
+  default = "srch-aihub"
 }
 
 variable "form_recognizer_name" {
-  default = "cog-forms-activate-genai"
+  default = "cog-forms-aihub"
 }
 
 variable "storage_account_name" {
@@ -47,11 +47,11 @@ variable "storage_account_name" {
 }
 
 variable "apim_name" {
-  default = "apim-activate-genai"
+  default = "apim-aihub"
 }
 
 variable "appi_name" {
-  default = "appi-activate-genai"
+  default = "appi-aihub"
 }
 
 variable "publisher_name" {
@@ -63,27 +63,27 @@ variable "publisher_email" {
 }
 
 variable "virtual_network_name" {
-  default = "vnet-activate-genai"
+  default = "vnet-aihub"
 }
 
 variable "managed_identity_name" {
-  default = "id-activate-genai"
+  default = "id-aihub"
 }
 
 variable "cae_name" {
-  default = "cae-activate-genai"
+  default = "cae-aihub"
 }
 
 variable "ca_chat_name" {
-  default = "ca-chat-activate-genai"
+  default = "ca-chat-aihub"
 }
 
 variable "ca_prep_docs_name" {
-  default = "ca-prep-docs-activate-genai"
+  default = "ca-prep-docs-aihub"
 }
 
 variable "ca_aihub_name" {
-  default = "ca-aihub-activate-genai"
+  default = "ca-aihub"
 }
 
 variable "ca_chat_image" {
