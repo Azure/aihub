@@ -1,11 +1,10 @@
-locals {
-  redirect_fqdn = jsondecode(azapi_resource.ca_back.output).properties.configuration.ingress.fqdn
-}
-
 module "sp" {
   count   = var.enable_entra_id_authentication ? 1 : 0
   source  = "../sp"
   sp_name = var.ca_name
+  redirect_uris = [
+    "https://${var.ca_name}.${var.cae_default_domain}/.auth/login/aad/callback"
+  ]
 }
 
 resource "azapi_resource" "current" {
@@ -44,24 +43,4 @@ resource "azapi_resource" "current" {
       }
     }
   })
-}
-
-locals {
-  fqdn                         = jsondecode(azapi_resource.ca_back.output).properties.configuration.ingress.fqdn
-  update_redirect_uris_command = var.enable_entra_id_authentication ? "az ad app update --id ${module.sp[0].client_id} --web-redirect-uris https://${local.fqdn}/.auth/login/aad/callback" : ""
-}
-
-resource "null_resource" "update_redirect_uris" {
-  count = var.enable_entra_id_authentication ? 1 : 0
-  provisioner "local-exec" {
-    command = local.update_redirect_uris_command
-  }
-  depends_on = [
-    module.sp,
-    azapi_resource.ca_back,
-    azapi_resource.current
-  ]
-  triggers = {
-    always_run = timestamp()
-  }
 }

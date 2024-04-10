@@ -156,6 +156,7 @@ module "ca_chat" {
   resource_group_id              = azurerm_resource_group.rg.id
   ca_name                        = local.ca_chat_name
   cae_id                         = module.cae.cae_id
+  cae_default_domain             = module.cae.default_domain
   managed_identity_id            = module.mi.mi_id
   chat_gpt_deployment            = module.openai.gpt_deployment_name
   chat_gpt_model                 = module.openai.gpt_deployment_model_name
@@ -196,6 +197,7 @@ module "ca_aihub" {
   resource_group_id           = azurerm_resource_group.rg.id
   ca_name                     = local.ca_aihub_name
   cae_id                      = module.cae.cae_id
+  cae_default_domain          = module.cae.default_domain
   managed_identity_id         = module.mi.mi_id
   chat_gpt_deployment         = module.openai.gpt_deployment_name
   chat_gpt_model              = module.openai.gpt_deployment_model_name

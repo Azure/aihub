@@ -14,7 +14,7 @@ resource "azuread_application" "sp" {
     implicit_grant {
       id_token_issuance_enabled = true
     }
-    redirect_uris = []
+    redirect_uris = var.redirect_uris
   }
 
   api {
