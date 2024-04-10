@@ -415,3 +415,5 @@ src/AIHub/appsettings.Development.json
 # .tfstate files
 *.tfstate
 *.tfstate.*
+
+local.settings.json

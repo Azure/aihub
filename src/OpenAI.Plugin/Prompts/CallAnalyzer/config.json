@@ -1,0 +1,21 @@
+{
+    "schema": 1,
+    "description": "Used to analyze a call given the transcript.",
+    "type": "completion",
+    "completion": {
+        "max_tokens": 1000,
+        "temperature": 0.1,
+        "top_p": 0,
+        "presence_penalty": 0,
+        "frequency_penalty": 0
+    },
+    "input": {
+        "parameters": [
+            {
+                "name": "transcript",
+                "description": "The call transcript",
+                "defaultValue": "agent: hello, carlos: hello i have an issue agent: have you tried turmning it off and on again"
+            }
+        ]
+    }
+}
