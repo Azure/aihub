@@ -19,7 +19,7 @@ resource "azapi_resource" "ca_function" {
       language             = "dotnet-isolated"
       managedEnvironmentId = "${var.cae_id}"
       siteConfig = {
-        linuxFxVersion = "DOCKER|cmendibl3/aoai-plugin:0.8.0"
+        linuxFxVersion = "DOCKER|${var.image_name}"
         appSettings = [
           {
             name  = "AzureWebJobsStorage"
