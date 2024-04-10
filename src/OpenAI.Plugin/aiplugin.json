@@ -1,0 +1,17 @@
+{
+    "schemaVersion": "v1",
+    "nameForHuman": "Call Transcript Plugin",
+    "nameForModel": "CallTranscriptPlugin",
+    "descriptionForModel": "Used to analyze a call given the transcript.",
+    "descriptionForHuman": "Used to analyze a call given the transcript.",
+    "auth": {
+        "type": "none"
+    },
+    "api": {
+        "type": "openapi",
+        "url": "{url}/swagger.json"
+    },
+    "logoUrl": "{url}/logo.png",
+    "contactEmail": "support@example.com",
+    "legalInfoUrl": "http://www.example.com/legal"
+}

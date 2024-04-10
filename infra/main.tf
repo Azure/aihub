@@ -23,6 +23,7 @@ locals {
   ca_chat_name            = "${var.ca_chat_name}${local.name_sufix}"
   ca_prep_docs_name       = "${var.ca_prep_docs_name}${local.name_sufix}"
   ca_aihub_name           = "${var.ca_aihub_name}${local.name_sufix}"
+  func_name               = "plugin${local.sufix}"
 }
 
 resource "azurerm_resource_group" "rg" {
@@ -228,4 +229,19 @@ module "ca_aihub" {
   managed_identity_client_id     = module.mi.client_id
   enable_entra_id_authentication = var.enable_entra_id_authentication
   image_name                     = var.ca_aihub_image
+}
+
+module "plugin" {
+  source                   = "./modules/ca-plugin"
+  location                 = azurerm_resource_group.rg.location
+  resource_group_name      = azurerm_resource_group.rg.name
+  resource_group_id        = azurerm_resource_group.rg.id
+  func_name                = local.func_name
+  image_name               = var.ca_plugin_image
+  cae_id                   = module.cae.cae_id
+  cae_default_domain       = module.cae.default_domain
+  appi_instrumentation_key = module.appi.appi_key
+  openai_key               = module.openai.openai_key
+  openai_model             = module.openai.gpt_deployment_name
+  openai_endpoint          = module.openai.openai_endpoint
 }

@@ -33,3 +33,7 @@ output "gpt4_deployment_model_name" {
 output "embedding_deployment_name" {
   value = azurerm_cognitive_deployment.embedding.name
 }
+
+output "openai_key" {
+  value = azurerm_cognitive_account.openai.primary_access_key
+}
