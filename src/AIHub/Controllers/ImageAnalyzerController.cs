@@ -46,76 +46,72 @@ public class ImageAnalyzerController : Controller
         string GPT4V_ENDPOINT = $"{AOAIendpoint}openai/deployments/{AOAIDeploymentName}/extensions/chat/completions?api-version=2023-07-01-preview";
         image_url = image_url + sasUri.Query;
 
-        using (httpClient = new HttpClient())
+        if (string.IsNullOrEmpty(AOAIsubscriptionKey))
         {
-            if (string.IsNullOrEmpty(AOAIsubscriptionKey))
+            var credential = new DefaultAzureCredential();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", credential.GetToken(new TokenRequestContext(["https://cognitiveservices.azure.com/.default"])).Token);
+        }
+        else
+        {
+            httpClient.DefaultRequestHeaders.Add("api-key", AOAIsubscriptionKey);
+        }
+        var payload = new
+        {
+            enhancements = new
             {
-                var credential = new DefaultAzureCredential();
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", credential.GetToken(new TokenRequestContext(["https://cognitiveservices.azure.com/.default"])).Token);
-            }
-            else
+                ocr = new { enabled = true },
+                grounding = new { enabled = true }
+            },
+            messages = new object[]
             {
-                httpClient.DefaultRequestHeaders.Add("api-key", AOAIsubscriptionKey);
-            }
-            var payload = new
-            {
-                enhancements = new
-                {
-                    ocr = new { enabled = true },
-                    grounding = new { enabled = true }
+                new {
+                    role = "system",
+                    content = new object[] {
+                        new {
+                            type = "text",
+                            text = "You are an AI assistant that helps people find information."
+                        }
+                    }
                 },
-                messages = new object[]
-                {
-                  new {
-                      role = "system",
-                      content = new object[] {
-                          new {
-                              type = "text",
-                              text = "You are an AI assistant that helps people find information."
-                          }
-                      }
-                  },
-                  new {
-                      role = "user",
-                      content = new object[] {
-                          new {
-                              type = "image_url",
-                              image_url = new {
-                                  url = image_url
-                              }
-                          },
-                          new {
-                              type = "text",
-                              text = prompt
-                          }
-                      }
-                  }
-                },
-                temperature = 0.7,
-                top_p = 0.95,
-                max_tokens = 800,
-                stream = false
-            };
-            var response = await httpClient.PostAsync(GPT4V_ENDPOINT, new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json"));
+                new {
+                    role = "user",
+                    content = new object[] {
+                        new {
+                            type = "image_url",
+                            image_url = new {
+                                url = image_url
+                            }
+                        },
+                        new {
+                            type = "text",
+                            text = prompt
+                        }
+                    }
+                }
+            },
+            temperature = 0.7,
+            top_p = 0.95,
+            max_tokens = 800,
+            stream = false
+        };
+        var response = await httpClient.PostAsync(GPT4V_ENDPOINT, new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json"));
 
+        if (response.IsSuccessStatusCode)
+        {
+            var responseData = JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync());
 
-            if (response.IsSuccessStatusCode)
-            {
-                var responseData = JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync());
-
-                // Get the web pages from the response
-                var response_final = responseData!.choices[0];
-                string final = response_final.message.content;
-                model.Message = final;
-                model.Image = image_url;
-            }
-            else
-            {
-                Console.WriteLine($"Error after GPT4V: {response.StatusCode}, {response.ReasonPhrase}");
-            }
+            // Get the web pages from the response
+            var response_final = responseData!.choices[0];
+            string final = response_final.message.content;
+            model.Message = final;
+            model.Image = image_url;
+        }
+        else
+        {
+            Console.WriteLine($"Error after GPT4V: {response.StatusCode}, {response.ReasonPhrase}");
         }
 
-        return View("ImageAnalyzer");
+        return View("ImageAnalyzer", model);
     }
 
     // Upload a file to my azure storage account

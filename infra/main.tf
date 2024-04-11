@@ -213,7 +213,7 @@ module "ca_aihub" {
   storage_container_name      = module.st.storage_container_name
   search_service_name         = module.search.search_service_name
   search_index_name           = module.search.search_index_name
-  openai_endpoint             = var.enable_apim ? module.apim[0].gateway_url : module.openai.openai_endpoint
+  openai_endpoint             = var.enable_apim ? "${module.apim[0].gateway_url}/" : module.openai.openai_endpoint
   chat_fqdn                   = module.ca_chat.fqdn
   pbi_report_link             = var.pbi_report_link
   content_safety_endpoint     = module.cog.content_safety_endpoint
