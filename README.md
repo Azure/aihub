@@ -17,8 +17,6 @@ Feel the power of artificial intelligence and cloud computing to provide a smart
 
 Learn more at the official documentation: [What is Azure Cognitive Search?](https://learn.microsoft.com/en-us/azure/search/search-what-is-azure-search).
 
-Do you want to implement this solution? [Activate GenAI with Azure](https://azure.github.io/activate-genai/).
-
 ### Call Center Analytics
 Analyze call center call trancripts (that might come from your Call Center technology, or having transcribed with Azure Speech Services).
 

@@ -44,8 +44,5 @@ az openai create --name aihub-openai --resource-group aihub-rg --location westeu
 az cognitiveservices account create --name aihub-contentsafety --resource-group aihub-rg --kind ContentSafety --sku F0 --location westeurope
 ```
 
-### Deploy chat using GEN-AI VBD material
-[Activate GenAI with Azure](https://azure.github.io/activate-genai/).
-
 ### Configure the web app
 As a last step, we need to configure the web app to use the storage account and the cognitive service account we created earlier. To do this, we need to rename appsettings.json.template file to appsettings.json and replace the placeholders with the values we got from the previous steps.

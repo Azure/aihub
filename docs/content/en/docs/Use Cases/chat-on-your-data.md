@@ -15,6 +15,3 @@ Feel the power of artificial intelligence and cloud computing to provide a smart
 **AI Hub** uses Azure Cognitive Search to serve an index of vectorized content, that will be used by our LLM (ChatGPT) to respond to user's query.
 
 Learn more at the official documentation: [What is Azure Cognitive Search?](https://learn.microsoft.com/en-us/azure/search/search-what-is-azure-search).
-
-Do you want to implement this solution? [Activate GenAI with Azure](https://azure.github.io/activate-genai/).
-
