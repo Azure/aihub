@@ -1,5 +1,5 @@
 Dropzone.options.dropaiimage = { 
-    paramName: "imageFile", 
+    paramName: "videoFile", 
     maxFilesize: 200, // MB
     createImageThumbnails:true,
     previewsContainer: "#file-previews",
@@ -19,12 +19,12 @@ Dropzone.options.dropaiimage = {
     success: function (file, response) {
         if (typeof response === "object") {        
             $("#show-message-result").text(response.message);
-            $("#bigpic").attr('src', response.image);
+            $("#bigpic").attr('src', response.video);
         } else {
             try {
                 var parsedResponse = JSON.parse(response);
                 $("#show-message-result").val(parsedResponse.message);
-                $("#bigpic").attr('src',parsedResponse.image);
+                $("#bigpic").attr('src',parsedResponse.video);
             } catch (e) {
                 console.error("Error parsing the response:", e);
             }

@@ -1,10 +1,14 @@
 using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Linq.Expressions;
+
 
 namespace MVCWeb.Controllers;
 
@@ -28,11 +32,11 @@ public class VideoAnalyzerController : Controller
         AOAIsubscriptionKey = config.GetValue<string>("VideoAnalyzer:OpenAISubscriptionKey") ?? throw new ArgumentNullException("OpenAISubscriptionKey");
         storageconnstring = config.GetValue<string>("Storage:ConnectionString") ?? throw new ArgumentNullException("ConnectionString");
         BlobServiceClient blobServiceClient = new BlobServiceClient(storageconnstring);
-        containerClient = blobServiceClient.GetBlobContainerClient(config.GetValue<string>("Storage:ContainerName"));
+        containerClient = blobServiceClient.GetBlobContainerClient(config.GetValue<string>("VideoAnalyzer:ContainerName"));
         sasUri = containerClient.GenerateSasUri(Azure.Storage.Sas.BlobContainerSasPermissions.Read, DateTimeOffset.UtcNow.AddHours(1));
         AOAIDeploymentName = config.GetValue<string>("VideoAnalyzer:DeploymentName") ?? throw new ArgumentNullException("DeploymentName");
-        Visionendpoint = config.GetValue<string>("VideoAnalyzer:VisionAPI") ?? throw new ArgumentNullException("VisionAPI");
-        VisionKey = config.GetValue<string>("VideoAnalyzer:VisionKey") ?? throw new ArgumentNullException("VisionKey");
+        Visionendpoint = config.GetValue<string>("VideoAnalyzer:VisionEndpoint") ?? throw new ArgumentNullException("VisionEndpoint");
+        VisionKey = config.GetValue<string>("VideoAnalyzer:VisionSubscriptionKey") ?? throw new ArgumentNullException("VisionSubscriptionKey");
 
         // Obtain the blobs list in the container
         blobs = containerClient.GetBlobs();
@@ -51,10 +55,10 @@ public class VideoAnalyzerController : Controller
     static async Task<HttpResponseMessage> CreateVideoIndex(string visionApiEndpoint, string visionApiKey, string indexName)
     {
         using var client = new HttpClient();
-        string url = $"{visionApiEndpoint}/computervision/retrieval/indexes/{indexName}?api-version=2023-05-01-preview";
+        string url = $"{visionApiEndpoint}/retrieval/indexes/{indexName}?api-version=2023-05-01-preview";
         client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", visionApiKey);
         var data = new { features = new[] { new { name = "vision", domain = "surveillance" } } };
-        var content = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json");        
+        var content = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");        
         var response = await client.PutAsync(url, content);
         return response;
     }
@@ -62,10 +66,10 @@ public class VideoAnalyzerController : Controller
     static async Task<HttpResponseMessage> AddVideoToIndex(string visionApiEndpoint, string visionApiKey, string indexName, string videoUrl, string videoId)
     {
         using var client = new HttpClient();
-        string url = $"{visionApiEndpoint}/computervision/retrieval/indexes/{indexName}/ingestions/my-ingestion?api-version=2023-05-01-preview";
+        string url = $"{visionApiEndpoint}/retrieval/indexes/{indexName}/ingestions/my-ingestion?api-version=2023-05-01-preview";
         client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", visionApiKey);
         var data = new { videos = new[] { new { mode = "add", documentId = videoId, documentUrl = videoUrl } } };
-        var content = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json");
+        var content = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
         var response = await client.PutAsync(url, content);
         return response;
     }
@@ -73,7 +77,7 @@ public class VideoAnalyzerController : Controller
     static async Task<bool> WaitForIngestionCompletion(string visionApiEndpoint, string visionApiKey, string indexName, int maxRetries = 30)
     {
         using var client = new HttpClient();
-        string url = $"{visionApiEndpoint}/computervision/retrieval/indexes/{indexName}/ingestions?api-version=2023-05-01-preview";
+        string url = $"{visionApiEndpoint}/retrieval/indexes/{indexName}/ingestions?api-version=2023-05-01-preview";
         client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", visionApiKey);
         int retries = 0;
         while (retries < maxRetries)
@@ -82,7 +86,7 @@ public class VideoAnalyzerController : Controller
             var response = await client.GetAsync(url);
             if (response.IsSuccessStatusCode)
             {
-                var stateData = JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync());
+                var stateData = JsonSerializer.Deserialize<dynamic>(await response.Content.ReadAsStringAsync());
                 if (stateData?.GetProperty("value").GetArrayLength() > 0 && stateData?.GetProperty("value")[0].GetProperty("state").GetString() == "Completed")
                 {
                     Console.WriteLine(stateData);
@@ -109,13 +113,14 @@ public class VideoAnalyzerController : Controller
     [HttpPost]
     public async Task<IActionResult> DenseCaptionVideo(string video_url, string prompt)
     {
-        string GPT4V_ENDPOINT = $"{AOAIendpoint}openai/deployments/{AOAIDeploymentName}/extensions/chat/completions?api-version=2023-07-01-preview";
-        string VISION_API_ENDPOINT = $"{Visionendpoint}/computervision";
+        string GPT4V_ENDPOINT = $"{AOAIendpoint}openai/deployments/{AOAIDeploymentName}/extensions/chat/completions?api-version=2023-07-01-preview"; //2024-02-15-preview";
+        string VISION_API_ENDPOINT = $"{Visionendpoint}computervision";
         string VISION_API_KEY = VisionKey;
-        string VIDEO_INDEX_NAME = video_url;
-        string VIDEO_FILE_SAS_URL = video_url;
-        video_url = video_url + sasUri.Query;
+        string VIDEO_INDEX_NAME = Regex.Replace(video_url.Split("/").Last().Split(".").First().GetHashCode().ToString(), "[^a-zA-Z0-9]", "");
+    
 
+
+        string VIDEO_FILE_SAS_URL = video_url + sasUri.Query;
 
         // Step 1: Create an Index
         var response = await CreateVideoIndex(VISION_API_ENDPOINT, VISION_API_KEY, VIDEO_INDEX_NAME);
@@ -153,8 +158,8 @@ public class VideoAnalyzerController : Controller
                     {
                         computerVisionBaseUrl = VISION_API_ENDPOINT,
                         computerVisionApiKey = VisionKey,
-                        indexName = video_url,
-                        videoUrls = new[] { video_url }
+                        indexName = Regex.Replace(video_url.Split("/").Last().Split(".").First().GetHashCode().ToString(), "[^a-zA-Z0-9]", ""),
+                        videoUrls = new[] { VIDEO_FILE_SAS_URL }
                     }
                 }
             },
@@ -166,18 +171,17 @@ public class VideoAnalyzerController : Controller
             {
                 new {
                     role = "system",
-                    content = new object[] {
-                        new {
-                            type = "text",
-                            text = "You are an AI assistant that helps people find information."
+                    content = new object[]
+                        {
+                            "You are an AI assistant that helps people find information."
                         }
-                    }
                 },
                 new {
                     role = "user", 
                     content = new object[]
                     {
-                        new acvDocumentIdWrapper() {AcvDocumentId = VIDEO_DOCUMENT_ID},prompt
+                        new acvDocumentIdWrapper() {AcvDocumentId = VIDEO_DOCUMENT_ID},
+                        prompt
                     },
                 }
             },
@@ -186,23 +190,22 @@ public class VideoAnalyzerController : Controller
             max_tokens = 800
         };
 
-        var chatresponse = await httpClient.PostAsync(GPT4V_ENDPOINT, new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json"));
-
-        if (chatresponse.IsSuccessStatusCode)
+        try
         {
-            var responseData = JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync());
+            var chatResponse = await httpClient.PostAsync(GPT4V_ENDPOINT, new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json"));
+            chatResponse.EnsureSuccessStatusCode();
+            var responseContent = JsonSerializer.Deserialize<dynamic>(await chatResponse.Content.ReadAsStringAsync());
+            Console.WriteLine(responseContent);
 
-            // Get the web pages from the response
-            var response_final = responseData!.choices[0];
-            string final = response_final.message.content;
-            model.Message = final;
-            model.Video = video_url;
+            model.Message = responseContent; //responseContent!.choices[0].message.content;
+            model.Video = VIDEO_FILE_SAS_URL;
+
         }
-        else
+        catch
         {
             Console.WriteLine($"Error after GPT4V: {response.StatusCode}, {response.ReasonPhrase}");
         }
-
+        
         return View("VideoAnalyzer", model);
     }
 
