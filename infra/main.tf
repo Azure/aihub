@@ -24,6 +24,7 @@ locals {
   ca_prep_docs_name       = "${var.ca_prep_docs_name}${local.name_sufix}"
   ca_aihub_name           = "${var.ca_aihub_name}${local.name_sufix}"
   func_name               = "plugin${local.sufix}"
+  cv_name                 = "${var.cv_name}${local.name_sufix}"
 }
 
 resource "azurerm_resource_group" "rg" {
@@ -244,4 +245,11 @@ module "plugin" {
   openai_key               = module.openai.openai_key
   openai_model             = module.openai.gpt_deployment_name
   openai_endpoint          = module.openai.openai_endpoint
+}
+
+module "cv" {
+  source              = "./modules/cv"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  cv_name             = local.cv_name
 }

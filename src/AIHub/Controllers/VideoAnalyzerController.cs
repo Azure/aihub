@@ -26,6 +26,8 @@ public class VideoAnalyzerController : Controller
     private VideoAnalyzerModel model;
     private HttpClient httpClient;
 
+    
+
     public VideoAnalyzerController(IConfiguration config, IHttpClientFactory clientFactory)
     {
         AOAIendpoint = config.GetValue<string>("VideoAnalyzer:OpenAIEndpoint") ?? throw new ArgumentNullException("OpenAIEndpoint");
@@ -117,9 +119,6 @@ public class VideoAnalyzerController : Controller
         string VISION_API_ENDPOINT = $"{Visionendpoint}computervision";
         string VISION_API_KEY = VisionKey;
         string VIDEO_INDEX_NAME = Regex.Replace(video_url.Split("/").Last().Split(".").First().GetHashCode().ToString(), "[^a-zA-Z0-9]", "");
-    
-
-
         string VIDEO_FILE_SAS_URL = video_url + sasUri.Query;
 
         // Step 1: Create an Index
@@ -149,6 +148,7 @@ public class VideoAnalyzerController : Controller
         }
         var payload = new
         {
+            model = "gpt-4-vision-preview",
             dataSources = new[]
             {
                 new
@@ -157,8 +157,8 @@ public class VideoAnalyzerController : Controller
                     parameters = new
                     {
                         computerVisionBaseUrl = VISION_API_ENDPOINT,
-                        computerVisionApiKey = VisionKey,
-                        indexName = Regex.Replace(video_url.Split("/").Last().Split(".").First().GetHashCode().ToString(), "[^a-zA-Z0-9]", ""),
+                        computerVisionApiKey = VISION_API_KEY,
+                        indexName = VIDEO_INDEX_NAME,
                         videoUrls = new[] { VIDEO_FILE_SAS_URL }
                     }
                 }
@@ -180,26 +180,31 @@ public class VideoAnalyzerController : Controller
                     role = "user", 
                     content = new object[]
                     {
-                        new acvDocumentIdWrapper() {AcvDocumentId = VIDEO_DOCUMENT_ID},
-                        prompt
+                        new {
+                            type = "acv_document_id",
+                            acv_document_id = VIDEO_DOCUMENT_ID
+                        },
+                        new {
+                            type = "text",
+                            text = prompt
+                        }
                     },
                 }
             },
             temperature = 0.7,
             top_p = 0.95,
-            max_tokens = 800
+            max_tokens = 4096
         };
 
         try
         {
             var chatResponse = await httpClient.PostAsync(GPT4V_ENDPOINT, new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json"));
             chatResponse.EnsureSuccessStatusCode();
-            var responseContent = JsonSerializer.Deserialize<dynamic>(await chatResponse.Content.ReadAsStringAsync());
+            var responseContent = JsonSerializer.Deserialize<JsonObject>(await chatResponse.Content.ReadAsStringAsync());
             Console.WriteLine(responseContent);
-
-            model.Message = responseContent; //responseContent!.choices[0].message.content;
+ 
+            model.Message = responseContent?["choices"]?[0]?["message"]?["content"]?.ToString();
             model.Video = VIDEO_FILE_SAS_URL;
-
         }
         catch
         {

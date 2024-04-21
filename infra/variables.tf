@@ -86,6 +86,10 @@ variable "ca_aihub_name" {
   default = "ca-aihub"
 }
 
+variable "cv_name" {
+  default = "cv-aihub"
+}
+
 variable "ca_chat_image" {
   default = "ghcr.io/azure/activate-genai/aihub-chat:1.0.0-preview.0"
 }
