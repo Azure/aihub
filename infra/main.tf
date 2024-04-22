@@ -142,6 +142,7 @@ module "cog" {
   vision_location                    = var.location_azopenai
   content_safety_storage_resource_id = module.st.storage_account_id
   deploy_bing                        = var.deploy_bing
+  content_safety_location            = var.location_content_safety
 }
 
 module "cae" {

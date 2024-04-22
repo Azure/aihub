@@ -10,6 +10,10 @@ variable "location_azopenai" {
   default = "swedencentral"
 }
 
+variable "location_content_safety" {
+  default = "eastus"
+}
+
 variable "log_name" {
   default = "log-aihub"
 }
@@ -99,15 +103,15 @@ variable "ca_chat_image" {
 }
 
 variable "ca_prep_docs_image" {
-  default = "ghcr.io/azure/aihub/aihub-prepdocs:1.0.9"
+  default = "ghcr.io/azure/aihub/aihub-prepdocs:1.0.10"
 }
 
 variable "ca_plugin_image" {
-  default = "ghcr.io/azure/aihub/aihub-plugin:1.0.9"
+  default = "ghcr.io/azure/aihub/aihub-plugin:1.0.10"
 }
 
 variable "ca_aihub_image" {
-  default = "ghcr.io/azure/aihub/aihub:1.0.10-preview.13"
+  default = "ghcr.io/azure/aihub/aihub:1.0.10"
 }
 
 variable "use_random_suffix" {

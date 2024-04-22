@@ -2,7 +2,7 @@ resource "azurerm_cognitive_account" "content_safety" {
   name                          = var.content_safety_name
   kind                          = "ContentSafety"
   sku_name                      = "S0"
-  location                      = var.location
+  location                      = var.content_safety_location
   resource_group_name           = var.resource_group_name
   public_network_access_enabled = true
   custom_subdomain_name         = var.content_safety_name
