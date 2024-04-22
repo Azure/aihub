@@ -105,7 +105,7 @@
                                     class="rounded-circle">
                             </span>
                             <span class="d-lg-flex flex-column gap-1 d-none">
-                                <h5 class="my-0">@(String.IsNullOrEmpty(Context.User.Identity.Name) ? Environment.UserName : Context.User.Identity.Name)</h5>
+                                <h5 class="my-0">@(String.IsNullOrEmpty(Context.User?.Identity?.Name) ? Environment.UserName : Context.User.Identity.Name)</h5>
                                 @* <h6 class="my-0 fw-normal">Chief Financial Officer</h6> *@
                             </span>
                         </a>
