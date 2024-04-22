@@ -93,7 +93,7 @@ resource "azurerm_resource_group_template_deployment" "main" {
     ],
     "outputs": {
       "accessKeys": {
-          "type": "object",
+          "type": "Object",
           "value": {
               "key1": "[listKeys(resourceId('Microsoft.Bing/accounts', parameters('name')), '2020-06-10').key1]",
               "key2": "[listKeys(resourceId('Microsoft.Bing/accounts', parameters('name')), '2020-06-10').key2]"
