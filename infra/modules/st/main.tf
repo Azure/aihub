@@ -41,7 +41,7 @@ resource "azurerm_storage_container" "image-analyzer" {
   storage_account_name  = azurerm_storage_account.sa.name
 }
 
-resource "azurerm_storage_container" "image-analyzer" {
+resource "azurerm_storage_container" "video-analyzer" {
   name                  = "video-analyzer"
   container_access_type = "private"
   storage_account_name  = azurerm_storage_account.sa.name
