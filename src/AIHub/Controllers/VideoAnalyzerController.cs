@@ -9,7 +9,6 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Linq.Expressions;
 
-
 namespace MVCWeb.Controllers;
 
 public class VideoAnalyzerController : Controller
@@ -26,7 +25,6 @@ public class VideoAnalyzerController : Controller
     private VideoAnalyzerModel model;
     private HttpClient httpClient;
 
-    
 
     public VideoAnalyzerController(IConfiguration config, IHttpClientFactory clientFactory)
     {
@@ -54,38 +52,35 @@ public class VideoAnalyzerController : Controller
         public string? AcvDocumentId { get; set; }
     }
 
-    static async Task<HttpResponseMessage> CreateVideoIndex(string visionApiEndpoint, string visionApiKey, string indexName)
+    async Task<HttpResponseMessage> CreateVideoIndex(string visionApiEndpoint, string visionApiKey, string indexName)
     {
-        using var client = new HttpClient();
         string url = $"{visionApiEndpoint}/retrieval/indexes/{indexName}?api-version=2023-05-01-preview";
-        client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", visionApiKey);
+        httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", visionApiKey);
         var data = new { features = new[] { new { name = "vision", domain = "surveillance" } } };
-        var content = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");        
-        var response = await client.PutAsync(url, content);
+        var content = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
+        var response = await httpClient.PutAsync(url, content);
         return response;
     }
 
-    static async Task<HttpResponseMessage> AddVideoToIndex(string visionApiEndpoint, string visionApiKey, string indexName, string videoUrl, string videoId)
+    async Task<HttpResponseMessage> AddVideoToIndex(string visionApiEndpoint, string visionApiKey, string indexName, string videoUrl, string videoId)
     {
-        using var client = new HttpClient();
         string url = $"{visionApiEndpoint}/retrieval/indexes/{indexName}/ingestions/my-ingestion?api-version=2023-05-01-preview";
-        client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", visionApiKey);
+        httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", visionApiKey);
         var data = new { videos = new[] { new { mode = "add", documentId = videoId, documentUrl = videoUrl } } };
         var content = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
-        var response = await client.PutAsync(url, content);
+        var response = await httpClient.PutAsync(url, content);
         return response;
     }
 
-    static async Task<bool> WaitForIngestionCompletion(string visionApiEndpoint, string visionApiKey, string indexName, int maxRetries = 30)
+    async Task<bool> WaitForIngestionCompletion(string visionApiEndpoint, string visionApiKey, string indexName, int maxRetries = 30)
     {
-        using var client = new HttpClient();
         string url = $"{visionApiEndpoint}/retrieval/indexes/{indexName}/ingestions?api-version=2023-05-01-preview";
-        client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", visionApiKey);
+        httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", visionApiKey);
         int retries = 0;
         while (retries < maxRetries)
         {
             await Task.Delay(10000);
-            var response = await client.GetAsync(url);
+            var response = await httpClient.GetAsync(url);
             if (response.IsSuccessStatusCode)
             {
                 var stateData = JsonSerializer.Deserialize<dynamic>(await response.Content.ReadAsStringAsync());
@@ -148,7 +143,7 @@ public class VideoAnalyzerController : Controller
         }
         var payload = new
         {
-            model = "gpt-4-vision-preview",
+            model = "gpt4-vision",
             dataSources = new[]
             {
                 new
@@ -177,7 +172,7 @@ public class VideoAnalyzerController : Controller
                         }
                 },
                 new {
-                    role = "user", 
+                    role = "user",
                     content = new object[]
                     {
                         new {
@@ -202,7 +197,7 @@ public class VideoAnalyzerController : Controller
             chatResponse.EnsureSuccessStatusCode();
             var responseContent = JsonSerializer.Deserialize<JsonObject>(await chatResponse.Content.ReadAsStringAsync());
             Console.WriteLine(responseContent);
- 
+
             model.Message = responseContent?["choices"]?[0]?["message"]?["content"]?.ToString();
             model.Video = VIDEO_FILE_SAS_URL;
         }
@@ -210,7 +205,7 @@ public class VideoAnalyzerController : Controller
         {
             Console.WriteLine($"Error after GPT4V: {response.StatusCode}, {response.ReasonPhrase}");
         }
-        
+
         return View("VideoAnalyzer", model);
     }
 
