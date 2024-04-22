@@ -21,3 +21,11 @@ output "speech_key" {
 output "bing_key" {
   value = var.deploy_bing ? jsondecode(azurerm_resource_group_template_deployment.main[0].output_content).accessKeys.value.key1 : "<bing not deployed>"
 }
+
+output "vision_endpoint" {
+  value = azurerm_cognitive_account.vision.endpoint
+}
+
+output "vision_key" {
+  value = azurerm_cognitive_account.vision.primary_access_key
+}

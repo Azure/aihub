@@ -30,6 +30,9 @@ variable "cognitive_service_endpoint" {}
 variable "cognitive_service_key" {}
 variable "speech_key" {}
 
+variable "vision_endpoint" {}
+variable "vision_key" {}
+
 variable "storage_connection_string" {}
 variable "bing_key" {}
 

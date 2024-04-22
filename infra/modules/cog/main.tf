@@ -31,6 +31,16 @@ resource "azurerm_cognitive_account" "speech" {
   custom_subdomain_name         = var.speech_name
 }
 
+resource "azurerm_cognitive_account" "vision" {
+  name                          = var.vision_name
+  kind                          = "ComputerVision"
+  sku_name                      = "S1"
+  location                      = var.location
+  resource_group_name           = var.resource_group_name
+  public_network_access_enabled = true
+  custom_subdomain_name         = var.vision_name
+}
+
 resource "azurerm_resource_group_template_deployment" "main" {
   count               = var.deploy_bing ? 1 : 0
   name                = "${var.bing_name}-${uuid()}"

@@ -13,6 +13,7 @@ locals {
   content_safety_name     = "${var.content_safety_name}${local.name_sufix}"
   cognitive_services_name = "${var.cognitive_services_name}${local.name_sufix}"
   speech_name             = "${var.speech_name}${local.name_sufix}"
+  vision_name             = "${var.vision_name}${local.name_sufix}"
   bing_name               = "${var.bing_name}${local.name_sufix}"
   search_name             = "${var.search_name}${local.name_sufix}"
   form_recognizer_name    = "${var.form_recognizer_name}${local.name_sufix}"
@@ -137,6 +138,7 @@ module "cog" {
   cognitive_services_name            = local.cognitive_services_name
   content_safety_name                = local.content_safety_name
   speech_name                        = local.speech_name
+  vision_name                        = local.vision_name
   content_safety_storage_resource_id = module.st.storage_account_id
   deploy_bing                        = var.deploy_bing
 }
@@ -194,38 +196,38 @@ module "ca_prep_docs" {
 }
 
 module "ca_aihub" {
-  source                      = "./modules/ca-aihub"
-  location                    = azurerm_resource_group.rg.location
-  resource_group_id           = azurerm_resource_group.rg.id
-  ca_name                     = local.ca_aihub_name
-  cae_id                      = module.cae.cae_id
-  cae_default_domain          = module.cae.default_domain
-  managed_identity_id         = module.mi.mi_id
-  chat_gpt_deployment         = module.openai.gpt_deployment_name
-  chat_gpt_model              = module.openai.gpt_deployment_model_name
-  chat_gpt4_deployment        = module.openai.gpt4_deployment_name
-  chat_gpt4_model             = module.openai.gpt4_deployment_model_name
-  chat_gpt4_vision_deployment = module.openai.gpt4_vision_deployment_name
-  chat_gpt4_vision_model      = module.openai.gpt4_vision_deployment_model_name
-  embeddings_deployment       = module.openai.embedding_deployment_name
-  embeddings_model            = module.openai.embedding_deployment_name
-  storage_account_name        = module.st.storage_account_name
-  storage_account_key         = module.st.key
-  storage_container_name      = module.st.storage_container_name
-  search_service_name         = module.search.search_service_name
-  search_index_name           = module.search.search_index_name
-  openai_endpoint             = var.enable_apim ? "${module.apim[0].gateway_url}/" : module.openai.openai_endpoint
-  chat_fqdn                   = module.ca_chat.fqdn
-  pbi_report_link             = var.pbi_report_link
-  content_safety_endpoint     = module.cog.content_safety_endpoint
-  content_safety_key          = module.cog.content_safety_key
-  cognitive_service_endpoint  = module.cog.cognitive_service_endpoint
-  cognitive_service_key       = module.cog.cognitive_service_key
-  speech_key                  = module.cog.speech_key
-
-  storage_connection_string = module.st.connection_string
-  bing_key                  = module.cog.bing_key
-
+  source                         = "./modules/ca-aihub"
+  location                       = azurerm_resource_group.rg.location
+  resource_group_id              = azurerm_resource_group.rg.id
+  ca_name                        = local.ca_aihub_name
+  cae_id                         = module.cae.cae_id
+  cae_default_domain             = module.cae.default_domain
+  managed_identity_id            = module.mi.mi_id
+  chat_gpt_deployment            = module.openai.gpt_deployment_name
+  chat_gpt_model                 = module.openai.gpt_deployment_model_name
+  chat_gpt4_deployment           = module.openai.gpt4_deployment_name
+  chat_gpt4_model                = module.openai.gpt4_deployment_model_name
+  chat_gpt4_vision_deployment    = module.openai.gpt4_vision_deployment_name
+  chat_gpt4_vision_model         = module.openai.gpt4_vision_deployment_model_name
+  embeddings_deployment          = module.openai.embedding_deployment_name
+  embeddings_model               = module.openai.embedding_deployment_name
+  storage_account_name           = module.st.storage_account_name
+  storage_account_key            = module.st.key
+  storage_container_name         = module.st.storage_container_name
+  search_service_name            = module.search.search_service_name
+  search_index_name              = module.search.search_index_name
+  openai_endpoint                = var.enable_apim ? "${module.apim[0].gateway_url}/" : module.openai.openai_endpoint
+  chat_fqdn                      = module.ca_chat.fqdn
+  pbi_report_link                = var.pbi_report_link
+  content_safety_endpoint        = module.cog.content_safety_endpoint
+  content_safety_key             = module.cog.content_safety_key
+  cognitive_service_endpoint     = module.cog.cognitive_service_endpoint
+  cognitive_service_key          = module.cog.cognitive_service_key
+  speech_key                     = module.cog.speech_key
+  vision_endpoint                = module.cog.vision_endpoint
+  vision_key                     = module.cog.vision_key
+  storage_connection_string      = module.st.connection_string
+  bing_key                       = module.cog.bing_key
   tenant_id                      = data.azurerm_subscription.current.tenant_id
   managed_identity_client_id     = module.mi.client_id
   enable_entra_id_authentication = var.enable_entra_id_authentication
@@ -245,11 +247,4 @@ module "plugin" {
   openai_key               = module.openai.openai_key
   openai_model             = module.openai.gpt_deployment_name
   openai_endpoint          = module.openai.openai_endpoint
-}
-
-module "cv" {
-  source              = "./modules/cv"
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
-  cv_name             = local.cv_name
 }

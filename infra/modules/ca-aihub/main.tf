@@ -135,6 +135,30 @@ resource "azapi_resource" "ca_back" {
                 value = var.chat_gpt4_vision_deployment
               },
               {
+                name  = "VideoAnalyzer__OpenAIEndpoint",
+                value = "${var.openai_endpoint}"
+              },
+              {
+                name  = "VideoAnalyzer__OpenAISubscriptionKey",
+                value = ""
+              },
+              {
+                name  = "VideoAnalyzer__ContainerName",
+                value = "video-analyzer"
+              },
+              {
+                name  = "VideoAnalyzer__DeploymentName",
+                value = var.chat_gpt4_vision_deployment
+              },
+              {
+                name  = "VideoAnalyzer__VisionEndpoint",
+                value = var.vision_endpoint
+              },
+              {
+                name  = "VideoAnalyzer__VisionSubscriptionKey",
+                value = var.vision_key
+              },
+              {
                 name  = "FormAnalyzer__FormRecogEndpoint",
                 value = "${var.cognitive_service_endpoint}"
               },
