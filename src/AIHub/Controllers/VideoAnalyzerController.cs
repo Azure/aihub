@@ -110,7 +110,7 @@ public class VideoAnalyzerController : Controller
     [HttpPost]
     public async Task<IActionResult> DenseCaptionVideo(string video_url, string prompt)
     {
-        string GPT4V_ENDPOINT = $"{AOAIendpoint}openai/deployments/{AOAIDeploymentName}/extensions/chat/completions?api-version=2023-07-01-preview"; //2024-02-15-preview";
+        string GPT4V_ENDPOINT = $"{AOAIendpoint}openai/deployments/{AOAIDeploymentName}/chat/completions?api-version=2024-02-15-preview";
         string VISION_API_ENDPOINT = $"{Visionendpoint}computervision";
         string VISION_API_KEY = VisionKey;
         string VIDEO_INDEX_NAME = Regex.Replace(video_url.Split("/").Last().Split(".").First().GetHashCode().ToString(), "[^a-zA-Z0-9]", "");
