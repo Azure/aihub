@@ -35,7 +35,7 @@ resource "azurerm_cognitive_account" "vision" {
   name                          = var.vision_name
   kind                          = "ComputerVision"
   sku_name                      = "S1"
-  location                      = var.location
+  location                      = var.vision_location
   resource_group_name           = var.resource_group_name
   public_network_access_enabled = true
   custom_subdomain_name         = var.vision_name

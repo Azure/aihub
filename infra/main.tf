@@ -139,6 +139,7 @@ module "cog" {
   content_safety_name                = local.content_safety_name
   speech_name                        = local.speech_name
   vision_name                        = local.vision_name
+  vision_location                    = var.location_azopenai
   content_safety_storage_resource_id = module.st.storage_account_id
   deploy_bing                        = var.deploy_bing
 }
