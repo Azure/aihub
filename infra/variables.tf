@@ -107,7 +107,7 @@ variable "ca_plugin_image" {
 }
 
 variable "ca_aihub_image" {
-  default = "ghcr.io/azure/aihub/aihub:1.0.10-preview.4"
+  default = "ghcr.io/azure/aihub/aihub:1.0.10-preview.13"
 }
 
 variable "use_random_suffix" {
