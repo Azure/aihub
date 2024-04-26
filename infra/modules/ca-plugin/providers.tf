@@ -1,5 +1,5 @@
 terraform {
-  required_version = ">= 1.1.8"
+  required_version = ">= 1.4.6"
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
@@ -7,14 +7,6 @@ terraform {
     }
     azapi = {
       source = "Azure/azapi"
-    }
-  }
-}
-
-provider "azurerm" {
-  features {
-    cognitive_account {
-      purge_soft_delete_on_destroy = true
     }
   }
 }
