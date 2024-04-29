@@ -34,7 +34,7 @@ az webapp create --name aihub-webapp --resource-group aihub-rg --plan aihub-apps
 az cognitiveservices account create --name aihub-cognitiveservice --resource-group aihub-rg  --kind CognitiveServices --sku S0 --location westeurope --yes
 ```
 
-### Create an Azure OpenAI resuorce
+### Create an Azure OpenAI resource
 ```bash
 az openai create --name aihub-openai --resource-group aihub-rg --location westeurope
 ```
