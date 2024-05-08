@@ -22,7 +22,7 @@ namespace OpenAI.Plugin.FSI
         }
 
         [Function("Compare Financial Products Plugin")]
-        [OpenApiOperation(operationId: "CompareProductsPlugin", tags: new[] { "CompareProductsPlugin" }, Description = "Compares a given financial product with those avialable in the market")]
+        [OpenApiOperation(operationId: "CompareProductsPlugin", tags: new[] { "CompareProductsPlugin" }, Description = "Compares a  given financial product with those avialable in the market")]
         [OpenApiRequestBody("application/json", typeof(ExecuteFunctionRequest), Description = "Variables to use when executing the specified function.", Required = true)]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(ExecuteFunctionResponse), Description = "Returns the response from the AI.")]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.BadRequest, contentType: "application/json", bodyType: typeof(ErrorResponse), Description = "Returned if the request body is invalid.")]
@@ -46,7 +46,7 @@ namespace OpenAI.Plugin.FSI
 
                 // Create the chat history
                 ChatHistory chatMessages = new ChatHistory("""
-                GET THE TOP FINANCIAL PRODUCTS IN SPAIN IN TERMS OF PROFITABILITY
+                GET THE TOP FINANCIAL PRODUCTS IN SPAIN. SUMMARIZE THE INVESTMENT POLICIES, RISKS AND COMMERCIAL TERMS
                 """);
 
                 // Get the chat completions
