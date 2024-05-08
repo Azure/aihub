@@ -21,8 +21,8 @@ namespace OpenAI.Plugin.FSI
             _kernel = kernel;
         }
 
-        [Function("Compare Finantial Products Plugin")]
-        [OpenApiOperation(operationId: "CompareProductsPlugin", tags: new[] { "CompareProductsPlugin" }, Description = "Compares a  given financial product with those avialable in the market")]
+        [Function("Compare Financial Products Plugin")]
+        [OpenApiOperation(operationId: "CompareProductsPlugin", tags: new[] { "CompareProductsPlugin" }, Description = "Compares a given financial product with those avialable in the market")]
         [OpenApiRequestBody("application/json", typeof(ExecuteFunctionRequest), Description = "Variables to use when executing the specified function.", Required = true)]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(ExecuteFunctionResponse), Description = "Returns the response from the AI.")]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.BadRequest, contentType: "application/json", bodyType: typeof(ErrorResponse), Description = "Returned if the request body is invalid.")]
