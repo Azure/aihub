@@ -3,8 +3,8 @@ OpenApiConfigurationOptions configOptions = new()
     Info = new OpenApiInfo()
     {
         Version = "1.0.0",
-        Title = "Call Transcript Plugin",
-        Description = "This is a plugin that analyze a call given the transcript and a prompt.",
+        Title = "Compare Financial Products Plugin",
+        Description = "This is a plugin that compares financial products against that provides in the prompt",
     },
     Servers = DefaultOpenApiConfigurationOptions.GetHostNames(),
     OpenApiVersion = OpenApiVersionType.V3,

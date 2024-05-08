@@ -257,7 +257,7 @@ module "plugin-fsi" {
   resource_group_name      = azurerm_resource_group.rg.name
   resource_group_id        = azurerm_resource_group.rg.id
   func_name                = "fsi${local.func_name}"
-  image_name               = var.ca_plugin_image
+  image_name               = var.ca_fsi_plugin_image
   cae_id                   = module.cae.cae_id
   cae_default_domain       = module.cae.default_domain
   appi_instrumentation_key = module.appi.appi_key
