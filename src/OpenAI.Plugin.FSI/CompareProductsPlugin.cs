@@ -45,9 +45,7 @@ namespace OpenAI.Plugin.FSI
                 IChatCompletionService chatCompletionService = _kernel.GetRequiredService<IChatCompletionService>();
 
                 // Create the chat history
-                ChatHistory chatMessages = new ChatHistory("""
-                GET THE TOP FINANCIAL PRODUCTS IN SPAIN. SUMMARIZE THE INVESTMENT POLICIES, RISKS AND COMMERCIAL TERMS
-                """);
+                ChatHistory chatMessages = new ChatHistory(functionRequest.QueryPrompt);
 
                 // Get the chat completions
                 OpenAIPromptExecutionSettings openAIPromptExecutionSettings = new()
