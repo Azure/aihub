@@ -4,34 +4,33 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.Extensions.Logging;
+using Microsoft.SemanticKernel.Connectors.OpenAI;
 using Models;
 
-namespace OpenAI.Plugin
+namespace OpenAI.Plugin.FSI
 {
-    public class CallTranscriptPlugin
+    public class CompareProductsPlugin
     {
         private static readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
         private readonly ILogger _logger;
         private readonly Kernel _kernel;
 
-        public CallTranscriptPlugin(ILoggerFactory loggerFactory, Kernel kernel)
+        public CompareProductsPlugin(ILoggerFactory loggerFactory, Kernel kernel)
         {
-            _logger = loggerFactory.CreateLogger<CallTranscriptPlugin>();
+            _logger = loggerFactory.CreateLogger<CompareProductsPlugin>();
             _kernel = kernel;
         }
 
-        [Function("Call Transcript Plugin")]
-        [OpenApiOperation(operationId: "CallTranscriptPlugin", tags: new[] { "CallTranscriptPlugin" }, Description = "Used to analyze a call given the transcript and a prompt")]
+        [Function("Compare Financial Products Plugin")]
+        [OpenApiOperation(operationId: "CompareProductsPlugin", tags: new[] { "CompareProductsPlugin" }, Description = "Compares a  given financial product with those avialable in the market")]
         [OpenApiRequestBody("application/json", typeof(ExecuteFunctionRequest), Description = "Variables to use when executing the specified function.", Required = true)]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(ExecuteFunctionResponse), Description = "Returns the response from the AI.")]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.BadRequest, contentType: "application/json", bodyType: typeof(ErrorResponse), Description = "Returned if the request body is invalid.")]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.NotFound, contentType: "application/json", bodyType: typeof(ErrorResponse), Description = "Returned if the semantic function could not be found.")]
         public async Task<HttpResponseData> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "plugins/transcript")] HttpRequestData req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "plugins/compare")] HttpRequestData req,
             FunctionContext executionContext)
         {
-            _logger.LogInformation("C# HTTP trigger function processed a request.");
-
 #pragma warning disable CA1062
             var functionRequest = await JsonSerializer.DeserializeAsync<ExecuteFunctionRequest>(req.Body, _jsonOptions).ConfigureAwait(false);
 #pragma warning disable CA1062
@@ -42,12 +41,30 @@ namespace OpenAI.Plugin
 
             try
             {
-                var context = new KernelArguments
+                // Retrieve the chat completion service from the kernel
+                IChatCompletionService chatCompletionService = _kernel.GetRequiredService<IChatCompletionService>();
+
+                // Create the chat history
+                ChatHistory chatMessages = new ChatHistory(functionRequest.QueryPrompt);
+
+                // Get the chat completions
+                OpenAIPromptExecutionSettings openAIPromptExecutionSettings = new()
                 {
-                    { "transcript", functionRequest.Transcript }
+                    ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions
                 };
 
-                var result = await _kernel.InvokeAsync("Prompts", "CallAnalyzer", context).ConfigureAwait(false);
+                var searchResult = await chatCompletionService.GetChatMessageContentAsync(
+                    chatMessages,
+                    executionSettings: openAIPromptExecutionSettings,
+                    kernel: _kernel);
+
+                var context = new KernelArguments
+                {
+                    { "products", searchResult.ToString() },
+                    { "product", functionRequest.Product },
+                };
+
+                var result = await _kernel.InvokeAsync("Prompts", "CompareProducts", context).ConfigureAwait(false);
 
                 return await CreateResponseAsync(
                     req,

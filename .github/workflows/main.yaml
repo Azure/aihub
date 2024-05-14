@@ -19,6 +19,7 @@ env:
   IMAGE_NAME: ${{ github.repository }}
   DOCS_IMAGE_NAME: aihub-prepdocs
   PLUGIN_IMAGE_NAME: aihub-plugin
+  FSIPLUGIN_IMAGE_NAME: aihub-fsiplugin
   AIHUB_ARTIFACT_NAME: aihub-tf-module
 
 jobs:
@@ -121,6 +122,22 @@ jobs:
           tags: ${{ env.REGISTRY }}/${{ env.GITHUB_REPOSITORY_LOWER_CASE }}/${{ env.PLUGIN_IMAGE_NAME }}:${{ env.MINVERVERSIONOVERRIDE }}
           labels: ${{ steps.meta-plugin.outputs.labels }}
 
+      # FSI PLUGIN
+      - name: Extract metadata (tags, labels) for fsi plugin Docker
+        id: meta-fsiplugin
+        uses: docker/metadata-action@v3
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.FSIPLUGIN_IMAGE_NAME }}
+    
+      - name: Build and push Docker image for fsi plugin
+        uses: docker/build-push-action@v3
+        with:
+          context: ./src/OpenAI.Plugin.FSI/
+          file: ./src/OpenAI.Plugin.FSI/Dockerfile
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ env.REGISTRY }}/${{ env.GITHUB_REPOSITORY_LOWER_CASE }}/${{ env.FSIPLUGIN_IMAGE_NAME }}:${{ env.MINVERVERSIONOVERRIDE }}
+          labels: ${{ steps.meta-fsiplugin.outputs.labels }}
+    
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -129,7 +146,7 @@ jobs:
             ./infra/modules/
             ./infra/*.tf
             ./infra/*.md
-    
+
   release:
     name: Create Release
     needs: build

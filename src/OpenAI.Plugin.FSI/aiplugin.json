@@ -1,0 +1,17 @@
+{
+    "schemaVersion": "v1",
+    "nameForHuman": "Compares a given financial product with what is in the market",
+    "nameForModel": "CompareProductsPlugin",
+    "descriptionForModel": "Used to compare a financial product.",
+    "descriptionForHuman": "Used to compare a financial product.",
+    "auth": {
+        "type": "none"
+    },
+    "api": {
+        "type": "openapi",
+        "url": "{url}/swagger.json"
+    },
+    "logoUrl": "{url}/logo.png",
+    "contactEmail": "support@example.com",
+    "legalInfoUrl": "http://www.example.com/legal"
+}
