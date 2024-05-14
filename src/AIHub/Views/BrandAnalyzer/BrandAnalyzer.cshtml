@@ -39,7 +39,7 @@
                             </div>
                             <div class="mb-3">
                                 <label for="text" class="form-label">Prompt:</label>
-                                <textarea class="form-control" id="prompt" name="prompt" maxlength="225" rows="3"> @(Model?.Prompt ?? "Tell me the overall opinion of the internet users about the company, highlighting the positive and negative aspects. Show 2 main blocks with bullets and a final conclusion. Please reply me in Spanish.") </textarea>
+                                <textarea class="form-control" id="prompt" name="prompt" rows="3"> @(Model?.Prompt ?? "Tell me the overall opinion of the internet users about the company, highlighting the positive and negative aspects. Show 2 main blocks with bullets and a final conclusion. Please reply me in Spanish.") </textarea>
                             </div>
                             <button type="submit" class="btn btn-primary" onclick="submitForm()">Start Analysis</button>
                         </form>                                      
