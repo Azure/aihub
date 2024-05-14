@@ -31,7 +31,7 @@
                     <form asp-controller="DocumentComparison" asp-action="UploadFile" method="post" enctype="multipart/form-data" id="upload-form" class="dropzone" data-plugin="dropzone" data-previews-container="#file-previews" data-upload-preview-template="#uploadPreviewTemplate">
                         <div class="mb-3">
                             <label class="form-label">Prompt:</label>
-                            <textarea class="form-control" id="prompt" name="prompt" maxlength="225" rows="3"> @(Model?.Prompt ?? "Compare the two documents provided, and detail their differences.") </textarea>
+                            <textarea class="form-control" id="prompt" name="prompt" rows="3"> @(Model?.Prompt ?? "Compare the two documents provided, and detail their differences.") </textarea>
                         </div>
                         <div class="tab-content form-control">
                             <div class="tab-pane show active" id="file-upload-preview">
