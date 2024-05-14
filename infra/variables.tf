@@ -111,7 +111,7 @@ variable "ca_plugin_image" {
 }
 
 variable "ca_fsi_plugin_image" {
-  default = "ghcr.io/azure/aihub/aihub-fsiplugin:1.0.12-preview.3"
+  default = "ghcr.io/azure/aihub/aihub-fsiplugin:1.0.12-preview.9"
 }
 
 variable "ca_aihub_image" {

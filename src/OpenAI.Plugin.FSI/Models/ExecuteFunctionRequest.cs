@@ -7,7 +7,7 @@ internal class ExecuteFunctionRequest
     [OpenApiProperty(Description = "The product to compare", Default = "")]
     public string Product { get; set; } = string.Empty;
 
-    [JsonPropertyName("queryprompt")]
+    [JsonPropertyName("queryPrompt")]
     [OpenApiProperty(Description = "The query prompt used to retrive products to compare to", Default = "")]
     public string QueryPrompt { get; set; } = string.Empty;
 }
