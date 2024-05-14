@@ -7,7 +7,7 @@ OpenApiConfigurationOptions configOptions = new()
         Description = "This is a plugin that compares financial products against that provides in the prompt",
     },
     Servers = DefaultOpenApiConfigurationOptions.GetHostNames(),
-    OpenApiVersion = OpenApiVersionType.V3,
+    OpenApiVersion = OpenApiVersionType.V2,
     ForceHttps = false,
     ForceHttp = false,
 };
