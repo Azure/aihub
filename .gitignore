@@ -417,3 +417,6 @@ src/AIHub/appsettings.Development.json
 *.tfstate.*
 
 local.settings.json
+
+# Ignore hidden folder for AI Hub Installation
+**/.aihub
