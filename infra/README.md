@@ -22,8 +22,9 @@ powershell -Command "iwr -useb https://raw.githubusercontent.com/azure/aihub/mas
 
 For installation on Linux, we recommend using `Ubuntu 22.04` or a newer version. Before executing the installation script, ensure that the following applications are installed and up-to-date:
 
-- `curl`, version `7.x` or higher
-- `jq`, version `1.6` or higher
+- `curl`, version `7.x` or higher.
+- `jq`, version `1.6` or higher.
+- `unzip`, version `6.x` or higher.
 
 To deploy the infrastructure, execute the following command:
 
