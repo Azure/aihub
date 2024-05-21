@@ -1,6 +1,6 @@
 echo ""
 set -e
-
+ 
 # GitHub Org and repo hosting AI Hub
 GitHubOrg="azure"
 GitHubRepo="aihub"
