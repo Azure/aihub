@@ -29,7 +29,7 @@ This delivery guide will help you test AI capabilities thru real scenarios.
 
 {{% blocks/section color="dark" type="row" %}}
 
-{{% blocks/feature icon="fa-solid fa-file-lines" title="Read the Docs!" url="https://azure.github.io/aihub/" %}}
+{{% blocks/feature icon="fa-solid fa-file-lines" title="Read the Docs!" url="https://azure.github.io/aihub/docs/" %}}
 Read the delivery guide and learn how to deploy the solution.
 {{% /blocks/feature %}}
 
