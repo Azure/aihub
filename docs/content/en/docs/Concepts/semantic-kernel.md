@@ -18,6 +18,13 @@ To help developers build their own Copilot experiences on top of AI plugins, we 
 
 ![Image of Semantic Kernel](https://learn.microsoft.com/en-us/semantic-kernel/media/mind-and-body-of-semantic-kernel.png)
 
-**AI Hub** uses Semantic Kernel to orchestrate the prompts, Azure OpenAI calls and Azure Cognitive Search queries and results.
+Currently, **AI Hub** does not directly use Semantic Kernel on its use case examples. It does use it with two specific examples on how to easily implement OpenAI plugins using it as an SDK.
+
+Available OpenAI plugin examples are:
+
+ - Analyze a call given its transcript: this example plugin uses Semantic Kernel to implement similar features as those shown in the [Call Center Analytics](../Use%20Cases/call-center-analytics.md) use case.
+ - Compares a given financial product with what is in the market: this example plugin uses Semantic Kernel to combine prompts with the [Web Search Engine Plugin](https://learn.microsoft.com/en-us/dotnet/api/microsoft.semantickernel.plugins.web.websearchengineplugin) combined with [Bing Search connector](https://learn.microsoft.com/en-us/dotnet/api/microsoft.semantickernel.plugins.web.bing.bingconnector).
+
+ Please refer to the [Plugins](../Plugins/_index.md) section for more information.
 
 Learn more at the official documentation of [Semantic Kernel](https://learn.microsoft.com/en-us/semantic-kernel/overview/)
