@@ -5,7 +5,7 @@ description: >
   An open-source SDK that lets you easily combine AI services like OpenAI, Azure OpenAI, and Hugging Face with conventional programming languages like C# and Python.
 categories: [SDK]
 tags: [docs, tools]
-weight: 3
+weight: 8
 ---
 
 Semantic Kernel is an open-source SDK that lets you easily combine AI services like OpenAI, Azure OpenAI, and Hugging Face with conventional programming languages like C# and Python. By doing so, you can create AI apps that combine the best of both worlds.
@@ -22,9 +22,9 @@ Currently, **AI Hub** does not directly use Semantic Kernel on its use case exam
 
 Available OpenAI plugin examples are:
 
- - Analyze a call given its transcript: this example plugin uses Semantic Kernel to implement similar features as those shown in the [Call Center Analytics](../Use%20Cases/call-center-analytics.md) use case.
+ - Analyze a call given its transcript: this example plugin uses Semantic Kernel to implement similar features as those shown in the [Call Center Analytics]({{< ref "/docs/Use Cases/call-center-analytics.md" >}}) use case.
  - Compares a given financial product with what is in the market: this example plugin uses Semantic Kernel to combine prompts with the [Web Search Engine Plugin](https://learn.microsoft.com/en-us/dotnet/api/microsoft.semantickernel.plugins.web.websearchengineplugin) combined with [Bing Search connector](https://learn.microsoft.com/en-us/dotnet/api/microsoft.semantickernel.plugins.web.bing.bingconnector).
 
- Please refer to the [Plugins](../Plugins/_index.md) section for more information.
+ Please refer to the [OpenAI Plugins]({{< relref "/docs/OpenAI Plugins" >}}) section for more information.
 
 Learn more at the official documentation of [Semantic Kernel](https://learn.microsoft.com/en-us/semantic-kernel/overview/)

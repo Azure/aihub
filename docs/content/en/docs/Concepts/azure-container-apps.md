@@ -5,7 +5,7 @@ description: >
   Host the application in Azure Container Apps.
 categories: [Azure]
 tags: [docs, container-apps, serverless]
-weight: 4
+weight: 5
 ---
 
 Azure Container Apps is a managed serverless container service that enables executing code in containers without the overhead of managing virtual machines, orchestrators, or adopting a highly opinionated application framework.

@@ -5,7 +5,7 @@ description: >
   Used to build a rich search experience over private, heterogeneous content in web, mobile, and enterprise applications.
 categories: [Azure]
 tags: [docs, cognitive-search]
-weight: 2
+weight: 4
 ---
 
 Azure Cognitive Search (formerly known as "Azure Search") is a cloud search service that gives developers infrastructure, APIs, and tools for building a rich search experience over private, heterogeneous content in web, mobile, and enterprise applications.
