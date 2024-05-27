@@ -237,6 +237,7 @@ module "ca_aihub" {
 }
 
 module "plugin" {
+  count                    = var.enable_openai_plugin_call_transcript ? 1 : 0
   source                   = "./modules/ca-plugin"
   location                 = azurerm_resource_group.rg.location
   resource_group_name      = azurerm_resource_group.rg.name
@@ -252,6 +253,7 @@ module "plugin" {
 }
 
 module "plugin-fsi" {
+  count                    = var.enable_openai_plugin_compare_financial_products ? 1 : 0
   source                   = "./modules/ca-plugin-fsi"
   location                 = azurerm_resource_group.rg.location
   resource_group_name      = azurerm_resource_group.rg.name
