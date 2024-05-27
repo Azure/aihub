@@ -43,9 +43,10 @@ resource "azurerm_cognitive_account" "vision" {
 
 resource "azurerm_resource_group_template_deployment" "main" {
   count               = var.deploy_bing ? 1 : 0
-  name                = "${var.bing_name}-${uuid()}"
+  name                = var.bing_name
   resource_group_name = var.resource_group_name
   deployment_mode     = "Incremental"
+  tags                = {}
   parameters_content = jsonencode({
     "name" = {
       value = var.bing_name
