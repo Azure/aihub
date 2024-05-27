@@ -137,3 +137,11 @@ variable "deploy_bing" {
 variable "pbi_report_link" {
   default = ""
 }
+
+variable "enable_openai_plugin_call_transcript" {
+  default = false
+}
+
+variable "enable_openai_plugin_compare_financial_products" {
+  default = false
+}
