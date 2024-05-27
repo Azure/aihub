@@ -18,13 +18,14 @@ To help developers build their own Copilot experiences on top of AI plugins, we 
 
 ![Image of Semantic Kernel](https://learn.microsoft.com/en-us/semantic-kernel/media/mind-and-body-of-semantic-kernel.png)
 
-Currently, **AI Hub** does not directly use Semantic Kernel on its use case examples. It does use it with two specific examples on how to easily implement OpenAI plugins using it as an SDK.
+## Semantic Kernel and the AI Hub
 
-Available OpenAI plugin examples are:
+At present, the **AI Hub** does not use the Semantic Kernel directly in its use case examples. However, it does demonstrate its usage through two specific examples that show how easely is to create OpenAI plugins using Semantic Kernel as an SDK.
 
- - Analyze a call given its transcript: this example plugin uses Semantic Kernel to implement similar features as those shown in the [Call Center Analytics]({{< ref "/docs/Use Cases/call-center-analytics.md" >}}) use case.
- - Compares a given financial product with what is in the market: this example plugin uses Semantic Kernel to combine prompts with the [Web Search Engine Plugin](https://learn.microsoft.com/en-us/dotnet/api/microsoft.semantickernel.plugins.web.websearchengineplugin) combined with [Bing Search connector](https://learn.microsoft.com/en-us/dotnet/api/microsoft.semantickernel.plugins.web.bing.bingconnector).
+Here are the available plugin examples:
 
- Please refer to the [OpenAI Plugins]({{< relref "/docs/OpenAI Plugins" >}}) section for more information.
+1. **Call Analysis**: This plugin uses Semantic Kernel to implement features similar to those demonstrated in the [Call Center Analytics]({{< ref "/docs/Use Cases/call-center-analytics.md" >}}) use case.
 
-Learn more at the official documentation of [Semantic Kernel](https://learn.microsoft.com/en-us/semantic-kernel/overview/)
+2. **Financial Product Comparison**: This plugin employs Semantic Kernel to combine native and prompt functions to compare a specific financial product with others in the market. It combines prompts with the [Web Search Engine Plugin](https://learn.microsoft.com/en-us/dotnet/api/microsoft.semantickernel.plugins.web.websearchengineplugin), which is further integrated with the [Bing Search connector](https://learn.microsoft.com/en-us/dotnet/api/microsoft.semantickernel.plugins.web.bing.bingconnector).
+
+For more information, please refer to the [OpenAI Plugins]({{< relref "/docs/OpenAI Plugins" >}}) section. You can also learn more about Semantic Kernel in its [official documentation](https://learn.microsoft.com/en-us/semantic-kernel/overview/).
