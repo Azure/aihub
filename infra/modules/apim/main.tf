@@ -46,6 +46,28 @@ resource "azurerm_api_management_backend" "openai" {
   }
 }
 
+resource "azapi_resource" "apim_backend_pool" {
+  type                      = "Microsoft.ApiManagement/service/backends@2023-09-01-preview"
+  parent_id                 = azapi_resource.apim.id
+  name                      = "openai-backend-pool"
+  schema_validation_enabled = false # requiered for now
+  body = jsonencode({
+    properties = {
+      description = "Azure OpenAI Backend Pool"
+      type        = "Pool"
+      pool = {
+        services = [
+          {
+            id       = azurerm_api_management_backend.openai.id
+            prioeity = 1
+            weight   = 1
+          }
+        ]
+      }
+    }
+  })
+}
+
 resource "azurerm_api_management_logger" "appi_logger" {
   name                = local.logger_name
   api_management_name = azapi_resource.apim.name
@@ -104,7 +126,18 @@ resource "azurerm_api_management_api_policy" "policy" {
                 </required-claims>
             </validate-jwt>
 
-            <set-backend-service backend-id="openai-api" />
+            <azure-openai-emit-token-metric
+                namespace="AzureOpenAI">   
+                <dimension name="API ID" />
+                <dimension name="Operation ID" />
+                <dimension name="Client IP" value="@(context.Request.IpAddress)" />
+            </azure-openai-emit-token-metric>
+
+            <azure-openai-token-limit
+              counter-key="@(context.Request.IpAddress)"
+              tokens-per-minute="10000" estimate-prompt-tokens="false" remaining-tokens-variable-name="remainingTokens" />
+
+            <set-backend-service backend-id="${azapi_resource.apim_backend_pool.name}" />
         </inbound>
         <backend>
           <base />
@@ -173,4 +206,17 @@ resource "azurerm_api_management_diagnostic" "diagnostics" {
     body_bytes     = 8192
     headers_to_log = []
   }
+}
+
+# https://learn.microsoft.com/en-us/azure/api-management/api-management-howto-app-insights?tabs=rest#emit-custom-metrics
+resource "azapi_update_resource" "diagnostics" {
+  type        = "Microsoft.ApiManagement/service/diagnostics@2022-08-01"
+  resource_id = azurerm_api_management_diagnostic.diagnostics.id
+
+  body = jsonencode({
+    properties = {
+      loggerId = azurerm_api_management_logger.appi_logger.id
+      metrics  = true
+    }
+  })
 }
