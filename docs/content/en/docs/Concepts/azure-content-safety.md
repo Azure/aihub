@@ -5,7 +5,7 @@ description: >
   Used to keep your content safe. Create better online experiences for everyone with powerful AI models that detect offensive or inappropriate content in text and images quickly and efficiently.
 categories: [Azure]
 tags: [docs, content-safety, azure, ai, content, safety]
-weight: 2
+weight: 3
 ---
 
 Azure AI Content Safety detects harmful user-generated and AI-generated content in applications and services. Azure AI Content Safety includes text and image APIs that allow you to detect material that is harmful. We also have an interactive Content Safety Studio that allows you to view, explore and try out sample code for detecting harmful content across different modalities.
