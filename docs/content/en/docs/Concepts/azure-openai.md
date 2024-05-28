@@ -12,7 +12,7 @@ Azure OpenAI Service provides REST API access to OpenAI's powerful language mode
 
 Important concepts about Azure OpenAI:
 
-* [Azure OpenAI Studio](oai.azure.com)
+* [Azure OpenAI Studio](https://oai.azure.com)
 * **Models available**
   * GPT-35-Turbo series: typical "chatGPT" model, recommended for most of the Azure OpenAI projects. When we might need more capability, GPT4 can me considered (take into account it will imply more latency and cost) 
   * GPT-4 series: they are the most advanced language models, available once you fill in the [GPT4 Request Form](https://customervoice.microsoft.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR7en2Ais5pxKtso_Pz4b1_xURjE4QlhVUERGQ1NXOTlNT0w1NldTWjJCMSQlQCN0PWcu) 
