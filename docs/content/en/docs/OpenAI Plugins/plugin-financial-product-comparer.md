@@ -3,6 +3,7 @@ title: Financial Product Comparer Plugin
 description: AI plugin that compares a financial product with what is available on the market.
 weight: 3
 categories: [Semantic Kernel, OpenAI]
+tags: [openai, plugins, semantic-kernel]
 ---
 
 Use this plugin to compare a given financial product with others available in the market by retrieving information via Bing.
