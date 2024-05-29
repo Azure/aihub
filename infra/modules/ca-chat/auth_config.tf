@@ -13,7 +13,7 @@ resource "azapi_resource" "current" {
   name      = "Current"
   parent_id = azapi_resource.ca_back.id
   timeouts {}
-  body = jsonencode({
+  body = {
     properties = {
       platform = {
         enabled = true
@@ -42,5 +42,5 @@ resource "azapi_resource" "current" {
         preserveUrlFragmentsForLogins = false
       }
     }
-  })
+  }
 }

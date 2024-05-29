@@ -3,5 +3,5 @@ output "apim_name" {
 }
 
 output "gateway_url" {
-  value = jsondecode(azapi_resource.apim.output).properties.gatewayUrl
+  value = azapi_resource.apim.output.properties.gatewayUrl
 }

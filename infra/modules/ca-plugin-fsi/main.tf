@@ -13,7 +13,7 @@ resource "azapi_resource" "ca_function" {
   location                  = var.location
   parent_id                 = var.resource_group_id
   type                      = "Microsoft.Web/sites@2023-01-01"
-  body = jsonencode({
+  body = {
     kind = "functionapp,linux,container,azurecontainerapps"
     properties : {
       language             = "dotnet-isolated"
@@ -78,5 +78,5 @@ resource "azapi_resource" "ca_function" {
       }
       httpsOnly = false
     }
-  })
+  }
 }

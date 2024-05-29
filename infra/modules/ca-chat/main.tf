@@ -10,7 +10,7 @@ resource "azapi_resource" "ca_back" {
     ]
   }
 
-  body = jsonencode({
+  body = {
     properties : {
       managedEnvironmentId = "${var.cae_id}"
       configuration = {
@@ -103,6 +103,6 @@ resource "azapi_resource" "ca_back" {
         }
       }
     }
-  })
+  }
   response_export_values = ["properties.configuration.ingress.fqdn"]
 }

@@ -12,7 +12,7 @@ resource "azapi_resource" "apim" {
     type = "SystemAssigned"
   }
   schema_validation_enabled = false # requiered for now
-  body = jsonencode({
+  body = {
     sku = {
       name     = "StandardV2"
       capacity = 1
@@ -27,7 +27,7 @@ resource "azapi_resource" "apim" {
         subnetResourceId = var.apim_subnet_id        
       } : null
     }
-  })
+  }
   response_export_values = [
     "identity.principalId",
     "properties.gatewayUrl"
@@ -51,7 +51,7 @@ resource "azapi_resource" "apim_backend_pool" {
   parent_id                 = azapi_resource.apim.id
   name                      = "openai-backend-pool"
   schema_validation_enabled = false # requiered for now
-  body = jsonencode({
+  body = {
     properties = {
       description = "Azure OpenAI Backend Pool"
       type        = "Pool"
@@ -65,7 +65,7 @@ resource "azapi_resource" "apim_backend_pool" {
         ]
       }
     }
-  })
+  }
 }
 
 resource "azurerm_api_management_logger" "appi_logger" {
@@ -231,10 +231,10 @@ resource "azapi_update_resource" "diagnostics" {
   type        = "Microsoft.ApiManagement/service/diagnostics@2022-08-01"
   resource_id = azurerm_api_management_diagnostic.diagnostics.id
 
-  body = jsonencode({
+  body = {
     properties = {
       loggerId = azurerm_api_management_logger.appi_logger.id
       metrics  = true
     }
-  })
+  }
 }
