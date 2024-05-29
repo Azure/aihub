@@ -1,8 +1,8 @@
 output "cae_id" {
-  value = azapi_resource.cae.id
+  value = azurerm_container_app_environment.cae.id
 }
 
 output "default_domain" {
-  value = azapi_resource.cae.output.properties.defaultDomain
+  value = azurerm_container_app_environment.cae.default_domain
 }
 

@@ -165,14 +165,13 @@ module "cog" {
 }
 
 module "cae" {
-  source            = "./modules/cae"
-  location          = azurerm_resource_group.rg.location
-  resource_group_id = azurerm_resource_group.rg.id
-  cae_name          = local.cae_name
-  cae_subnet_id     = module.vnet.cae_subnet_id
-  log_workspace_id  = module.log.log_workspace_id
-  log_key           = module.log.log_key
-  appi_key          = module.appi.appi_key
+  source                 = "./modules/cae"
+  location               = azurerm_resource_group.rg.location
+  resource_group_name    = azurerm_resource_group.rg.name
+  cae_name               = local.cae_name
+  cae_subnet_id          = module.vnet.cae_subnet_id
+  log_id                 = module.log.log_id
+  appi_connection_string = module.appi.appi_connection_string
 }
 
 module "ca_chat" {
