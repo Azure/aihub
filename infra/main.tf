@@ -114,11 +114,15 @@ module "appi" {
 }
 
 module "st" {
-  source               = "./modules/st"
-  location             = azurerm_resource_group.rg.location
-  resource_group_name  = azurerm_resource_group.rg.name
-  storage_account_name = local.storage_account_name
-  principal_id         = module.mi.principal_id
+  source                      = "./modules/st"
+  location                    = azurerm_resource_group.rg.location
+  resource_group_name         = azurerm_resource_group.rg.name
+  storage_account_name        = local.storage_account_name
+  principal_id                = module.mi.principal_id
+  vnet_id                     = module.vnet.virtual_network_id
+  private_endpoints_subnet_id = module.vnet.pe_subnet_id 
+  use_private_endpoints       = var.use_private_endpoints
+  allowed_ips                 = var.allowed_ips
 }
 
 module "openai" {

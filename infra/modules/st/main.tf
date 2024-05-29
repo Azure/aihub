@@ -1,3 +1,13 @@
+data "http" "current_ip" {
+  url = "http://ipv4.icanhazip.com"
+  count = var.use_private_endpoints ? 1 : 0
+}
+
+locals {
+  allowed_ips          = var.use_private_endpoints ? concat(var.allowed_ips, ["${chomp(data.http.current_ip[0].response_body)}"]) : var.allowed_ips
+  network_rules_bypass = var.use_private_endpoints ? [ "None" ] : [ "AzureServices" ]
+}
+
 resource "azurerm_storage_account" "sa" {
   name                            = var.storage_account_name
   location                        = var.location
@@ -6,17 +16,19 @@ resource "azurerm_storage_account" "sa" {
   account_replication_type        = "LRS"
   enable_https_traffic_only       = true
   allow_nested_items_to_be_public = false
-  # We are enabling the firewall only allowing traffic from our PC's public IP.
-  #   network_rules {
-  #     default_action             = "Deny"
-  #     virtual_network_subnet_ids = []
-  #     ip_rules = [
-  #       jsondecode(data.http.current_public_ip.body).ip
-  #     ]
-  #   }
 }
 
-# Create data container
+resource "azurerm_storage_account_network_rules" "sa_network_rules" {
+  count                      = var.use_private_endpoints ? 1 : 0
+  storage_account_id         = azurerm_storage_account.sa.id
+  default_action             = "Deny"
+  virtual_network_subnet_ids = []
+  ip_rules                   = local.allowed_ips
+  bypass                     = [ "None" ]
+}
+
+# Create containers and file shares, then populate them as required.
+
 resource "azurerm_storage_container" "content" {
   name                  = "content"
   container_access_type = "private"
@@ -93,3 +105,74 @@ resource "azurerm_role_assignment" "storage_contributor" {
   principal_id         = var.principal_id
 }
 
+# Private endpoint for the Blob Storage
+
+resource "azurerm_private_dns_zone" "sa_blob" {
+  count               = var.use_private_endpoints ? 1 : 0
+  name                = "privatelink.blob.core.windows.net"
+  resource_group_name = var.resource_group_name
+}
+
+resource "azurerm_private_endpoint" "sa_blob" {
+  count               = var.use_private_endpoints ? 1 : 0
+  name                = "pep-${var.storage_account_name}-blob"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  subnet_id           = var.private_endpoints_subnet_id
+
+  private_service_connection {
+    name                           = "sa-blob-privateserviceconnection"
+    private_connection_resource_id = azurerm_storage_account.sa.id
+    is_manual_connection           = false
+    subresource_names              = ["blob"]
+  }
+
+  private_dns_zone_group {
+    name                 = "sa-blob-privatelink"
+    private_dns_zone_ids = [azurerm_private_dns_zone.sa_blob[0].id]
+  }
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "sa_blob" {
+  count                 = var.use_private_endpoints ? 1 : 0
+  name                  = "blob"
+  resource_group_name   = var.resource_group_name
+  private_dns_zone_name = azurerm_private_dns_zone.sa_blob[0].name
+  virtual_network_id    = var.vnet_id
+}
+
+# Private endpoint for the File Share
+
+resource "azurerm_private_dns_zone" "sa_file" {
+  count               = var.use_private_endpoints ? 1 : 0
+  name                = "privatelink.file.core.windows.net"
+  resource_group_name = var.resource_group_name
+}
+
+resource "azurerm_private_endpoint" "sa_file" {
+  count               = var.use_private_endpoints ? 1 : 0
+  name                = "pep-${var.storage_account_name}-file"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  subnet_id           = var.private_endpoints_subnet_id
+
+  private_service_connection {
+    name                           = "sa-file-privateserviceconnection"
+    private_connection_resource_id = azurerm_storage_account.sa.id
+    is_manual_connection           = false
+    subresource_names              = ["file"]
+  }
+
+  private_dns_zone_group {
+    name                 = "sa-file-privatelink"
+    private_dns_zone_ids = [azurerm_private_dns_zone.sa_file[0].id]
+  }
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "sa_file" {
+  count               = var.use_private_endpoints ? 1 : 0
+  name                  = "file"
+  resource_group_name   = var.resource_group_name
+  private_dns_zone_name = azurerm_private_dns_zone.sa_file[0].name
+  virtual_network_id    = var.vnet_id
+}
