@@ -4,7 +4,7 @@ resource "azapi_resource" "cae" {
   parent_id = var.resource_group_id
   type      = "Microsoft.App/managedEnvironments@2022-11-01-preview"
 
-  body = jsonencode({
+  body = {
     properties : {
       daprAIInstrumentationKey = "${var.appi_key}"
       appLogsConfiguration = {
@@ -25,6 +25,6 @@ resource "azapi_resource" "cae" {
         },
       ]
     }
-  })
+  }
   response_export_values = ["properties.defaultDomain"]
 }

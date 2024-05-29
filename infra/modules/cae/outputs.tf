@@ -3,6 +3,6 @@ output "cae_id" {
 }
 
 output "default_domain" {
-  value = jsondecode(azapi_resource.cae.output).properties.defaultDomain
+  value = azapi_resource.cae.output.properties.defaultDomain
 }
 
