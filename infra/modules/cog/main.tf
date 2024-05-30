@@ -1,3 +1,5 @@
+# Content Safety
+
 resource "azurerm_cognitive_account" "content_safety" {
   name                          = var.content_safety_name
   kind                          = "ContentSafety"
@@ -9,7 +11,59 @@ resource "azurerm_cognitive_account" "content_safety" {
   identity {
     type = "SystemAssigned"
   }
+  dynamic "network_acls" { # Only set network rules if private endpoints are used, adding allowed IPs to access the service
+    for_each = var.use_private_endpoints ? [1] : []
+      content {
+        default_action = "Deny"
+        ip_rules       = var.allowed_ips      
+      }
+  }  
 }
+
+resource "azurerm_role_assignment" "reader" {
+  scope                = var.content_safety_storage_resource_id
+  role_definition_name = "Storage Blob Data Reader"
+  principal_id         = azurerm_cognitive_account.content_safety.identity[0].principal_id
+}
+
+## Private endpoint
+
+resource "azurerm_private_dns_zone" "private_dns_zone_safety" {
+  count               = var.use_private_endpoints ? 1 : 0
+  name                = "privatelink.${var.content_safety_name}.azure.com"
+  resource_group_name = var.resource_group_name
+}
+
+resource "azurerm_private_endpoint" "pep_content_safety" {
+  count               = var.use_private_endpoints ? 1 : 0
+  name                = "pep-${var.content_safety_name}"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  subnet_id           = var.private_endpoints_subnet_id
+
+  private_service_connection {
+    name                           = "${var.content_safety_name}-safety-privateserviceconnection"
+    private_connection_resource_id = azurerm_cognitive_account.content_safety.id
+    is_manual_connection           = false
+    subresource_names              = ["account"]  
+  }
+
+  private_dns_zone_group {
+    name                 = "${var.content_safety_name}-privatelink"
+    private_dns_zone_ids = [azurerm_private_dns_zone.private_dns_zone_safety[0].id]
+  }
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "private_dns_zone_link_content_safety" {
+  count                 = var.use_private_endpoints ? 1 : 0
+  name                  = var.content_safety_name
+  resource_group_name   = var.resource_group_name
+  private_dns_zone_name = azurerm_private_dns_zone.private_dns_zone_safety[0].name
+  virtual_network_id    = var.vnet_id
+}
+
+
+# AI services multi-service account
 
 resource "azurerm_cognitive_account" "cognitive" {
   name                          = var.cognitive_services_name
@@ -19,7 +73,53 @@ resource "azurerm_cognitive_account" "cognitive" {
   resource_group_name           = var.resource_group_name
   public_network_access_enabled = true
   custom_subdomain_name         = var.cognitive_services_name
+  dynamic "network_acls" { # Only set network rules if private endpoints are used, adding allowed IPs to access the service
+    for_each = var.use_private_endpoints ? [1] : []
+      content {
+        default_action = "Deny"
+        ip_rules       = var.allowed_ips      
+      }
+  }
 }
+
+## Private endpoint
+
+resource "azurerm_private_dns_zone" "private_dns_zone_cognitive_services" {
+  count               = var.use_private_endpoints ? 1 : 0
+  name                = "privatelink.${var.cognitive_services_name}.azure.com"
+  resource_group_name = var.resource_group_name
+}
+
+resource "azurerm_private_endpoint" "pep_cognitive_services" {
+  count               = var.use_private_endpoints ? 1 : 0
+  name                = "pep-${var.cognitive_services_name}"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  subnet_id           = var.private_endpoints_subnet_id
+
+  private_service_connection {
+    name                           = "${var.cognitive_services_name}-privateserviceconnection"
+    private_connection_resource_id = azurerm_cognitive_account.cognitive.id
+    is_manual_connection           = false
+    subresource_names              = ["account"]  
+  }
+
+  private_dns_zone_group {
+    name                 = "${var.cognitive_services_name}-privatelink"
+    private_dns_zone_ids = [azurerm_private_dns_zone.private_dns_zone_cognitive_services[0].id]
+  }
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "private_dns_zone_link_cognitive_services" {
+  count                 = var.use_private_endpoints ? 1 : 0
+  name                  = var.cognitive_services_name
+  resource_group_name   = var.resource_group_name
+  private_dns_zone_name = azurerm_private_dns_zone.private_dns_zone_cognitive_services[0].name
+  virtual_network_id    = var.vnet_id
+}
+
+
+# Speech Service
 
 resource "azurerm_cognitive_account" "speech" {
   name                          = var.speech_name
@@ -29,7 +129,53 @@ resource "azurerm_cognitive_account" "speech" {
   resource_group_name           = var.resource_group_name
   public_network_access_enabled = true
   custom_subdomain_name         = var.speech_name
+  dynamic "network_acls" { # Only set network rules if private endpoints are used, adding allowed IPs to access the service
+    for_each = var.use_private_endpoints ? [1] : []
+      content {
+        default_action = "Deny"
+        ip_rules       = var.allowed_ips      
+      }
+  }    
 }
+
+## Private endpoint
+
+resource "azurerm_private_dns_zone" "private_dns_zone_speech" {
+  count               = var.use_private_endpoints ? 1 : 0
+  name                = "privatelink.${var.speech_name}.azure.com"
+  resource_group_name = var.resource_group_name
+}
+
+resource "azurerm_private_endpoint" "pep_speech" {
+  count               = var.use_private_endpoints ? 1 : 0
+  name                = "pep-${var.speech_name}"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  subnet_id           = var.private_endpoints_subnet_id
+
+  private_service_connection {
+    name                           = "${var.speech_name}-privateserviceconnection"
+    private_connection_resource_id = azurerm_cognitive_account.speech.id
+    is_manual_connection           = false
+    subresource_names              = ["account"]  
+  }
+
+  private_dns_zone_group {
+    name                 = "${var.speech_name}-privatelink"
+    private_dns_zone_ids = [azurerm_private_dns_zone.private_dns_zone_speech[0].id]
+  }
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "private_dns_zone_link_speech" {
+  count                 = var.use_private_endpoints ? 1 : 0
+  name                  = var.speech_name
+  resource_group_name   = var.resource_group_name
+  private_dns_zone_name = azurerm_private_dns_zone.private_dns_zone_speech[0].name
+  virtual_network_id    = var.vnet_id
+}
+
+
+# Computer Vision
 
 resource "azurerm_cognitive_account" "vision" {
   name                          = var.vision_name
@@ -39,7 +185,52 @@ resource "azurerm_cognitive_account" "vision" {
   resource_group_name           = var.resource_group_name
   public_network_access_enabled = true
   custom_subdomain_name         = var.vision_name
+  dynamic "network_acls" { # Only set network rules if private endpoints are used, adding allowed IPs to access the service
+    for_each = var.use_private_endpoints ? [1] : []
+      content {
+        default_action = "Deny"
+        ip_rules       = var.allowed_ips      
+      }
+  }
 }
+
+## Private endpoint
+
+resource "azurerm_private_dns_zone" "private_dns_zone_vision" {
+  count               = var.use_private_endpoints ? 1 : 0
+  name                = "privatelink.${var.vision_name}.azure.com"
+  resource_group_name = var.resource_group_name
+}
+
+resource "azurerm_private_endpoint" "pep_vision" {
+  count               = var.use_private_endpoints ? 1 : 0
+  name                = "pep-${var.vision_name}"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  subnet_id           = var.private_endpoints_subnet_id
+
+  private_service_connection {
+    name                           = "${var.vision_name}-privateserviceconnection"
+    private_connection_resource_id = azurerm_cognitive_account.vision.id
+    is_manual_connection           = false
+    subresource_names              = ["account"]  
+  }
+
+  private_dns_zone_group {
+    name                 = "${var.vision_name}-privatelink"
+    private_dns_zone_ids = [azurerm_private_dns_zone.private_dns_zone_vision[0].id]
+  }
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "pep_vision" {
+  count                 = var.use_private_endpoints ? 1 : 0
+  name                  = var.vision_name
+  resource_group_name   = var.resource_group_name
+  private_dns_zone_name = azurerm_private_dns_zone.private_dns_zone_vision[0].name
+  virtual_network_id    = var.vnet_id
+}
+
+# Bing Search
 
 resource "azurerm_resource_group_template_deployment" "main" {
   count               = var.deploy_bing ? 1 : 0
@@ -103,10 +294,4 @@ resource "azurerm_resource_group_template_deployment" "main" {
    }    
 }
 TEMPLATE
-}
-
-resource "azurerm_role_assignment" "reader" {
-  scope                = var.content_safety_storage_resource_id
-  role_definition_name = "Storage Blob Data Reader"
-  principal_id         = azurerm_cognitive_account.content_safety.identity[0].principal_id
 }
