@@ -1,10 +1,16 @@
 data "azurerm_subscription" "current" {}
 
+data "http" "current_ip" {
+  url = "http://ipv4.icanhazip.com"
+  count = var.use_private_endpoints ? 1 : 0
+}
+
 resource "random_id" "random" {
   byte_length = 8
 }
 
 locals {
+  allowed_ips             = var.use_private_endpoints ? concat(var.allowed_ips, ["${chomp(data.http.current_ip[0].response_body)}"]) : var.allowed_ips
   sufix                   = var.use_random_suffix ? substr(lower(random_id.random.hex), 1, 5) : ""
   name_sufix              = var.use_random_suffix ? "-${local.sufix}" : ""
   resource_group_name     = "${var.resource_group_name}${local.name_sufix}"
@@ -66,7 +72,8 @@ module "apim" {
   openai_service_name      = module.openai.openai_service_name
   openai_service_endpoint  = module.openai.openai_endpoint
   tenant_id                = data.azurerm_subscription.current.tenant_id
-
+  use_private_endpoints    = var.use_private_endpoints
+ 
   depends_on = [module.nsg]
 }
 
@@ -84,18 +91,26 @@ resource "azurerm_role_assignment" "id_reader" {
 }
 
 module "search" {
-  source              = "./modules/search"
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
-  search_name         = local.search_name
-  principal_id        = module.mi.principal_id
+  source                      = "./modules/search"
+  location                    = azurerm_resource_group.rg.location
+  resource_group_name         = azurerm_resource_group.rg.name
+  search_name                 = local.search_name
+  principal_id                = module.mi.principal_id
+  allowed_ips                 = local.allowed_ips
+  vnet_id                     = module.vnet.virtual_network_id
+  private_endpoints_subnet_id = module.vnet.pe_subnet_id 
+  use_private_endpoints       = var.use_private_endpoints
 }
 
 module "form_recognizer" {
-  source               = "./modules/form"
-  location             = azurerm_resource_group.rg.location
-  resource_group_name  = azurerm_resource_group.rg.name
-  form_recognizer_name = local.form_recognizer_name
+  source                      = "./modules/form"
+  location                    = azurerm_resource_group.rg.location
+  resource_group_name         = azurerm_resource_group.rg.name
+  form_recognizer_name        = local.form_recognizer_name
+  vnet_id                     = module.vnet.virtual_network_id
+  private_endpoints_subnet_id = module.vnet.pe_subnet_id 
+  use_private_endpoints       = var.use_private_endpoints
+  allowed_ips                 = local.allowed_ips
 }
 
 module "log" {
@@ -122,15 +137,20 @@ module "st" {
   vnet_id                     = module.vnet.virtual_network_id
   private_endpoints_subnet_id = module.vnet.pe_subnet_id 
   use_private_endpoints       = var.use_private_endpoints
-  allowed_ips                 = var.allowed_ips
+  allowed_ips                 = local.allowed_ips
 }
 
 module "openai" {
-  source              = "./modules/openai"
-  location            = var.location_azopenai
-  resource_group_name = azurerm_resource_group.rg.name
-  azopenai_name       = local.azopenai_name
-  principal_id        = module.mi.principal_id
+  source                      = "./modules/openai"
+  location                    = var.location_azopenai
+  resource_group_name         = azurerm_resource_group.rg.name
+  azopenai_name               = local.azopenai_name
+  principal_id                = module.mi.principal_id
+  allowed_ips                 = local.allowed_ips
+  vnet_id                     = module.vnet.virtual_network_id
+  vnet_location               = azurerm_resource_group.rg.location
+  private_endpoints_subnet_id = module.vnet.pe_subnet_id 
+  use_private_endpoints       = var.use_private_endpoints
 }
 
 module "cog" {
@@ -147,6 +167,10 @@ module "cog" {
   content_safety_storage_resource_id = module.st.storage_account_id
   deploy_bing                        = var.deploy_bing
   content_safety_location            = var.location_content_safety
+  allowed_ips                        = local.allowed_ips
+  vnet_id                            = module.vnet.virtual_network_id
+  private_endpoints_subnet_id        = module.vnet.pe_subnet_id 
+  use_private_endpoints              = var.use_private_endpoints
 }
 
 module "cae" {
