@@ -145,10 +145,12 @@ variable "enable_openai_plugin_call_transcript" {
 variable "enable_openai_plugin_compare_financial_products" {
   default = false
 }
+
 variable "use_private_endpoints" {
     type = bool
     default = false
 }
+
 variable "allowed_ips" {
   type = list(string)
   default = []

@@ -26,6 +26,10 @@ resource "azapi_resource" "apim" {
       publisherName         = var.publisher_name
       apiVersionConstraint  = {}
       developerPortalStatus = "Disabled"
+      virtualNetworkType    = var.use_private_endpoints ? "External" : "None"
+      virtualNetworkConfiguration = var.use_private_endpoints ? {
+        subnetResourceId = var.apim_subnet_id        
+      } : null
     }
   })
   response_export_values = [
