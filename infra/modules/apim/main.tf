@@ -63,7 +63,7 @@ resource "azapi_resource" "apim_backend_pool" {
         services = [
           {
             id       = azurerm_api_management_backend.openai.id
-            prioeity = 1
+            priority = 1
             weight   = 1
           }
         ]
