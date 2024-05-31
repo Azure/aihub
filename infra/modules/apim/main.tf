@@ -26,6 +26,10 @@ resource "azapi_resource" "apim" {
       publisherName         = var.publisher_name
       apiVersionConstraint  = {}
       developerPortalStatus = "Disabled"
+      virtualNetworkType    = var.use_private_endpoints ? "External" : "None"
+      virtualNetworkConfiguration = var.use_private_endpoints ? {
+        subnetResourceId = var.apim_subnet_id        
+      } : null
     }
   })
   response_export_values = [
@@ -150,7 +154,7 @@ resource "azurerm_api_management_api_policy" "policy" {
         </on-error>
     </policies>
     XML
-  depends_on  = [azurerm_api_management_backend.openai]
+  depends_on  = [azurerm_api_management_backend.openai, azapi_resource.apim_backend_pool]
 }
 
 # https://github.com/aavetis/azure-openai-logger/blob/main/README.md
