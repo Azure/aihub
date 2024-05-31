@@ -31,7 +31,7 @@ resource "azurerm_role_assignment" "search_service_contributor" {
 
 resource "azurerm_private_dns_zone" "private_dns_zone_search" {
   count               = var.use_private_endpoints ? 1 : 0
-  name                = "privatelink.${var.search_name}.azure.com"
+  name                = "privatelink.search.windows.net"
   resource_group_name = var.resource_group_name
 }
 
