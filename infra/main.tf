@@ -102,17 +102,6 @@ module "search" {
   use_private_endpoints       = var.use_private_endpoints
 }
 
-module "form_recognizer" {
-  source                      = "./modules/form"
-  location                    = azurerm_resource_group.rg.location
-  resource_group_name         = azurerm_resource_group.rg.name
-  form_recognizer_name        = local.form_recognizer_name
-  vnet_id                     = module.vnet.virtual_network_id
-  private_endpoints_subnet_id = module.vnet.pe_subnet_id 
-  use_private_endpoints       = var.use_private_endpoints
-  allowed_ips                 = local.allowed_ips
-}
-
 module "log" {
   source              = "./modules/log"
   location            = azurerm_resource_group.rg.location
@@ -161,6 +150,7 @@ module "cog" {
   bing_name                          = local.bing_name
   cognitive_services_name            = local.cognitive_services_name
   content_safety_name                = local.content_safety_name
+  form_recognizer_name               = local.form_recognizer_name
   speech_name                        = local.speech_name
   vision_name                        = local.vision_name
   vision_location                    = var.location_azopenai
