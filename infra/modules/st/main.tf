@@ -103,7 +103,7 @@ resource "azurerm_role_assignment" "storage_contributor" {
 
 resource "azurerm_private_dns_zone" "private_dns_zone_blob" {
   count               = var.use_private_endpoints ? 1 : 0
-  name                = "privatelink.${var.storage_account_name}-blob.azure.com"
+  name                = "privatelink.blob.core.windows.net"
   resource_group_name = var.resource_group_name
 }
 
@@ -139,7 +139,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "private_dns_zone_link_
 
 resource "azurerm_private_dns_zone" "private_dns_zone_file" {
   count               = var.use_private_endpoints ? 1 : 0
-  name                = "privatelink.${var.storage_account_name}-file.azure.com"
+  name                = "privatelink.file.core.windows.net"
   resource_group_name = var.resource_group_name
 }
 
