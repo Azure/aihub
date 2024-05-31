@@ -29,3 +29,7 @@ output "vision_endpoint" {
 output "vision_key" {
   value = azurerm_cognitive_account.vision.primary_access_key
 }
+
+output "form_recognizer_name" {
+  value = azurerm_cognitive_account.form.name
+}

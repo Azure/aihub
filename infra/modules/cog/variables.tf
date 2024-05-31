@@ -3,6 +3,7 @@ variable "resource_group_id" {}
 variable "location" {}
 variable "content_safety_name" {}
 variable "cognitive_services_name" {}
+variable "form_recognizer_name" {}
 variable "speech_name" {}
 variable "vision_name" {}
 variable "vision_location" {}
