@@ -89,7 +89,7 @@ resource "azurerm_role_assignment" "openai_user" {
 
 resource "azurerm_private_dns_zone" "private_dns_zone_openai" {
   count               = var.use_private_endpoints ? 1 : 0
-  name                = "privatelink.${var.azopenai_name}.azure.com"
+  name                = "privatelink.openai.azure.com"
   resource_group_name = var.resource_group_name
 }
 
