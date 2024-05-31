@@ -154,7 +154,7 @@ resource "azurerm_api_management_api_policy" "policy" {
         </on-error>
     </policies>
     XML
-  depends_on  = [azurerm_api_management_backend.openai]
+  depends_on  = [azurerm_api_management_backend.openai, azapi_resource.apim_backend_pool]
 }
 
 # https://github.com/aavetis/azure-openai-logger/blob/main/README.md
