@@ -4,7 +4,7 @@ description: AI Hub &mdash; Steps to deploy the complete solution.
 weight: 4
 ---
 
-# High-level Architecture
+## High-level Architecture
 
 The following diagram shows the high-level architecture of the **AI Hub** solution:
 
