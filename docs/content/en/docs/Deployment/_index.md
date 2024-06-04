@@ -10,39 +10,42 @@ The following diagram shows the high-level architecture of the **AI Hub** soluti
 
 ![High-level Architecture](/aihub/img/AI-Hub-HLD.png)
 
-### Create a new resource group
+## Deployment
+
+To deploy the AI Hub on your own Azure subscription, please follow these instructions.
+
+### Prerequisites
+
+Before deploying the Azure AI Hub, please ensure the following prerequisites are met:
+
+- Please review the values in the `variables.tf` file to create the appropriate `.tfvars` file with the values you prefer. Take into account that some elements in the architecture are optional, like for example private endpoints which by default are not deployed unless the value of the `use_private_endpoints` variable is set to `true`.
+- You have Azure CLI version `2.56.0` or higher installed, or using the Azure Cloud Shell.
+- During deployment, the script will create two application registrations on Microsoft Entra ID. Please verify that your user account has the necessary privileges.
+- The Azure AI Hub uses various cognitive services like Azure Computer Vision, Azure Speech Service or Azure Document Intelligence. To deploy these Cognitive Services, you must manually accept the "Responsible AI" terms. This can currently only be done by deploying any of these services from the Azure Portal.
+
+
+### Deploying the infrastructure - From Windows
+
+Run the following command to deploy the infrastructure:
+
 ```bash
-az group create --name aihub-rg --location westeurope
-```
-### Create a new storage account
-```bash
-az storage account create --name aihubstorage --resource-group aihub-rg --location westeurope --sku Standard_LRS
+az login
+az account set -s <target subscription_id or subscription_name>
+powershell -Command "iwr -useb https://raw.githubusercontent.com/azure/aihub/master/install/install.ps1 | iex"
 ```
 
-### Create a new app service plan
-```bash
-az appservice plan create --name aihub-appservice --resource-group aihub-rg --sku S1
-```
+### Deploying the infrastructure - From Linux
 
-### Create a new web app using dot net 8
-```bash
-az webapp create --name aihub-webapp --resource-group aihub-rg --plan aihub-appservice --runtime "DOTNET|8.0"
-```
+For installation on Linux, we recommend using `Ubuntu 22.04` or a newer version. Before executing the installation script, ensure that the following applications are installed and up-to-date:
 
-### Create an Azure multi service cognitive service account
-```bash
-az cognitiveservices account create --name aihub-cognitiveservice --resource-group aihub-rg  --kind CognitiveServices --sku S0 --location westeurope --yes
-```
+- `curl`, version `7.x` or higher.
+- `jq`, version `1.6` or higher.
+- `unzip`, version `6.x` or higher.
 
-### Create an Azure OpenAI resource
-```bash
-az openai create --name aihub-openai --resource-group aihub-rg --location westeurope
-```
+To deploy the infrastructure, execute the following command:
 
-### Create a Content Safety Cognitive Service
 ```bash
-az cognitiveservices account create --name aihub-contentsafety --resource-group aihub-rg --kind ContentSafety --sku F0 --location westeurope
+az login
+az account set -s <target subscription_id or subscription_name>
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/azure/aihub/master/install/install_linux.sh)"
 ```
-
-### Configure the web app
-As a last step, we need to configure the web app to use the storage account and the cognitive service account we created earlier. To do this, we need to rename appsettings.json.template file to appsettings.json and replace the placeholders with the values we got from the previous steps.

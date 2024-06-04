@@ -33,7 +33,3 @@ az login
 az account set -s <target subscription_id or subscription_name>
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/azure/aihub/master/install/install_linux.sh)"
 ```
-
-## Manual steps
-
-For details on manual deployment, please refer to the [Deployment](https://azure.github.io/aihub/docs/deployment/) section in the Azure AI Hub documentation.
