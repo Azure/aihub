@@ -130,16 +130,48 @@ resource "azurerm_api_management_api_policy" "policy" {
                 </required-claims>
             </validate-jwt>
 
-            <azure-openai-emit-token-metric
-                namespace="AzureOpenAI">   
-                <dimension name="API ID" />
-                <dimension name="Operation ID" />
-                <dimension name="Client IP" value="@(context.Request.IpAddress)" />
-            </azure-openai-emit-token-metric>
+            <choose>
+                <when condition="@(
+                    // Parse the request body as a JObject
+                    context.Request.Body.As<JObject>(preserveContent: true)["messages"]
+                        // Check that all messages...
+                        ?.All(message => 
+                            message["content"]
+                                // ...have all content...
+                                .All(content => 
+                                    // ...that is either not a JObject...
+                                    !(content is JObject) 
+                                    // ...or is a JObject with a 'type' property that equals 'text'
+                                    || (content is JObject && ((JObject)content).ContainsKey("type") && content["type"].Value<string>() == "text")
+                                )
+                        ) == true
+                  )">
+                    
+                    <!-- If all type properties are 'text' or there are no type properties, apply the new Azure OpenAI policies -->
+                    
+                    <trace source="Azure OpenAI Policies" severity="information">
+                        <message>Using Azure OpenAI policies.</message>
+                        <metadata name="Using_Azure_OpenAI_Policies" value="true" />
+                    </trace>
+                    
+                    <azure-openai-emit-token-metric
+                        namespace="AzureOpenAI">
+                        <dimension name="API ID" />
+                        <dimension name="Operation ID" />
+                        <dimension name="Client IP" value="@(context.Request.IpAddress)" />
+                    </azure-openai-emit-token-metric>
 
-            <azure-openai-token-limit
-              counter-key="@(context.Request.IpAddress)"
-              tokens-per-minute="10000" estimate-prompt-tokens="false" remaining-tokens-variable-name="remainingTokens" />
+                    <azure-openai-token-limit
+                      counter-key="@(context.Request.IpAddress)"
+                      tokens-per-minute="10000" estimate-prompt-tokens="false" remaining-tokens-variable-name="remainingTokens" />
+                </when>
+                <otherwise>
+                    <trace source="Azure OpenAI Policies" severity="information">
+                        <message>Not using Azure OpenAI policies.</message>
+                        <metadata name="Using_Azure_OpenAI_Policies" value="false" />
+                    </trace>
+                </otherwise>
+            </choose>
 
             <set-backend-service backend-id="${azapi_resource.apim_backend_pool.name}" />
         </inbound>
