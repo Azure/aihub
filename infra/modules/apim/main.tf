@@ -131,21 +131,7 @@ resource "azurerm_api_management_api_policy" "policy" {
             </validate-jwt>
 
             <choose>
-                <when condition="@(
-                    // Parse the request body as a JObject
-                    context.Request.Body.As<JObject>(preserveContent: true)["messages"]
-                        // Check that all messages...
-                        ?.All(message => 
-                            message["content"]
-                                // ...have all content...
-                                .All(content => 
-                                    // ...that is either not a JObject...
-                                    !(content is JObject) 
-                                    // ...or is a JObject with a 'type' property that equals 'text'
-                                    || (content is JObject && ((JObject)content).ContainsKey("type") && content["type"].Value<string>() == "text")
-                                )
-                        ) == true
-                  )">
+                <when condition="@(context.Request.Body.As<JObject>(preserveContent: true)["messages"]?.All(message => message["content"].All(content => !(content is JObject))) == true)">
                     
                     <!-- If all type properties are 'text' or there are no type properties, apply the new Azure OpenAI policies -->
                     
