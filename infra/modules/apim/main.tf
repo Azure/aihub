@@ -168,7 +168,6 @@ resource "azurerm_api_management_api_policy" "policy" {
         </on-error>
     </policies>
     XML
-  depends_on  = [azurerm_api_management_named_value.tenant_id]
 }
 
 # https://github.com/aavetis/azure-openai-logger/blob/main/README.md
