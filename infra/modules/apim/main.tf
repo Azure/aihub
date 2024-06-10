@@ -3,14 +3,10 @@ locals {
   backend_url = "${var.openai_service_endpoint}openai"
 }
 
-data "azurerm_resource_group" "rg" {
-  name = var.resource_group_name
-}
-
 resource "azapi_resource" "apim" {
   type      = "Microsoft.ApiManagement/service@2023-05-01-preview"
   name      = var.apim_name
-  parent_id = data.azurerm_resource_group.rg.id
+  parent_id = var.resource_group_id
   location  = var.location
   identity {
     type = "SystemAssigned"
@@ -172,7 +168,6 @@ resource "azurerm_api_management_api_policy" "policy" {
         </on-error>
     </policies>
     XML
-  depends_on  = [azurerm_api_management_backend.openai, azapi_resource.apim_backend_pool]
 }
 
 # https://github.com/aavetis/azure-openai-logger/blob/main/README.md
