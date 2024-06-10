@@ -62,6 +62,7 @@ module "apim" {
   count                    = var.enable_apim ? 1 : 0
   source                   = "./modules/apim"
   location                 = azurerm_resource_group.rg.location
+  resource_group_id        = azurerm_resource_group.rg.id
   resource_group_name      = azurerm_resource_group.rg.name
   apim_name                = local.apim_name
   apim_subnet_id           = module.vnet.apim_subnet_id
