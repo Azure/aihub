@@ -4,7 +4,7 @@ locals {
 }
 
 resource "azapi_resource" "apim" {
-  type      = "Microsoft.ApiManagement/service@2023-05-01-preview"
+  type      = "Microsoft.ApiManagement/service@2023-03-01-preview"
   name      = var.apim_name
   parent_id = var.resource_group_id
   location  = var.location
@@ -168,6 +168,7 @@ resource "azurerm_api_management_api_policy" "policy" {
         </on-error>
     </policies>
     XML
+    depends_on = [ azurerm_api_management_named_value.tenant_id ]
 }
 
 # https://github.com/aavetis/azure-openai-logger/blob/main/README.md
