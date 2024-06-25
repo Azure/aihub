@@ -1,3 +1,5 @@
+using OpenAI.Chat;
+
 namespace MVCWeb.Controllers;
 
 public class DocumentComparisonController : Controller
@@ -60,41 +62,33 @@ public class DocumentComparisonController : Controller
 
         try
         {
-            OpenAIClient aoaiClient;
-            if (string.IsNullOrEmpty(AOAIsubscriptionKey))
-            {
-                aoaiClient = new OpenAIClient(
-                    new Uri(AOAIendpoint),
-                    new DefaultAzureCredential());
-            }
-            else
-            {
-                aoaiClient = new OpenAIClient(
-                    new Uri(AOAIendpoint),
-                    new AzureKeyCredential(AOAIsubscriptionKey));
-            }
+            Uri aoaiEndpointUri = new(AOAIendpoint);
 
-            // ### If streaming is not selected
-            Response<ChatCompletions> responseWithoutStream = await aoaiClient.GetChatCompletionsAsync(
-                new ChatCompletionsOptions()
-                {
-                    DeploymentName = AOAIDeploymentName,
-                    Messages =
-                    {
-                        new ChatRequestSystemMessage(@"You are specialized in analyze different versions of the same PDF document. The first Document OCR result is: <<<"+output_result[0]+">>> and the second Document OCR result is: <<<"+output_result[1]+">>>"),
-                        new ChatRequestUserMessage(@"User question: "+prompt ),
-                    },
-                    Temperature = (float)0.7,
-                    MaxTokens = 1000,
-                    NucleusSamplingFactor = (float)0.95,
-                    FrequencyPenalty = 0,
-                    PresencePenalty = 0,
-                });
+            AzureOpenAIClient azureClient = string.IsNullOrEmpty(AOAIsubscriptionKey)
+                ? new(aoaiEndpointUri, new DefaultAzureCredential())
+                : new(aoaiEndpointUri, new AzureKeyCredential(AOAIsubscriptionKey));
 
-            ChatCompletions completions = responseWithoutStream.Value;
-            ChatChoice results_analisis = completions.Choices[0];
-            model.Message = results_analisis.Message.Content;
-            ViewBag.Message = results_analisis.Message.Content;
+            ChatClient chatClient = azureClient.GetChatClient(AOAIDeploymentName);
+
+            var messages = new ChatMessage[]
+            {
+                new SystemChatMessage($@"You are specialized in analyze different versions of the same PDF document. The first Document OCR result is: <<<{output_result[0]}>>> and the second Document OCR result is: <<<{output_result[1]}>>>"),
+                new UserChatMessage($@"User question: {prompt}"),
+            };
+
+            ChatCompletionOptions chatCompletionOptions = new()
+            {
+                MaxTokens = 1000,
+                Temperature = 0.7f,
+                FrequencyPenalty = 0,
+                PresencePenalty = 0,
+                TopP = 0.95f
+            };
+
+            ChatCompletion completion = await chatClient.CompleteChatAsync(messages, chatCompletionOptions);
+
+            model.Message = completion.Content[0].Text;
+            ViewBag.Message = completion.Content[0].Text;
         }
         catch (RequestFailedException)
         {
@@ -122,7 +116,7 @@ public class DocumentComparisonController : Controller
         {
             if (CheckImageExtension(documentFile.FileName.ToString()))
             {
-                ViewBag.Message = "You must upload pdf documpents only";
+                ViewBag.Message = "You must upload pdf documents only";
                 return View("DocumentComparison", model);
             }
         }
@@ -156,21 +150,8 @@ public class DocumentComparisonController : Controller
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 
-    private bool CheckNullValues(IFormFile filename)
+    private static bool CheckImageExtension(string filename)
     {
-        if (filename == null)
-        {
-            return true;
-        }
-        return false;
-    }
-
-    private bool CheckImageExtension(string filename)
-    {
-        if (filename.Contains(".pdf", StringComparison.OrdinalIgnoreCase))
-        {
-            return false;
-        }
-        return true;
+        return !filename.Contains(@".pdf", StringComparison.OrdinalIgnoreCase);
     }
 }

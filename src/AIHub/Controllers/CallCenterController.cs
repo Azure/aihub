@@ -1,3 +1,5 @@
+using OpenAI.Chat;
+
 namespace MVCWeb.Controllers;
 
 public class CallCenterController : Controller
@@ -34,43 +36,32 @@ public class CallCenterController : Controller
         }
         try
         {
-            OpenAIClient aoaiClient;
-            if (string.IsNullOrEmpty(subscriptionKey))
-            {
-                aoaiClient = new OpenAIClient(
-                    new Uri(endpoint),
-                    new DefaultAzureCredential());
-            }
-            else
-            {
-                aoaiClient = new OpenAIClient(
-                    new Uri(endpoint),
-                    new AzureKeyCredential(subscriptionKey));
-            }
+            Uri aoaiEndpointUri = new(endpoint);
 
-            // If streaming is not selected
-            Response<ChatCompletions> responseWithoutStream = await aoaiClient.GetChatCompletionsAsync(
-                new ChatCompletionsOptions()
-                {
-                    DeploymentName = AOAIDeploymentName,
-                    Messages =
-                    {
-                        new ChatRequestSystemMessage(model.Prompt),
-                        new ChatRequestUserMessage(@"Call transcript: "+model.Transcript),
-                    },
-                    Temperature = (float)0.1,
-                    MaxTokens = 1000,
-                    NucleusSamplingFactor = (float)0.95,
-                    FrequencyPenalty = 0,
-                    PresencePenalty = 0,
-                });
+            AzureOpenAIClient azureClient = string.IsNullOrEmpty(subscriptionKey)
+              ? new(aoaiEndpointUri, new DefaultAzureCredential())
+              : new(aoaiEndpointUri, new AzureKeyCredential(subscriptionKey));
 
-            ChatCompletions completions = responseWithoutStream.Value;
-            ChatChoice results_analisis = completions.Choices[0];
-            System.Console.WriteLine(results_analisis);
-            ViewBag.Message =
-                   results_analisis.Message.Content
-                   ;
+            ChatClient chatClient = azureClient.GetChatClient(AOAIDeploymentName);
+
+            var messages = new ChatMessage[]
+            {
+                new SystemChatMessage(model.Prompt),
+                new UserChatMessage(@"Call transcript: "+model.Transcript),
+            };
+
+            ChatCompletionOptions chatCompletionOptions = new()
+            {
+                MaxTokens = 1000,
+                Temperature = 0.1f,
+                FrequencyPenalty = 0,
+                PresencePenalty = 0,
+                TopP = 0.95f,
+            };
+
+            ChatCompletion completion = await chatClient.CompleteChatAsync(messages, chatCompletionOptions);
+
+            ViewBag.Message = completion.Content[0].Text;
         }
         catch (RequestFailedException)
         {
@@ -86,7 +77,7 @@ public class CallCenterController : Controller
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 
-    private bool CheckNullValues(string? companyName, string? prompt)
+    private static bool CheckNullValues(string? companyName, string? prompt)
     {
         if (string.IsNullOrEmpty(companyName))
         {
