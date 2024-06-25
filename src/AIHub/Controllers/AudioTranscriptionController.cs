@@ -158,22 +158,14 @@ public class AudioTranscriptionController : Controller
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 
-    private bool CheckNullValues(IFormFile? imageFile)
+    private static bool CheckNullValues(IFormFile? imageFile)
     {
-        if (imageFile == null)
-        {
-            return true;
-        }
-        return false;
+        return imageFile == null;
     }
 
-    private bool CheckImageExtension(string blobUri)
+    private static bool CheckImageExtension(string blobUri)
     {
         string uri_lower = blobUri;
-        if (uri_lower.Contains(".mp3", StringComparison.OrdinalIgnoreCase))
-        {
-            return false;
-        }
-        return true;
+        return !uri_lower.Contains(@".mp3", StringComparison.OrdinalIgnoreCase);
     }
 }
