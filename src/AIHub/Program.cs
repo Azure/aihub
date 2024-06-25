@@ -1,7 +1,16 @@
-using Azure;
-using Azure.AI.ContentSafety;
-
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Configuration.SetBasePath(Directory.GetCurrentDirectory());
+
+/* Load Configuration */
+if (Debugger.IsAttached)
+{
+    builder.Configuration.AddJsonFile(@"appsettings.debug.json", optional: true, reloadOnChange: true);
+}
+
+builder.Configuration.AddJsonFile($@"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+                     .AddJsonFile($@"appsettings.{Environment.UserName}.json", optional: true, reloadOnChange: true)
+                     .AddEnvironmentVariables();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -29,4 +38,4 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-app.Run();
+await app.RunAsync();
