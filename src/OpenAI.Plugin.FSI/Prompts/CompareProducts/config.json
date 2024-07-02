@@ -18,6 +18,10 @@
             {
                 "name": "product",
                 "description": "The product"
+            },
+            {
+                "name": "language",
+                "description": "language to be used in the answer"
             }
         ]
     }
