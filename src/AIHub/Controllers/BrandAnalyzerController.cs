@@ -1,3 +1,5 @@
+using OpenAI.Chat;
+
 namespace MVCWeb.Controllers;
 
 public class BrandAnalyzerController : Controller
@@ -76,42 +78,33 @@ public class BrandAnalyzerController : Controller
 
         try
         {
+            Uri aoaiEndpointUri = new(AOAIendpoint);
 
-            OpenAIClient aoaiClient;
-            if (string.IsNullOrEmpty(AOAIsubscriptionKey))
+            AzureOpenAIClient azureClient = string.IsNullOrEmpty(AOAIsubscriptionKey)
+                ? new(aoaiEndpointUri, new DefaultAzureCredential())
+                : new(aoaiEndpointUri, new AzureKeyCredential(AOAIsubscriptionKey));
+
+            ChatClient chatClient = azureClient.GetChatClient(AOAIDeploymentName);
+
+            var messages = new ChatMessage[]
             {
-                aoaiClient = new OpenAIClient(
-                    new Uri(AOAIendpoint),
-                    new DefaultAzureCredential());
-            }
-            else
+                new SystemChatMessage($"I will provide a list results from opinions on the Internet about {model.CompanyName} Bing search. If {model.CompanyName} is not a company what the user is asking for, answer to provide a new Company name. The user will ask you what they want to get from the company opinions. \n Results: {input_context}"),
+                new UserChatMessage(model.Prompt),
+            };
+
+            ChatCompletionOptions chatCompletionOptions = new()
             {
-                aoaiClient = new OpenAIClient(
-                    new Uri(AOAIendpoint),
-                    new AzureKeyCredential(AOAIsubscriptionKey));
-            }
+                
+                Temperature = 0.7f,
+                MaxTokens = 1000,
+                TopP = 0.95f,
+                FrequencyPenalty = 0,
+                PresencePenalty = 0,
+            };
 
-            // If streaming is not selected
-            Response<ChatCompletions> responseWithoutStream = await aoaiClient.GetChatCompletionsAsync(
-                new ChatCompletionsOptions()
-                {
-                    DeploymentName = AOAIDeploymentName,
-                    Messages =
-                    {
-                        new ChatRequestSystemMessage(@"I will provide a list results from opinons on the internet about "+model.CompanyName+" Bing search. If "+model.CompanyName+" is not a company what the user is asking for, answer to provide a new Company name. The user will ask you what they want to get from the compay opinions. \n Results: "+ input_context),
-                        new ChatRequestUserMessage(model.Prompt),
-                    },
-                    Temperature = (float)0.7,
-                    MaxTokens = 1000,
-                    NucleusSamplingFactor = (float)0.95,
-                    FrequencyPenalty = 0,
-                    PresencePenalty = 0,
-                });
+            ChatCompletion completion = await chatClient.CompleteChatAsync(messages, chatCompletionOptions);
 
-            ChatCompletions completions = responseWithoutStream.Value;
-            ChatChoice results_analisis = completions.Choices[0];
-            model.Message = results_analisis.Message.Content;
-            ViewBag.Message = results_analisis.Message.Content;
+            ViewBag.Message = completion.Content[0].Text;
         }
         catch (RequestFailedException)
         {
@@ -127,12 +120,8 @@ public class BrandAnalyzerController : Controller
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 
-    private bool CheckNullValues(string? companyName)
+    private static bool CheckNullValues(string? companyName)
     {
-        if (string.IsNullOrEmpty(companyName))
-        {
-            return true;
-        }
-        return false;
+        return string.IsNullOrEmpty(companyName);
     }
 }

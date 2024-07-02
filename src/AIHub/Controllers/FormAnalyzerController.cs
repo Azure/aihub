@@ -1,3 +1,5 @@
+using OpenAI.Chat;
+
 namespace MVCWeb.Controllers;
 
 public class FormAnalyzerController : Controller
@@ -47,42 +49,34 @@ public class FormAnalyzerController : Controller
         var operation = await client.AnalyzeDocumentFromUriAsync(WaitUntil.Completed, "prebuilt-layout", new Uri(image));
         var result = operation.Value.Content;
 
-        OpenAIClient aoaiClient;
-        if (string.IsNullOrEmpty(AOAIsubscriptionKey))
+        Uri aoaiEndpointUri = new(AOAIendpoint);
+
+        AzureOpenAIClient azureClient = string.IsNullOrEmpty(AOAIsubscriptionKey)
+            ? new(aoaiEndpointUri, new DefaultAzureCredential())
+            : new(aoaiEndpointUri, new AzureKeyCredential(AOAIsubscriptionKey));
+
+        ChatClient chatClient = azureClient.GetChatClient(AOAIDeploymentName);
+
+        var messages = new ChatMessage[]
         {
-            aoaiClient = new OpenAIClient(
-                new Uri(AOAIendpoint),
-                new DefaultAzureCredential());
-        }
-        else
+            new SystemChatMessage($@"You are specialized in understanding PDFs and answering questions about it. Document OCR result is: {result}"),
+            new UserChatMessage($@"User question: {prompt}"),
+        };
+
+        ChatCompletionOptions chatCompletionOptions = new()
         {
-            aoaiClient = new OpenAIClient(
-                new Uri(AOAIendpoint),
-                new AzureKeyCredential(AOAIsubscriptionKey));
-        }
+            MaxTokens = 1000,
+            Temperature = 0.7f,
+            FrequencyPenalty = 0,
+            PresencePenalty = 0,
+            TopP = 0.95f
+        };
 
-        // If streaming is not selected
-        Response<ChatCompletions> responseWithoutStream = await aoaiClient.GetChatCompletionsAsync(
-            new ChatCompletionsOptions()
-            {
-                DeploymentName = AOAIDeploymentName,
-                Messages =
-                {
-                        new ChatRequestSystemMessage($"You are specialized in understanding PDFs and answering questions about it. Document OCR result is: {result}"),
-                        new ChatRequestUserMessage($"User question: {prompt}"),
-                },
-                Temperature = (float)0.7,
-                MaxTokens = 1000,
-                NucleusSamplingFactor = (float)0.95,
-                FrequencyPenalty = 0,
-                PresencePenalty = 0,
-            });
-
-        ChatCompletions completions = responseWithoutStream.Value;
-        ChatChoice results_analisis = completions.Choices[0];
-        model.Message = results_analisis.Message.Content;
-        ViewBag.Message = results_analisis.Message.Content;
-
+        ChatCompletion completion = await chatClient.CompleteChatAsync(messages, chatCompletionOptions);
+        
+        model.Message = completion.Content[0].Text;
+        ViewBag.Message = completion.Content[0].Text;
+        
         model.Image = image;
 
         return Ok(model);
@@ -133,22 +127,14 @@ public class FormAnalyzerController : Controller
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 
-    private bool CheckNullValues(IFormFile imageFile)
+    private static bool CheckNullValues(IFormFile imageFile)
     {
-        if (imageFile == null)
-        {
-            return true;
-        }
-        return false;
+        return imageFile == null;
     }
 
-    private bool CheckImageExtension(string blobUri)
+    private static bool CheckImageExtension(string blobUri)
     {
         string uri_lower = blobUri;
-        if (uri_lower.Contains(".pdf", StringComparison.OrdinalIgnoreCase))
-        {
-            return false;
-        }
-        return true;
+        return !uri_lower.Contains(@".pdf", StringComparison.OrdinalIgnoreCase);
     }
 }
