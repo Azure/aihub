@@ -62,6 +62,7 @@ namespace OpenAI.Plugin.FSI
                 {
                     { "products", searchResult.ToString() },
                     { "product", functionRequest.Product },
+                    { "language", functionRequest.ResponseLanguage },
                 };
 
                 var result = await _kernel.InvokeAsync("Prompts", "CompareProducts", context).ConfigureAwait(false);

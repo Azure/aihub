@@ -10,4 +10,8 @@ internal class ExecuteFunctionRequest
     [JsonPropertyName("queryPrompt")]
     [OpenApiProperty(Description = "The query prompt used to retrive products to compare to", Default = "")]
     public string QueryPrompt { get; set; } = string.Empty;
+
+    [JsonPropertyName("responseLanguage")]
+    [OpenApiProperty(Description = "The language used to respond", Default = "spanish")]
+    public string ResponseLanguage { get; set; } = string.Empty;
 }
