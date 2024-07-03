@@ -150,7 +150,7 @@ jobs:
   release:
     name: Create Release
     needs: build
-    if: github.event_name != 'pull_request' && startswith(github.ref, 'refs/tags/v')
+    #if: github.event_name != 'pull_request' && startswith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     permissions: write-all
     outputs:
