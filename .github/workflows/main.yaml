@@ -220,13 +220,16 @@ jobs:
       - name: List Container Apps
         run: |
           az containerapp list --resource-group ${{ vars.AZURE_RG }} --output table
+      - name: Calculate Version
+        run: |
+          echo "MINVERVERSIONOVERRIDE=$($HOME/.dotnet/tools/minver -t v. -m 1.0 -p preview)" >> $GITHUB_ENV
       - name: Show image name
         run: echo "Image name is $MY_IMAGE"
         env:
-          MY_IMAGE: ${{ env.REGISTRY }}/${{ env.GITHUB_REPOSITORY_LOWER_CASE }}/aihub:${{ env.MINVERVERSIONOVERRIDE }}
+          MY_IMAGE: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/aihub:${{ env.MINVERVERSIONOVERRIDE }}
       - name: Deploy to Azure Container Apps
         run: |
           az containerapp update \
             --name ${{ vars.AZURE_CONTAINERAPPS_NAME }} \
             --resource-group ${{ vars.AZURE_RG }} \
-            --image ${{ env.REGISTRY }}/${{ env.GITHUB_REPOSITORY_LOWER_CASE }}/aihub:${{ env.MINVERVERSIONOVERRIDE }}
+            --image ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.MINVERVERSIONOVERRIDE }}
