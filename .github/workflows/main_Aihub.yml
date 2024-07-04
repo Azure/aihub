@@ -95,7 +95,7 @@ jobs:
           auth-type: IDENTITY
           client-id: ${{ secrets.CLIENTID }}
           tenant-id: ${{ secrets.TENANTID }}
-          subscription-id: ${{ secrets.SUBSCRIPTION }}
+          subscription-id: ${{ secrets.SUBSCRIPTIONID }}
           enable-AzPSSession: true
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
