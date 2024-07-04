@@ -27,10 +27,10 @@ html[data-menu-color=light] {
 }
 
 html[data-menu-color=dark] {
-    --ct-menu-bg: #070F26;
-    --ct-menu-item-color: #8391a2;
-    --ct-menu-item-hover-color: #0072bC;
-    --ct-menu-item-active-color: #ffffff;
+    --ct-menu-bg: #F40009;
+    --ct-menu-item-color: #ffffff;
+    --ct-menu-item-hover-color: #000000;
+    --ct-menu-item-active-color: #000000;
     --ct-help-box-bg: rgba(255, 255, 255, 0.07)
 }
 
