@@ -146,7 +146,6 @@ jobs:
             ./infra/modules/
             ./infra/*.tf
             ./infra/*.md
-
   # release:
   #   name: Create Release
   #   needs: build
