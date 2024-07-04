@@ -94,13 +94,6 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - uses: azure/appservice-settings@v1
-        with:
-          app-name: ${{ vars.APPSERVICE_NAME }}
-          mask-inputs: true
-          slot-name: ${{ vars.ENVIRONMENT_NAME }}
-          app-settings-json: '${{ secrets.APPSERVICE_SETTINGS }}' 
-
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
