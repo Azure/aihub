@@ -92,11 +92,10 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v1
         with:
-          auth-type: IDENTITY
-          client-id: ${{ secrets.CLIENTID }}
-          tenant-id: ${{ secrets.TENANTID }}
-          subscription-id: ${{ secrets.SUBSCRIPTIONID }}
-          enable-AzPSSession: true
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Verify app service
+        run: |
+          az webapp config appsettings list --name ${{ vars.APPSERVICE_NAME }} --resource-group rg-aihub-937e6 --subscription 918e39c1-af1b-452f-948e-18285f0e6dce
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
