@@ -215,7 +215,7 @@ jobs:
     steps:
       - name: Deploy to Azure Container Apps
         run: |
-          az containerapp deploy
+          az containerapp update \
             --name ${{ vars.AZURE_CONTAINERAPPS_NAME }} \
             --resource-group ${{ vars.AZURE_RG }} \
             --image ${{ env.REGISTRY }}/${{ env.GITHUB_REPOSITORY_LOWER_CASE }}/aihub:${{ env.MINVERVERSIONOVERRIDE }}
