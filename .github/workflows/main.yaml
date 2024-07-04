@@ -150,7 +150,7 @@ jobs:
   release:
     name: Create Release
     needs: build
-    if: github.event_name != 'pull_request' && startswith(github.ref, 'refs/tags/v')
+    #if: github.event_name != 'pull_request' && startswith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     permissions: write-all
     outputs:
@@ -208,9 +208,14 @@ jobs:
       - name: List Container Apps
         run: |
           az containerapp list --resource-group ${{ vars.AZURE_RG }} --output table
+  deploy:
+    name: Deploy
+    needs: Publish
+    runs-on: ubuntu-latest
+    steps:
       - name: Deploy to Azure Container Apps
         run: |
-          az containerapp update \
+          az containerapp deploy
             --name ${{ vars.AZURE_CONTAINERAPPS_NAME }} \
             --resource-group ${{ vars.AZURE_RG }} \
             --image ${{ env.REGISTRY }}/${{ env.GITHUB_REPOSITORY_LOWER_CASE }}/aihub:${{ env.MINVERVERSIONOVERRIDE }}
