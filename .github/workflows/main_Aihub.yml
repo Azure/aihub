@@ -93,10 +93,9 @@ jobs:
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: Deploy to Azure Web App
-        id: deploy-to-webapp
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: ${{ vars.APPSERVICE_NAME }}
-          slot-name: ${{ vars.ENVIRONMENT_NAME }}
-          package: .
+      - name: Deploy to Azure Container Apps
+        run: |
+            az containerapp update \
+              --name ${{ secrets.AZURE_CONTAINERAPPS_NAME }} \
+              --resource-group ${{ secrets.AZURE_RG }} \
+              --image ${{ env.REGISTRY }}/${{ env.GITHUB_REPOSITORY_LOWER_CASE }}/aihub:${{ env.MINVERVERSIONOVERRIDE }}
