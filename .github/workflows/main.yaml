@@ -202,7 +202,7 @@ jobs:
   #         asset_content_type: application/octet-stream
   deploy:
     name: Deploy
-    # needs: Publish
+    needs: Build
     runs-on: ubuntu-latest
     steps:
       - name: Login to Azure
