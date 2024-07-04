@@ -16,27 +16,27 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '8.x'
+          dotnet-version: "8.x"
           include-prerelease: true
 
       - name: Setup MinVer
         run: |
           dotnet tool install --global minver-cli --version 4.3.0
-          
+
       - name: Calculate Version
         run: |
           echo "MINVERVERSIONOVERRIDE=$($HOME/.dotnet/tools/minver -t v. -m 1.0 -d preview)" >> $GITHUB_ENV
       - name: Build with dotnet
         run: dotnet build --configuration Release
-        working-directory: './src/AIHub'
+        working-directory: "./src/AIHub"
 
       - name: dotnet publish
         run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
-        working-directory: './src/AIHub'
+        working-directory: "./src/AIHub"
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
@@ -50,20 +50,20 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-          
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-        
+
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v3
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          
+
       - name: Lower case REPO
         run: |
           echo "GITHUB_REPOSITORY_LOWER_CASE=${GITHUB_REPOSITORY,,}" >> ${GITHUB_ENV}
-          
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
         with:
@@ -88,17 +88,17 @@ jobs:
       - name: Mostrar valor de variable
         run: echo "El valor de AZURE_CREDENTIALS es $MY_VARIABLE"
         env:
-          MY_VARIABLE: ${{ secrets.AZURE_CREDENTIALS }}          
+          MY_VARIABLE: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Login to Azure
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: List Container Apps
         run: |
-            az containerapp list --resource-group ${{ vars.AZURE_RG }} --output table
+          az containerapp list --resource-group ${{ vars.AZURE_RG }} --output table
       - name: Deploy to Azure Container Apps
         run: |
-            az containerapp update \
-              --name ${{ vars.AZURE_CONTAINERAPPS_NAME }} \
-              --resource-group ${{ vars.AZURE_RG }} \
-              --image ${{ env.REGISTRY }}/${{ env.GITHUB_REPOSITORY_LOWER_CASE }}/aihub:${{ env.MINVERVERSIONOVERRIDE }}
+          az containerapp deploy \
+            --name ${{ vars.AZURE_CONTAINERAPPS_NAME }} \
+            --resource-group ${{ vars.AZURE_RG }} \
+            --image ${{ env.REGISTRY }}/${{ env.GITHUB_REPOSITORY_LOWER_CASE }}/aihub:${{ env.MINVERVERSIONOVERRIDE }}
