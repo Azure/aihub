@@ -93,18 +93,12 @@ jobs:
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      - uses: azure/appservice-settings@v1
-        with:
-          app-name: ${{ vars.APPSERVICE_NAME }}
-          mask-inputs: true
-          slot-name: ${{ vars.ENVIRONMENT_NAME }}
-          app-settings-json: '${{ secrets.APPSERVICE_SETTINGS }}' 
-
-      - name: Deploy to Azure Web App
-        id: deploy-to-webapp
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: ${{ vars.APPSERVICE_NAME }}
-          slot-name: ${{ vars.ENVIRONMENT_NAME }}
-          package: .
+      - name: List Container Apps
+        run: |
+            az containerapp list --resource-group ${{ vars.AZURE_RG }} --output table
+      - name: Deploy to Azure Container Apps
+        run: |
+            az containerapp update \
+              --name ${{ vars.AZURE_CONTAINERAPPS_NAME }} \
+              --resource-group ${{ vars.AZURE_RG }} \
+              --image ${{ env.REGISTRY }}/${{ env.GITHUB_REPOSITORY_LOWER_CASE }}/aihub:${{ env.MINVERVERSIONOVERRIDE }}
