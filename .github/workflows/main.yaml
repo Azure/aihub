@@ -213,6 +213,13 @@ jobs:
     needs: Publish
     runs-on: ubuntu-latest
     steps:
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: List Container Apps
+        run: |
+          az containerapp list --resource-group ${{ vars.AZURE_RG }} --output table
       - name: Deploy to Azure Container Apps
         run: |
           az containerapp update \
