@@ -6,12 +6,12 @@ name: aihub
 on:
   push:
     branches:
-      - main
+      - dev
     tags:
       - v*
   pull_request:
     branches:
-      - main
+      - dev
   workflow_dispatch:
 
 env:
