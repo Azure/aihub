@@ -225,4 +225,4 @@ jobs:
           az containerapp update \
             --name ${{ vars.AZURE_CONTAINERAPPS_NAME }} \
             --resource-group ${{ vars.AZURE_RG }} \
-            --image ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:2.0.16
+            --image ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:2.0.17
