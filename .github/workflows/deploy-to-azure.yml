@@ -24,7 +24,10 @@ jobs:
 
       - name: Show image name
         run: |
-          echo ${{ env.REGISTRY }}/${{env.IMAGE_NAME}}:2.0.19
+          echo "Imagen: " ${{ env.REGISTRY }}/${{env.IMAGE_NAME}}:2.0.19
+      - name: Verify that the image is in ACR
+        run: |
+          az acr repository show --name ${{ env.REGISTRY }} --repository ${{env.IMAGE_NAME}} --tag 2.0.19
       - name: Deploy to Azure Container App
         run: |
           az containerapp update \
