@@ -30,7 +30,7 @@ jobs:
         run: |
           IMAGE_EXISTS=$(curl -s -o /dev/null -w "%{http_code}" \
           -H "Authorization: Bearer ${{ github.token }}" \
-          https://ghcr.io/v2/${{ github.repository_owner }}/aihub/2.0.19)
+          https://ghcr.io/v2/${{ github.repository_owner }}/aihub/manifests/2.0.19)
           if [ $IMAGE_EXISTS -eq 200 ]; then
             echo "Image exists in GHCR"
           else
