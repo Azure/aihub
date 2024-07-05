@@ -16,7 +16,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository_name }}
+  IMAGE_NAME: ${{ github.repository }}
   DOCS_IMAGE_NAME: aihub-prepdocs
   PLUGIN_IMAGE_NAME: aihub-plugin
   FSIPLUGIN_IMAGE_NAME: aihub-fsiplugin
@@ -48,6 +48,12 @@ jobs:
       - name: Calculate Version
         run: |
           echo "MINVERVERSIONOVERRIDE=$($HOME/.dotnet/tools/minver -t v. -m 1.0 -p preview)" >> $GITHUB_ENV
+
+      - name: Values
+        run: |
+          echo "Registry: ${{ env.REGISTRY }}"
+          echo "Image_Name: ${{ env.IMAGE_NAME }}"
+          echo "Version:${{ env.MINVERVERSIONOVERRIDE }}"
 
       - name: Build with dotnet
         run: dotnet build --configuration Release
@@ -206,8 +212,8 @@ jobs:
           asset_name: ${{ env.AIHUB_ARTIFACT_NAME }}.zip
           asset_content_type: application/octet-stream
   deploy:
+    needs: [build, release, publish]
     runs-on: ubuntu-latest
-    needs: build
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
