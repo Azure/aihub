@@ -28,10 +28,12 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Loguearse en Docker Registry
+        run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u lhorcajada --password-stdin
+
       - name: Listar imágenes de Docker
         run: |
-          echo ${{ secrets.GITHUB_TOKEN }}
-          docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} --password-stdin
           docker images | grep ghcr.io
 
       - name: Deploy to Azure Container App
