@@ -49,12 +49,6 @@ jobs:
         run: |
           echo "MINVERVERSIONOVERRIDE=$($HOME/.dotnet/tools/minver -t v. -m 1.0 -p preview)" >> $GITHUB_ENV
 
-      - name: Values
-        run: |
-          echo "Registry: ${{ env.REGISTRY }}"
-          echo "Image_Name: ${{ env.IMAGE_NAME }}"
-          echo "Version:${{ env.MINVERVERSIONOVERRIDE }}"
-
       - name: Build with dotnet
         run: dotnet build --configuration Release
         working-directory: "./src/AIHub"
@@ -89,6 +83,13 @@ jobs:
         run: |
           echo "GITHUB_REPOSITORY_LOWER_CASE=${GITHUB_REPOSITORY,,}" >> ${GITHUB_ENV}
 
+      - name: Values
+        run: |
+          echo "Registry: ${{ env.REGISTRY }}"
+          echo "Image_Name: ${{ env.IMAGE_NAME }}"
+          echo "Version:${{ env.MINVERVERSIONOVERRIDE }}"
+          echo "Repositorio:GITHUB_REPOSITORY_LOWER_CASE"
+
       - name: Build and push Docker image for AIHub
         uses: docker/build-push-action@v3
         with:
@@ -114,7 +115,7 @@ jobs:
         with:
           context: ./src/prepdocs/
           file: ./src/prepdocs/Dockerfile
-          tags: ${{ env.REGISTRY }}/${{ env.DOCS_IMAGE_NAME }}:${{ env.MINVERVERSIONOVERRIDE }}
+          tags: ${{ env.REGISTRY }}/${{ env.GITHUB_REPOSITORY_LOWER_CASE }}/${{ env.DOCS_IMAGE_NAME }}:${{ env.MINVERVERSIONOVERRIDE }}
           labels: ${{ steps.meta-docs.outputs.labels }}
           push: true
 
@@ -129,7 +130,7 @@ jobs:
         with:
           context: ./src/OpenAI.Plugin/
           file: ./src/OpenAI.Plugin/Dockerfile
-          tags: ${{ env.REGISTRY }}/${{ env.PLUGIN_IMAGE_NAME }}:${{ env.MINVERVERSIONOVERRIDE }}
+          tags: ${{ env.REGISTRY }}/${{ env.GITHUB_REPOSITORY_LOWER_CASE }}/${{ env.PLUGIN_IMAGE_NAME }}:${{ env.MINVERVERSIONOVERRIDE }}
           labels: ${{ steps.meta-plugin.outputs.labels }}
           push: true
 
@@ -145,7 +146,7 @@ jobs:
         with:
           context: ./src/OpenAI.Plugin.FSI/
           file: ./src/OpenAI.Plugin.FSI/Dockerfile
-          tags: ${{ env.REGISTRY }}/${{ env.FSIPLUGIN_IMAGE_NAME }}:${{ env.MINVERVERSIONOVERRIDE }}
+          tags: ${{ env.REGISTRY }}/${{ env.GITHUB_REPOSITORY_LOWER_CASE }}/${{ env.FSIPLUGIN_IMAGE_NAME }}:${{ env.MINVERVERSIONOVERRIDE }}
           labels: ${{ steps.meta-fsiplugin.outputs.labels }}
           push: true
 
