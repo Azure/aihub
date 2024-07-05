@@ -34,7 +34,7 @@ jobs:
 
       - name: Listar imágenes de Docker
         run: |
-          docker images | grep ghcr.io
+          docker images | grep ${{ env.REGISTRY }}/${{env.IMAGE_NAME}}
 
       - name: Deploy to Azure Container App
         run: |
