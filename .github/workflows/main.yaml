@@ -21,6 +21,7 @@ env:
   PLUGIN_IMAGE_NAME: aihub-plugin
   FSIPLUGIN_IMAGE_NAME: aihub-fsiplugin
   AIHUB_ARTIFACT_NAME: aihub-tf-module
+  CONTAINERAPP_NAME: ${{ vars.AZURE_CONTAINERAPPS_NAME }}
 
 jobs:
   # build:
@@ -216,7 +217,9 @@ jobs:
   #         asset_content_type: application/octet-stream
   deploy:
     #needs: build #[build, release, publish]
+
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -226,26 +229,27 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Login to the Container registry
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Setup MinVer
+        run: |
+          dotnet tool install --global minver-cli --version 4.3.0
+
+      - name: Calculate Version
+        run: |
+          echo "MINVERVERSIONOVERRIDE=$($HOME/.dotnet/tools/minver -t v. -m 1.0 -p preview)" >> $GITHUB_ENV
 
       - name: Values
         run: |
-          echo "Image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:"
+          echo "Image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
 
       - name: Deploy to Azure Container App
         run: |
           az containerapp update \
-            --name ${{ env.AZURE_CONTAINERAPPS_NAME }} \
+            --name ${{ env.CONTAINERAPP_NAME }} \
             --resource-group ${{ vars.AZURE_RG }} \
-            --image ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            --image ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{env.MINVERVERSIONOVERRIDE}}
 
       - name: Verify deployment
         run: |
           az containerapp show \
-            --name ${{env.AZURE_CONTAINERAPPS_NAME}} \
+            --name ${{env.CONTAINERAPP_NAME}} \
             --resource-group ${{vars.AZURE_RG}}
