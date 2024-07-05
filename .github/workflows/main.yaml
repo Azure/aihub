@@ -48,8 +48,15 @@ jobs:
       - name: Calculate Version
         run: |
           echo "MINVERVERSIONOVERRIDE=$($HOME/.dotnet/tools/minver -t v. -m 1.0 -p preview)" >> $GITHUB_ENV
-          MINVER_VERSION=$($HOME/.dotnet/tools/minver -t v. -m 1.0 -p preview)
-          echo "::set-output name=minver_version::$MINVER_VERSION"
+          echo "::set-output name=minver_version::${{ env.MINVER_VERSION }}"
+
+      - name: Values
+        run: |
+          echo "Registry: ${{ env.REGISTRY }}"
+          echo "Image_Name: ${{ env.IMAGE_NAME }}"
+          echo "Version:${{ env.MINVERVERSIONOVERRIDE }}"
+          echo "Version:${{ env.MINVER_VERSION }}"
+          echo "Repositorio:${{env.GITHUB_REPOSITORY_LOWER_CASE}}"
 
       - name: Build with dotnet
         run: dotnet build --configuration Release
@@ -84,14 +91,6 @@ jobs:
       - name: Lower case REPO
         run: |
           echo "GITHUB_REPOSITORY_LOWER_CASE=${GITHUB_REPOSITORY,,}" >> ${GITHUB_ENV}
-
-      - name: Values
-        run: |
-          echo "Registry: ${{ env.REGISTRY }}"
-          echo "Image_Name: ${{ env.IMAGE_NAME }}"
-          echo "Version:${{ env.MINVERVERSIONOVERRIDE }}"
-          echo "Version:${{ env.MINVER_VERSION }}"
-          echo "Repositorio:${{env.GITHUB_REPOSITORY_LOWER_CASE}}"
 
       - name: Build and push Docker image for AIHub
         uses: docker/build-push-action@v3
