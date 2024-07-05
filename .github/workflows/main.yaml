@@ -94,7 +94,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/${{env.IMAGE_NAME}}:${{ env.MINVERVERSIONOVERRIDE }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.MINVERVERSIONOVERRIDE }}
 
       - name: Extract metadata (tags, labels) for prep-docs Docker
         id: meta-docs
