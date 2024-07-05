@@ -28,16 +28,23 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: List Container Apps
+      - name: Listar imágenes de Docker
         run: |
-          az containerapp list --resource-group ${{ vars.AZURE_RG }} --output table
+          ACCESS_TOKEN="${{ secrets.GITHUB_TOKEN }}"
+          REPO="${{ env.REGISTRY }}/${{env.IMAGE_NAME}}"  # Cambia por tu usuario y nombre de repositorio
+
+          echo "Listing images in $REPO"
+          curl -H "Authorization: token $ACCESS_TOKEN" \
+               -H "Accept: application/vnd.github.v3+json" \
+               "https://api.github.com/repos/$REPO/packages/container/images" \
+               | jq '.'
 
       - name: Deploy to Azure Container App
         run: |
           az containerapp update \
             --name ${{env.CONTAINERAPP_NAME}} \
             --resource-group ${{vars.AZURE_RG}} \
-            --image ${{ env.REGISTRY }}/${{env.IMAGE_NAME}}/aihub:2.0.26
+            --image ${{ env.REGISTRY }}/${{env.IMAGE_NAME}}:2.0.26
 
       - name: Verify deployment
         run: |
