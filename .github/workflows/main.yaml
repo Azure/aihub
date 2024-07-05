@@ -158,62 +158,62 @@ jobs:
             ./infra/modules/
             ./infra/*.tf
             ./infra/*.md
-  release:
-    name: Create Release
-    needs: build
-    if: github.event_name != 'pull_request' && startswith(github.ref, 'refs/tags/v')
-    runs-on: ubuntu-latest
-    permissions: write-all
-    outputs:
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
+  # release:
+  #   name: Create Release
+  #   needs: build
+  #   if: github.event_name != 'pull_request' && startswith(github.ref, 'refs/tags/v')
+  #   runs-on: ubuntu-latest
+  #   permissions: write-all
+  #   outputs:
+  #     upload_url: ${{ steps.create_release.outputs.upload_url }}
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
+  #       with:
+  #         fetch-depth: 0
 
-      - name: release
-        uses: actions/create-release@v1
-        id: create_release
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: ${{ env.MINVERVERSIONOVERRIDE }}
-          body: ${{ steps.changelog.outputs.clean_changelog }}
-          draft: false
-          prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
+  #     - name: release
+  #       uses: actions/create-release@v1
+  #       id: create_release
+  #       with:
+  #         tag_name: ${{ github.ref }}
+  #         release_name: ${{ env.MINVERVERSIONOVERRIDE }}
+  #         body: ${{ steps.changelog.outputs.clean_changelog }}
+  #         draft: false
+  #         prerelease: false
+  #       env:
+  #         GITHUB_TOKEN: ${{ github.token }}
 
-  publish:
-    name: Publish binaries
-    needs: release
-    permissions: write-all
-    if: github.event_name != 'pull_request' && startswith(github.ref, 'refs/tags/v')
-    env:
-      ARTIFACT_DIR: ${{ github.workspace }}/release
-      PROJECT_NAME: aihub
-    runs-on: ubuntu-latest
-    steps:
-      - name: download artifacts - ${{ env.AIHUB_ARTIFACT_NAME }}
-        uses: actions/download-artifact@v3
-        with:
-          name: ${{ env.AIHUB_ARTIFACT_NAME }}
-          path: ${{ env.ARTIFACT_DIR }}/${{ env.AIHUB_ARTIFACT_NAME }}
+  # publish:
+  #   name: Publish binaries
+  #   needs: release
+  #   permissions: write-all
+  #   if: github.event_name != 'pull_request' && startswith(github.ref, 'refs/tags/v')
+  #   env:
+  #     ARTIFACT_DIR: ${{ github.workspace }}/release
+  #     PROJECT_NAME: aihub
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: download artifacts - ${{ env.AIHUB_ARTIFACT_NAME }}
+  #       uses: actions/download-artifact@v3
+  #       with:
+  #         name: ${{ env.AIHUB_ARTIFACT_NAME }}
+  #         path: ${{ env.ARTIFACT_DIR }}/${{ env.AIHUB_ARTIFACT_NAME }}
 
-      - name: Creating Zip
-        run: zip -r ${{ env.AIHUB_ARTIFACT_NAME }}.zip ${{ env.ARTIFACT_DIR }}/${{ env.AIHUB_ARTIFACT_NAME }}/*
+  #     - name: Creating Zip
+  #       run: zip -r ${{ env.AIHUB_ARTIFACT_NAME }}.zip ${{ env.ARTIFACT_DIR }}/${{ env.AIHUB_ARTIFACT_NAME }}/*
 
-      - name: upload artifacts
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        with:
-          upload_url: ${{ needs.release.outputs.upload_url }}
-          asset_path: ${{ env.AIHUB_ARTIFACT_NAME }}.zip
-          asset_name: ${{ env.AIHUB_ARTIFACT_NAME }}.zip
-          asset_content_type: application/octet-stream
+  #     - name: upload artifacts
+  #       uses: actions/upload-release-asset@v1
+  #       env:
+  #         GITHUB_TOKEN: ${{ github.token }}
+  #       with:
+  #         upload_url: ${{ needs.release.outputs.upload_url }}
+  #         asset_path: ${{ env.AIHUB_ARTIFACT_NAME }}.zip
+  #         asset_name: ${{ env.AIHUB_ARTIFACT_NAME }}.zip
+  #         asset_content_type: application/octet-stream
   deploy:
-    needs: [build, release, publish]
+    needs: build #[build, release, publish]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
