@@ -6,12 +6,12 @@ name: aihub
 on:
   push:
     branches:
-      - main
+      - dev
     tags:
       - v*
   pull_request:
     branches:
-      - main
+      - dev
   workflow_dispatch:
 
 env:
@@ -87,8 +87,6 @@ jobs:
         with:
           context: ./src/AIHub/
           file: ./src/AIHub/Dockerfile
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ env.REGISTRY }}/${{ env.GITHUB_REPOSITORY_LOWER_CASE }}/aihub:${{ env.MINVERVERSIONOVERRIDE }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: MINVERVERSIONOVERRIDE=${{ env.MINVERVERSIONOVERRIDE }}
 
@@ -103,7 +101,6 @@ jobs:
         with:
           context: ./src/prepdocs/
           file: ./src/prepdocs/Dockerfile
-          push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ env.REGISTRY }}/${{ env.GITHUB_REPOSITORY_LOWER_CASE }}/${{ env.DOCS_IMAGE_NAME }}:${{ env.MINVERVERSIONOVERRIDE }}
           labels: ${{ steps.meta-docs.outputs.labels }}
 
@@ -118,7 +115,6 @@ jobs:
         with:
           context: ./src/OpenAI.Plugin/
           file: ./src/OpenAI.Plugin/Dockerfile
-          push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ env.REGISTRY }}/${{ env.GITHUB_REPOSITORY_LOWER_CASE }}/${{ env.PLUGIN_IMAGE_NAME }}:${{ env.MINVERVERSIONOVERRIDE }}
           labels: ${{ steps.meta-plugin.outputs.labels }}
 
@@ -134,7 +130,6 @@ jobs:
         with:
           context: ./src/OpenAI.Plugin.FSI/
           file: ./src/OpenAI.Plugin.FSI/Dockerfile
-          push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ env.REGISTRY }}/${{ env.GITHUB_REPOSITORY_LOWER_CASE }}/${{ env.FSIPLUGIN_IMAGE_NAME }}:${{ env.MINVERVERSIONOVERRIDE }}
           labels: ${{ steps.meta-fsiplugin.outputs.labels }}
 
