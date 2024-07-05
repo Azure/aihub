@@ -29,7 +29,7 @@ jobs:
       contents: read
       packages: write
     outputs:
-      minver_version: ${{ steps.calculate.outputs.minver_version }}
+      minver_version_override: ${{ steps.build.outputs.minver_version_override }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -47,15 +47,15 @@ jobs:
 
       - name: Calculate Version
         run: |
-          echo "MINVERVERSIONOVERRIDE=$($HOME/.dotnet/tools/minver -t v. -m 1.0 -p preview)" >> $GITHUB_ENV
-          echo "::set-output name=minver_version::${{ env.MINVER_VERSION }}"
+          MINVER_VERSION_OVERRIDE=$($HOME/.dotnet/tools/minver -t v. -m 1.0 -p preview)
+          echo "MINVERVERSIONOVERRIDE=$MINVER_VERSION_OVERRIDE" >> $GITHUB_ENV
+          echo "::set-output name=minver_version_override::$MINVER_VERSION_OVERRIDE"
 
       - name: Values
         run: |
           echo "Registry: ${{ env.REGISTRY }}"
           echo "Image_Name: ${{ env.IMAGE_NAME }}"
           echo "Version:${{ env.MINVERVERSIONOVERRIDE }}"
-          echo "Version:${{ env.MINVER_VERSION }}"
           echo "Repositorio:${{env.GITHUB_REPOSITORY_LOWER_CASE}}"
 
       - name: Build with dotnet
@@ -235,14 +235,14 @@ jobs:
 
       - name: Values
         run: |
-          echo "Image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.build.outputs.minver_version }}"
+          echo "Image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.build.outputs.minver_version_override }}"
 
       - name: Deploy to Azure Container App
         run: |
           az containerapp update \
             --name ${{ env.AZURE_CONTAINERAPPS_NAME }} \
             --resource-group ${{ vars.AZURE_RG }} \
-            --image ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.build.outputs.minver_version }}
+            --image ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.build.outputs.minver_version_override }}
 
       - name: Verify deployment
         run: |
