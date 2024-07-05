@@ -88,4 +88,10 @@ Use of Microsoft trademarks or logos in modified versions of this project must n
 Any use of third-party trademarks or logos are subject to those third-party's policies.
 
 ## Deploy
-Para desplegar es necesario crear un tag versionado con el formato v.x.x.x
+To deploy it is necessary to create a versioned tag with the v.x.x.x format.
+1. Upload the comit. When it is merged into the dev branch a pipeline will be launched which will only execute the build.
+2. When the build passes it creates a new tag. To know which is the last one go into the repo and in the "Code" tab there is a label with the tag counter. Click on it and you will see all the tags. So you will know which is the last one.
+3. Run something like this in the console:
+   ``git tag -a v.2.0.33 -m "Version 2.0.33"``
+   ``git push --tags``
+This will launch the versioned pipeline and execute all steps.
