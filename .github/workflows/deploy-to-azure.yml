@@ -28,13 +28,16 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: List Container Apps
+        run: |
+          az containerapp list --resource-group ${{ vars.AZURE_RG }} --output table
 
       - name: Deploy to Azure Container App
         run: |
           az containerapp update \
             --name ${{env.CONTAINERAPP_NAME}} \
             --resource-group ${{vars.AZURE_RG}} \
-            --image ${{ env.REGISTRY }}/${{env.IMAGE_NAME}}/aihub:last
+            --image ${{ env.REGISTRY }}/${{env.IMAGE_NAME}}/aihub:2.0.26
 
       - name: Verify deployment
         run: |
