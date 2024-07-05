@@ -88,7 +88,7 @@ jobs:
           echo "Registry: ${{ env.REGISTRY }}"
           echo "Image_Name: ${{ env.IMAGE_NAME }}"
           echo "Version:${{ env.MINVERVERSIONOVERRIDE }}"
-          echo "Repositorio:GITHUB_REPOSITORY_LOWER_CASE"
+          echo "Repositorio:${{env.GITHUB_REPOSITORY_LOWER_CASE}}"
 
       - name: Build and push Docker image for AIHub
         uses: docker/build-push-action@v3
@@ -230,6 +230,10 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Values
+        run: |
+          echo "Image: ${{ env.REGISTRY }}/${{ github.repository_name }}:${{needs.build.outputs.MINVERVERSIONOVERRIDE}}"
 
       - name: Deploy to Azure Container App
         run: |
