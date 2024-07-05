@@ -29,8 +29,7 @@ jobs:
     permissions:
       contents: read
       packages: write
-    outputs:
-      minver_version_override: ${{ steps.build.outputs.minver_version_override }}
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -227,24 +226,16 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Setup MinVer
-        run: |
-          dotnet tool install --global minver-cli --version 4.3.0
-
-      - name: Calculate Version
-        run: |
-          echo "MINVERVERSIONOVERRIDE=$($HOME/.dotnet/tools/minver -t v. -m 1.0 -p preview)" >> $GITHUB_ENV
-
       - name: Values
         run: |
-          echo "Image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{env.MINVERVERSIONOVERRIDE}}"
+          echo "Image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$MINVERVERSIONOVERRIDE"
 
       - name: Deploy to Azure Container App
         run: |
           az containerapp update \
             --name ${{ env.CONTAINERAPP_NAME }} \
             --resource-group ${{ vars.AZURE_RG }} \
-            --image ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{env.MINVERVERSIONOVERRIDE}}
+            --image "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$MINVERVERSIONOVERRIDE"
 
       - name: Verify deployment
         run: |
