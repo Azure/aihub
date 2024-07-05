@@ -96,7 +96,7 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-          push: true
+          push: ${{ github.event_name != 'pull_request' }}
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.MINVERVERSIONOVERRIDE }}
 
@@ -113,7 +113,7 @@ jobs:
           file: ./src/prepdocs/Dockerfile
           tags: ${{ env.REGISTRY }}/${{ env.GITHUB_REPOSITORY_LOWER_CASE }}/${{ env.DOCS_IMAGE_NAME }}:${{ env.MINVERVERSIONOVERRIDE }}
           labels: ${{ steps.meta-docs.outputs.labels }}
-          push: true
+          push: ${{ github.event_name != 'pull_request' }}
 
       - name: Extract metadata (tags, labels) for plugin Docker
         id: meta-plugin
@@ -128,7 +128,7 @@ jobs:
           file: ./src/OpenAI.Plugin/Dockerfile
           tags: ${{ env.REGISTRY }}/${{ env.GITHUB_REPOSITORY_LOWER_CASE }}/${{ env.PLUGIN_IMAGE_NAME }}:${{ env.MINVERVERSIONOVERRIDE }}
           labels: ${{ steps.meta-plugin.outputs.labels }}
-          push: true
+          push: ${{ github.event_name != 'pull_request' }}
 
       # FSI PLUGIN
       - name: Extract metadata (tags, labels) for fsi plugin Docker
@@ -144,7 +144,7 @@ jobs:
           file: ./src/OpenAI.Plugin.FSI/Dockerfile
           tags: ${{ env.REGISTRY }}/${{ env.GITHUB_REPOSITORY_LOWER_CASE }}/${{ env.FSIPLUGIN_IMAGE_NAME }}:${{ env.MINVERVERSIONOVERRIDE }}
           labels: ${{ steps.meta-fsiplugin.outputs.labels }}
-          push: true
+          push: ${{ github.event_name != 'pull_request' }}
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
