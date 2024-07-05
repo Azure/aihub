@@ -90,6 +90,7 @@ jobs:
           echo "Registry: ${{ env.REGISTRY }}"
           echo "Image_Name: ${{ env.IMAGE_NAME }}"
           echo "Version:${{ env.MINVERVERSIONOVERRIDE }}"
+          echo "Version:${{ env.MINVER_VERSION }}"
           echo "Repositorio:${{env.GITHUB_REPOSITORY_LOWER_CASE}}"
 
       - name: Build and push Docker image for AIHub
@@ -240,12 +241,12 @@ jobs:
       - name: Deploy to Azure Container App
         run: |
           az containerapp update \
-            --name ${{ env.CONTAINERAPP_NAME }} \
+            --name ${{ env.AZURE_CONTAINERAPPS_NAME }} \
             --resource-group ${{ vars.AZURE_RG }} \
             --image ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.build.outputs.minver_version }}
 
       - name: Verify deployment
         run: |
           az containerapp show \
-            --name ${{env.CONTAINERAPP_NAME}} \
+            --name ${{env.AZURE_CONTAINERAPPS_NAME}} \
             --resource-group ${{vars.AZURE_RG}}
