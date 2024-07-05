@@ -29,7 +29,8 @@ jobs:
     permissions:
       contents: read
       packages: write
-
+    outputs:
+      imageVersion: ${{steps.calculate_version.outputs.imageVersion}}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -45,9 +46,11 @@ jobs:
         run: |
           dotnet tool install --global minver-cli --version 4.3.0
 
-      - name: Calculate Version
+      - id: calculate_version
+        name: Calculate Version
         run: |
           echo "MINVERVERSIONOVERRIDE=$($HOME/.dotnet/tools/minver -t v. -m 1.0 -p preview)" >> $GITHUB_ENV
+          echo "imageVersion=$($HOME/.dotnet/tools/minver -t v. -m 1.0 -p preview)" >> $GITHUB_OUTPUT
 
       - name: Build with dotnet
         run: dotnet build --configuration Release
@@ -217,19 +220,16 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Debugging - Verificar variables de entorno
-        run: |
-          env | sort
       - name: Verificar valor de la versión
         run: |
-          echo "Valor de MINVERVERSIONOVERRIDE en deploy: ${{ env.MINVERVERSIONOVERRIDE }}"
+          echo "Valor de MINVERVERSIONOVERRIDE en deploy: ${{ needs.build.outputs.imageVersion }}"
 
       - name: Deploy to Azure Container App
         run: |
           az containerapp update \
             --name ${{ env.CONTAINERAPP_NAME }} \
             --resource-group ${{ vars.AZURE_RG }} \
-            --image ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:"${{ env.MINVERVERSIONOVERRIDE }}"
+            --image ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:"${{ needs.build.outputs.imageVersion }}"
 
       - name: Verify deployment
         run: |
