@@ -30,7 +30,8 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Listar imágenes de Docker
         run: |
-          docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
+          echo ${{ secrets.GITHUB_TOKEN }}
+          docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} --password-stdin
           docker images | grep ghcr.io
 
       - name: Deploy to Azure Container App
