@@ -34,14 +34,14 @@ jobs:
 
       - name: Listar imágenes de Docker
         run: |
-          docker images | grep ${{ env.REGISTRY }}/${{env.IMAGE_NAME}}
+          docker images | grep ${{ env.REGISTRY }}/${{ github.actor }}/${{env.IMAGE_NAME}}
 
       - name: Deploy to Azure Container App
         run: |
           az containerapp update \
             --name ${{env.CONTAINERAPP_NAME}} \
             --resource-group ${{vars.AZURE_RG}} \
-            --image ${{ env.REGISTRY }}/${{env.IMAGE_NAME}}:2.0.26
+            --image ${{ env.REGISTRY }}/${{ github.actor }}/${{env.IMAGE_NAME}}:2.0.25
 
       - name: Verify deployment
         run: |
