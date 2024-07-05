@@ -239,7 +239,7 @@ jobs:
 
       - name: Values
         run: |
-          echo "Image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
+          echo "Image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{env.MINVERVERSIONOVERRIDE}}"
 
       - name: Deploy to Azure Container App
         run: |
