@@ -228,14 +228,14 @@ jobs:
 
       - name: Values
         run: |
-          echo "Image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$MINVERVERSIONOVERRIDE"
+          echo "Image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{env.MINVERVERSIONOVERRIDE}}"
 
       - name: Deploy to Azure Container App
         run: |
           az containerapp update \
             --name ${{ env.CONTAINERAPP_NAME }} \
             --resource-group ${{ vars.AZURE_RG }} \
-            --image "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$MINVERVERSIONOVERRIDE"
+            --image "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{env.MINVERVERSIONOVERRIDE}}
 
       - name: Verify deployment
         run: |
