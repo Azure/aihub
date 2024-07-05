@@ -206,10 +206,8 @@ jobs:
   #         asset_name: ${{ env.AIHUB_ARTIFACT_NAME }}.zip
   #         asset_content_type: application/octet-stream
   deploy:
-    needs: build #[build, release, publish]
-
     runs-on: ubuntu-latest
-
+    needs: build #[build, release, publish]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -219,18 +217,19 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Values
+      - name: Debugging - Verificar variables de entorno
         run: |
-          echo "Registry: ${{ env.REGISTRY }}"
-          echo "Image_Name: ${{ env.IMAGE_NAME }}"
-          echo "Version: ${{ env.MINVERVERSIONOVERRIDE }}"
+          env | sort
+      - name: Verificar valor de la versión
+        run: |
+          echo "Valor de MINVERVERSIONOVERRIDE en deploy: ${{ env.MINVERVERSIONOVERRIDE }}"
 
       - name: Deploy to Azure Container App
         run: |
           az containerapp update \
             --name ${{ env.CONTAINERAPP_NAME }} \
             --resource-group ${{ vars.AZURE_RG }} \
-            --image "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.MINVERVERSIONOVERRIDE }}"
+            --image ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:"${{ env.MINVERVERSIONOVERRIDE }}"
 
       - name: Verify deployment
         run: |
