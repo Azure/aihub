@@ -16,7 +16,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}/aihub
+  IMAGE_NAME: ${{ github.repository }}
   DOCS_IMAGE_NAME: aihub-prepdocs
   PLUGIN_IMAGE_NAME: aihub-plugin
   FSIPLUGIN_IMAGE_NAME: aihub-fsiplugin
@@ -92,6 +92,7 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+          push: true
 
       - name: Extract metadata (tags, labels) for prep-docs Docker
         id: meta-docs
@@ -106,6 +107,7 @@ jobs:
           file: ./src/prepdocs/Dockerfile
           tags: ${{ env.REGISTRY }}/${{ env.GITHUB_REPOSITORY_LOWER_CASE }}/${{ env.DOCS_IMAGE_NAME }}:${{ env.MINVERVERSIONOVERRIDE }}
           labels: ${{ steps.meta-docs.outputs.labels }}
+          push: true
 
       - name: Extract metadata (tags, labels) for plugin Docker
         id: meta-plugin
@@ -120,6 +122,7 @@ jobs:
           file: ./src/OpenAI.Plugin/Dockerfile
           tags: ${{ env.REGISTRY }}/${{ env.GITHUB_REPOSITORY_LOWER_CASE }}/${{ env.PLUGIN_IMAGE_NAME }}:${{ env.MINVERVERSIONOVERRIDE }}
           labels: ${{ steps.meta-plugin.outputs.labels }}
+          push: true
 
       # FSI PLUGIN
       - name: Extract metadata (tags, labels) for fsi plugin Docker
@@ -135,6 +138,7 @@ jobs:
           file: ./src/OpenAI.Plugin.FSI/Dockerfile
           tags: ${{ env.REGISTRY }}/${{ env.GITHUB_REPOSITORY_LOWER_CASE }}/${{ env.FSIPLUGIN_IMAGE_NAME }}:${{ env.MINVERVERSIONOVERRIDE }}
           labels: ${{ steps.meta-fsiplugin.outputs.labels }}
+          push: true
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
