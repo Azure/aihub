@@ -48,9 +48,7 @@ jobs:
 
   #     - name: Calculate Version
   #       run: |
-  #         MINVER_VERSION_OVERRIDE=$($HOME/.dotnet/tools/minver -t v. -m 1.0 -p preview)
-  #         echo "MINVERVERSIONOVERRIDE=$MINVER_VERSION_OVERRIDE" >> $GITHUB_ENV
-  #         echo "::set-output name=minver_version_override::$MINVER_VERSION_OVERRIDE"
+  #         echo "MINVERVERSIONOVERRIDE=$($HOME/.dotnet/tools/minver -t v. -m 1.0 -p preview)" >> $GITHUB_ENV
 
   #     - name: Build with dotnet
   #       run: dotnet build --configuration Release
@@ -223,6 +221,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: "8.x"
+          include-prerelease: true
 
       - name: Log in to Azure
         uses: azure/login@v1
