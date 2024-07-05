@@ -89,6 +89,9 @@ jobs:
           file: ./src/AIHub/Dockerfile
           labels: ${{ steps.meta.outputs.labels }}
           build-args: MINVERVERSIONOVERRIDE=${{ env.MINVERVERSIONOVERRIDE }}
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Extract metadata (tags, labels) for prep-docs Docker
         id: meta-docs
