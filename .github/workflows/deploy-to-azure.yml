@@ -25,9 +25,18 @@ jobs:
       - name: Show image name
         run: |
           echo "Imagen: " ${{ env.REGISTRY }}/${{env.IMAGE_NAME}}:2.0.19
-      - name: Verify that the image is in ACR
+      - name: Check if image exists in GHCR
+        id: check-image
         run: |
-          az acr repository show --name ${{ env.REGISTRY }} --image ${{env.IMAGE_NAME}}:2.0.19
+          IMAGE_EXISTS=$(curl -s -o /dev/null -w "%{http_code}" \
+          -H "Authorization: Bearer ${{ github.token }}" \
+          https://ghcr.io/v2/${{ github.repository_owner }}/aihub/manifests/v2)
+          if [ $IMAGE_EXISTS -eq 200 ]; then
+            echo "Image exists in GHCR"
+          else
+            echo "Image does not exist in GHCR"
+            exit 1
+          fi
       - name: Deploy to Azure Container App
         run: |
           az containerapp update \
