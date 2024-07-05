@@ -32,10 +32,6 @@ jobs:
       - name: Loguearse en Docker Registry
         run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u lhorcajada --password-stdin
 
-      - name: Listar imágenes de Docker
-        run: |
-          docker images | grep ${{ env.REGISTRY }}/${{ github.actor }}/${{env.IMAGE_NAME}}
-
       - name: Deploy to Azure Container App
         run: |
           az containerapp update \
