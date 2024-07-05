@@ -16,7 +16,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: ${{ github.repository_name }}
   DOCS_IMAGE_NAME: aihub-prepdocs
   PLUGIN_IMAGE_NAME: aihub-plugin
   FSIPLUGIN_IMAGE_NAME: aihub-fsiplugin
@@ -28,7 +28,8 @@ jobs:
     permissions:
       contents: read
       packages: write
-
+    outputs:
+      MINVERVERSIONOVERRIDE: ${{ steps.build.outputs.MINVERVERSIONOVERRIDE }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -107,9 +108,9 @@ jobs:
         with:
           context: ./src/prepdocs/
           file: ./src/prepdocs/Dockerfile
-          tags: ${{ env.REGISTRY }}/${{ env.GITHUB_REPOSITORY_LOWER_CASE }}/${{ env.DOCS_IMAGE_NAME }}:${{ env.MINVERVERSIONOVERRIDE }}
+          tags: ${{ env.REGISTRY }}/${{ env.DOCS_IMAGE_NAME }}:${{ env.MINVERVERSIONOVERRIDE }}
           labels: ${{ steps.meta-docs.outputs.labels }}
-          
+          push: true
 
       - name: Extract metadata (tags, labels) for plugin Docker
         id: meta-plugin
@@ -122,9 +123,9 @@ jobs:
         with:
           context: ./src/OpenAI.Plugin/
           file: ./src/OpenAI.Plugin/Dockerfile
-          tags: ${{ env.REGISTRY }}/${{ env.GITHUB_REPOSITORY_LOWER_CASE }}/${{ env.PLUGIN_IMAGE_NAME }}:${{ env.MINVERVERSIONOVERRIDE }}
+          tags: ${{ env.REGISTRY }}/${{ env.PLUGIN_IMAGE_NAME }}:${{ env.MINVERVERSIONOVERRIDE }}
           labels: ${{ steps.meta-plugin.outputs.labels }}
-          
+          push: true
 
       # FSI PLUGIN
       - name: Extract metadata (tags, labels) for fsi plugin Docker
@@ -138,9 +139,9 @@ jobs:
         with:
           context: ./src/OpenAI.Plugin.FSI/
           file: ./src/OpenAI.Plugin.FSI/Dockerfile
-          tags: ${{ env.REGISTRY }}/${{ env.GITHUB_REPOSITORY_LOWER_CASE }}/${{ env.FSIPLUGIN_IMAGE_NAME }}:${{ env.MINVERVERSIONOVERRIDE }}
+          tags: ${{ env.REGISTRY }}/${{ env.FSIPLUGIN_IMAGE_NAME }}:${{ env.MINVERVERSIONOVERRIDE }}
           labels: ${{ steps.meta-fsiplugin.outputs.labels }}
-         
+          push: true
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
@@ -204,3 +205,34 @@ jobs:
           asset_path: ${{ env.AIHUB_ARTIFACT_NAME }}.zip
           asset_name: ${{ env.AIHUB_ARTIFACT_NAME }}.zip
           asset_content_type: application/octet-stream
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Login to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Deploy to Azure Container App
+        run: |
+          az containerapp update \
+            --name ${{env.CONTAINERAPP_NAME}} \
+            --resource-group ${{vars.AZURE_RG}} \
+            --image ${{ env.REGISTRY }}/${{ github.repository_name }}:${{needs.build.outputs.MINVERVERSIONOVERRIDE}}
+
+      - name: Verify deployment
+        run: |
+          az containerapp show \
+            --name ${{env.CONTAINERAPP_NAME}} \
+            --resource-group ${{vars.AZURE_RG}}
