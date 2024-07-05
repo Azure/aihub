@@ -30,14 +30,8 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Listar imágenes de Docker
         run: |
-          ACCESS_TOKEN="${{ secrets.GITHUB_TOKEN }}"
-          REPO="${{ env.REGISTRY }}/${{env.IMAGE_NAME}}"  # Cambia por tu usuario y nombre de repositorio
-
-          echo "Listing images in $REPO"
-          curl -H "Authorization: token $ACCESS_TOKEN" \
-               -H "Accept: application/vnd.github.v3+json" \
-               "https://api.github.com/repos/$REPO/packages/container/images" \
-               | jq '.'
+          docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
+          docker images | grep ghcr.io
 
       - name: Deploy to Azure Container App
         run: |
