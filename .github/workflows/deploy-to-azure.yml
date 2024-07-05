@@ -24,13 +24,13 @@ jobs:
 
       - name: Show image name
         run: |
-          echo "Imagen: " ${{ env.REGISTRY }}/${{env.IMAGE_NAME}}:2.0.19
+          echo "Imagen: " ${{ env.REGISTRY }}/${{env.IMAGE_NAME}}:1.0.0-preview.0
       - name: Check if image exists in GHCR
         id: check-image
         run: |
           IMAGE_EXISTS=$(curl -s -o /dev/null -w "%{http_code}" \
           -H "Authorization: Bearer ${{ github.token }}" \
-          https://ghcr.io/v2/${{ github.repository_owner }}/aihub/manifests/2.0.19)
+          https://ghcr.io/v2/${{ github.repository_owner }}/aihub/manifests/1.0.0-preview.0)
           if [ $IMAGE_EXISTS -eq 200 ]; then
             echo "Image exists in GHCR"
           else
@@ -42,7 +42,7 @@ jobs:
           az containerapp update \
             --name ${{env.CONTAINERAPP_NAME}} \
             --resource-group ${{vars.AZURE_RG}} \
-            --image ${{ env.REGISTRY }}/${{env.IMAGE_NAME}}:2.0.19
+            --image ${{ env.REGISTRY }}/${{env.IMAGE_NAME}}:1.0.0-preview.0
 
       - name: Verify deployment
         run: |
