@@ -24,141 +24,141 @@ env:
   CONTAINERAPP_NAME: ${{ vars.AZURE_CONTAINERAPPS_NAME }}
 
 jobs:
-  # build:
-  #   runs-on: ubuntu-latest
-  #   permissions:
-  #     contents: read
-  #     packages: write
-  #   outputs:
-  #     minver_version_override: ${{ steps.build.outputs.minver_version_override }}
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #       with:
-  #         fetch-depth: 0
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      minver_version_override: ${{ steps.build.outputs.minver_version_override }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-  #     - name: Set up .NET Core
-  #       uses: actions/setup-dotnet@v1
-  #       with:
-  #         dotnet-version: "8.x"
-  #         include-prerelease: true
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: "8.x"
+          include-prerelease: true
 
-  #     - name: Setup MinVer
-  #       run: |
-  #         dotnet tool install --global minver-cli --version 4.3.0
+      - name: Setup MinVer
+        run: |
+          dotnet tool install --global minver-cli --version 4.3.0
 
-  #     - name: Calculate Version
-  #       run: |
-  #         echo "MINVERVERSIONOVERRIDE=$($HOME/.dotnet/tools/minver -t v. -m 1.0 -p preview)" >> $GITHUB_ENV
+      - name: Calculate Version
+        run: |
+          echo "MINVERVERSIONOVERRIDE=$($HOME/.dotnet/tools/minver -t v. -m 1.0 -p preview)" >> $GITHUB_ENV
 
-  #     - name: Build with dotnet
-  #       run: dotnet build --configuration Release
-  #       working-directory: "./src/AIHub"
+      - name: Build with dotnet
+        run: dotnet build --configuration Release
+        working-directory: "./src/AIHub"
 
-  #     - name: dotnet publish
-  #       run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
-  #       working-directory: "./src/AIHub"
+      - name: dotnet publish
+        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+        working-directory: "./src/AIHub"
 
-  #     - name: Upload artifact for deployment job
-  #       uses: actions/upload-artifact@v3
-  #       with:
-  #         name: .net-app
-  #         path: ${{env.DOTNET_ROOT}}/myapp
+      - name: Upload artifact for deployment job
+        uses: actions/upload-artifact@v3
+        with:
+          name: .net-app
+          path: ${{env.DOTNET_ROOT}}/myapp
 
-  #     - name: Login to the Container registry
-  #       uses: docker/login-action@v3
-  #       with:
-  #         registry: ${{ env.REGISTRY }}
-  #         username: ${{ github.actor }}
-  #         password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Login to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-  #     - name: Set up Docker Buildx
-  #       uses: docker/setup-buildx-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-  #     - name: Extract metadata (tags, labels) for Docker
-  #       id: meta
-  #       uses: docker/metadata-action@v3
-  #       with:
-  #         images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-  #     - name: Lower case REPO
-  #       run: |
-  #         echo "GITHUB_REPOSITORY_LOWER_CASE=${GITHUB_REPOSITORY,,}" >> ${GITHUB_ENV}
+      - name: Lower case REPO
+        run: |
+          echo "GITHUB_REPOSITORY_LOWER_CASE=${GITHUB_REPOSITORY,,}" >> ${GITHUB_ENV}
 
-  #     - name: Values
-  #       run: |
-  #         echo "Registry: ${{ env.REGISTRY }}"
-  #         echo "Image_Name: ${{ env.IMAGE_NAME }}"
-  #         echo "Version:${{ env.MINVERVERSIONOVERRIDE }} | ${{ steps.build.outputs.minver_version_override }}"
-  #         echo "Repositorio:${{env.GITHUB_REPOSITORY_LOWER_CASE}}"
+      - name: Values
+        run: |
+          echo "Registry: ${{ env.REGISTRY }}"
+          echo "Image_Name: ${{ env.IMAGE_NAME }}"
+          echo "Version:${{ env.MINVERVERSIONOVERRIDE }} | ${{ steps.build.outputs.minver_version_override }}"
+          echo "Repositorio:${{env.GITHUB_REPOSITORY_LOWER_CASE}}"
 
-  #     - name: Build and push Docker image for AIHub
-  #       uses: docker/build-push-action@v3
-  #       with:
-  #         context: ./src/AIHub/
-  #         file: ./src/AIHub/Dockerfile
-  #         labels: ${{ steps.meta.outputs.labels }}
-  #         build-args: MINVERVERSIONOVERRIDE=${{ env.MINVERVERSIONOVERRIDE }}
-  #         registry: ${{ env.REGISTRY }}
-  #         username: ${{ github.actor }}
-  #         password: ${{ secrets.GITHUB_TOKEN }}
-  #         push: true
-  #         tags: |
-  #           ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.MINVERVERSIONOVERRIDE }}
+      - name: Build and push Docker image for AIHub
+        uses: docker/build-push-action@v3
+        with:
+          context: ./src/AIHub/
+          file: ./src/AIHub/Dockerfile
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: MINVERVERSIONOVERRIDE=${{ env.MINVERVERSIONOVERRIDE }}
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.MINVERVERSIONOVERRIDE }}
 
-  #     - name: Extract metadata (tags, labels) for prep-docs Docker
-  #       id: meta-docs
-  #       uses: docker/metadata-action@v3
-  #       with:
-  #         images: ${{ env.REGISTRY }}/${{ env.DOCS_IMAGE_NAME }}
+      - name: Extract metadata (tags, labels) for prep-docs Docker
+        id: meta-docs
+        uses: docker/metadata-action@v3
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.DOCS_IMAGE_NAME }}
 
-  #     - name: Build and push Docker image for prep-docs
-  #       uses: docker/build-push-action@v3
-  #       with:
-  #         context: ./src/prepdocs/
-  #         file: ./src/prepdocs/Dockerfile
-  #         tags: ${{ env.REGISTRY }}/${{ env.GITHUB_REPOSITORY_LOWER_CASE }}/${{ env.DOCS_IMAGE_NAME }}:${{ env.MINVERVERSIONOVERRIDE }}
-  #         labels: ${{ steps.meta-docs.outputs.labels }}
-  #         push: true
+      - name: Build and push Docker image for prep-docs
+        uses: docker/build-push-action@v3
+        with:
+          context: ./src/prepdocs/
+          file: ./src/prepdocs/Dockerfile
+          tags: ${{ env.REGISTRY }}/${{ env.GITHUB_REPOSITORY_LOWER_CASE }}/${{ env.DOCS_IMAGE_NAME }}:${{ env.MINVERVERSIONOVERRIDE }}
+          labels: ${{ steps.meta-docs.outputs.labels }}
+          push: true
 
-  #     - name: Extract metadata (tags, labels) for plugin Docker
-  #       id: meta-plugin
-  #       uses: docker/metadata-action@v3
-  #       with:
-  #         images: ${{ env.REGISTRY }}/${{ env.PLUGIN_IMAGE_NAME }}
+      - name: Extract metadata (tags, labels) for plugin Docker
+        id: meta-plugin
+        uses: docker/metadata-action@v3
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.PLUGIN_IMAGE_NAME }}
 
-  #     - name: Build and push Docker image for plugin
-  #       uses: docker/build-push-action@v3
-  #       with:
-  #         context: ./src/OpenAI.Plugin/
-  #         file: ./src/OpenAI.Plugin/Dockerfile
-  #         tags: ${{ env.REGISTRY }}/${{ env.GITHUB_REPOSITORY_LOWER_CASE }}/${{ env.PLUGIN_IMAGE_NAME }}:${{ env.MINVERVERSIONOVERRIDE }}
-  #         labels: ${{ steps.meta-plugin.outputs.labels }}
-  #         push: true
+      - name: Build and push Docker image for plugin
+        uses: docker/build-push-action@v3
+        with:
+          context: ./src/OpenAI.Plugin/
+          file: ./src/OpenAI.Plugin/Dockerfile
+          tags: ${{ env.REGISTRY }}/${{ env.GITHUB_REPOSITORY_LOWER_CASE }}/${{ env.PLUGIN_IMAGE_NAME }}:${{ env.MINVERVERSIONOVERRIDE }}
+          labels: ${{ steps.meta-plugin.outputs.labels }}
+          push: true
 
-  #     # FSI PLUGIN
-  #     - name: Extract metadata (tags, labels) for fsi plugin Docker
-  #       id: meta-fsiplugin
-  #       uses: docker/metadata-action@v3
-  #       with:
-  #         images: ${{ env.REGISTRY }}/${{ env.FSIPLUGIN_IMAGE_NAME }}
+      # FSI PLUGIN
+      - name: Extract metadata (tags, labels) for fsi plugin Docker
+        id: meta-fsiplugin
+        uses: docker/metadata-action@v3
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.FSIPLUGIN_IMAGE_NAME }}
 
-  #     - name: Build and push Docker image for fsi plugin
-  #       uses: docker/build-push-action@v3
-  #       with:
-  #         context: ./src/OpenAI.Plugin.FSI/
-  #         file: ./src/OpenAI.Plugin.FSI/Dockerfile
-  #         tags: ${{ env.REGISTRY }}/${{ env.GITHUB_REPOSITORY_LOWER_CASE }}/${{ env.FSIPLUGIN_IMAGE_NAME }}:${{ env.MINVERVERSIONOVERRIDE }}
-  #         labels: ${{ steps.meta-fsiplugin.outputs.labels }}
-  #         push: true
+      - name: Build and push Docker image for fsi plugin
+        uses: docker/build-push-action@v3
+        with:
+          context: ./src/OpenAI.Plugin.FSI/
+          file: ./src/OpenAI.Plugin.FSI/Dockerfile
+          tags: ${{ env.REGISTRY }}/${{ env.GITHUB_REPOSITORY_LOWER_CASE }}/${{ env.FSIPLUGIN_IMAGE_NAME }}:${{ env.MINVERVERSIONOVERRIDE }}
+          labels: ${{ steps.meta-fsiplugin.outputs.labels }}
+          push: true
 
-  #     - name: Upload Artifacts
-  #       uses: actions/upload-artifact@v3
-  #       with:
-  #         name: ${{ env.AIHUB_ARTIFACT_NAME }}
-  #         path: |
-  #           ./infra/modules/
-  #           ./infra/*.tf
-  #           ./infra/*.md
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.AIHUB_ARTIFACT_NAME }}
+          path: |
+            ./infra/modules/
+            ./infra/*.tf
+            ./infra/*.md
   # release:
   #   name: Create Release
   #   needs: build
@@ -214,19 +214,13 @@ jobs:
   #         asset_name: ${{ env.AIHUB_ARTIFACT_NAME }}.zip
   #         asset_content_type: application/octet-stream
   deploy:
-    #needs: build #[build, release, publish]
+    needs: build #[build, release, publish]
 
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-
-      - name: Set up .NET Core
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: "8.x"
-          include-prerelease: true
 
       - name: Log in to Azure
         uses: azure/login@v1
