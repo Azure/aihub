@@ -29,8 +29,8 @@ html[data-menu-color=light] {
 html[data-menu-color=dark] {
     --ct-menu-bg: #F40009;
     --ct-menu-item-color: #ffffff;
-    --ct-menu-item-hover-color: #000000;
-    --ct-menu-item-active-color: #000000;
+    --ct-menu-item-hover-color: #f39c31;
+    --ct-menu-item-active-color: #f39c31;
     --ct-help-box-bg: rgba(255, 255, 255, 0.07)
 }
 
@@ -288,7 +288,7 @@ body {
     line-height: var(--ct-body-line-height);
     color: var(--ct-body-color);
     text-align: var(--ct-body-text-align);
-    background-color: var(--ct-body-bg);
+    background-color: rgba(0, 0, 0, 0);
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent
 }
@@ -6035,12 +6035,12 @@ fieldset:disabled .btn {
     padding-left: var(--ct-breadcrumb-item-padding-x)
 }
 
-.breadcrumb-item+.breadcrumb-item::before {
-    float: left;
-    padding-right: var(--ct-breadcrumb-item-padding-x);
-    color: var(--ct-breadcrumb-divider-color);
-    content: var(--ct-breadcrumb-divider, "\f0142")
-}
+    .breadcrumb-item + .breadcrumb-item::before {
+        float: left;
+        padding-right: var(--ct-breadcrumb-item-padding-x);
+        color: rgb(245, 130, 50);
+        content: var(--ct-breadcrumb-divider, "\f0142")
+    }
 
 .breadcrumb-item.active {
     color: var(--ct-breadcrumb-item-active-color)
@@ -16807,12 +16807,12 @@ html[data-sidenav-size=condensed]:not([data-layout=topnav]) .wrapper .leftside-m
     padding-left: 0 !important
 }
 
-html[data-sidenav-size=condensed]:not([data-layout=topnav]) .wrapper .leftside-menu .side-nav .side-nav-item:hover .side-nav-link {
-    position: relative;
-    color: #fff;
-    background: var(--ct-menu-condensed-link-bg);
-    width: var(--ct-leftbar-width)
-}
+    html[data-sidenav-size=condensed]:not([data-layout=topnav]) .wrapper .leftside-menu .side-nav .side-nav-item:hover .side-nav-link {
+        position: relative;
+        color: #fff;
+        background: #871441;
+        width: var(--ct-leftbar-width)
+    }
 
 html[data-sidenav-size=condensed]:not([data-layout=topnav]) .wrapper .leftside-menu .side-nav .side-nav-item:hover .side-nav-link span {
     visibility: visible
@@ -16839,6 +16839,11 @@ html[data-sidenav-size=condensed]:not([data-layout=topnav]) .wrapper .leftside-m
     box-shadow: 0 0 45px 0 rgba(var(--ct-body-color-rgb), .2);
     width: calc(var(--ct-leftbar-width) - var(--ct-leftbar-width-sm))
 }
+
+    html[data-sidenav-size=condensed]:not([data-layout=topnav]) .wrapper .leftside-menu .side-nav .side-nav-item:hover > .collapse > ul.side-nav-second-level,
+    html[data-sidenav-size=condensed]:not([data-layout=topnav]) .wrapper .leftside-menu .side-nav .side-nav-item:hover > .collapsing > ul.side-nav-second-level {
+        background: #461946;
+    }
 
 html[data-sidenav-size=condensed]:not([data-layout=topnav]) .wrapper .leftside-menu .side-nav .side-nav-item:hover>.collapse>ul a,
 html[data-sidenav-size=condensed]:not([data-layout=topnav]) .wrapper .leftside-menu .side-nav .side-nav-item:hover>.collapsing>ul a {
@@ -20818,8 +20823,8 @@ html[data-theme=dark] .auth-brand .logo-dark {
 .faq-question-q-box {
     height: 30px;
     width: 30px;
-    color: var(--ct-primary);
-    background-color: rgba(var(--ct-primary-rgb), .25);
+    color: #461946;
+    background-color: #faaf00;
     -webkit-box-shadow: 0 0 45px 0 rgba(var(--ct-body-color-rgb), .2);
     box-shadow: 0 0 45px 0 rgba(var(--ct-body-color-rgb), .2);
     text-align: center;
