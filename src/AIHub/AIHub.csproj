@@ -31,8 +31,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="wwwroot\images\customer\customer-logo-cocacola.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <Content Update="wwwroot\images\customer\customer-logo.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 
