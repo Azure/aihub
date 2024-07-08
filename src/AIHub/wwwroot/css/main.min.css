@@ -129,7 +129,7 @@ html[data-bs-theme=dark][data-topbar-color=light] {
     --ct-primary-rgb: 0, 114, 188;
     --ct-secondary-rgb: 108, 117, 125;
     --ct-success-rgb: 10, 207, 151;
-    --ct-info-rgb: 57, 175, 209;
+    --ct-info-rgb: 70, 25, 70;
     --ct-warning-rgb: 255, 195, 90;
     --ct-danger-rgb: 250, 92, 124;
     --ct-light-rgb: 238, 242, 247;
@@ -4028,7 +4028,7 @@ fieldset:disabled .btn {
 .btn-info {
     --ct-btn-color: #fff;
     --ct-btn-bg: #461946;
-    --ct-btn-border-color: #faaf00;
+    --ct-btn-border-color: #461946;
     --ct-btn-hover-color: #fff;
     --ct-btn-hover-bg: #faaf00;
     --ct-btn-hover-border-color: #faaf00;
