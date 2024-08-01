@@ -27,10 +27,10 @@ html[data-menu-color=light] {
 }
 
 html[data-menu-color=dark] {
-    --ct-menu-bg: #F40009;
+    --ct-menu-bg: #041c2c;
     --ct-menu-item-color: #ffffff;
-    --ct-menu-item-hover-color: #f39c31;
-    --ct-menu-item-active-color: #f39c31;
+    --ct-menu-item-hover-color: #00b5f1;
+    --ct-menu-item-active-color: #00b5f1;
     --ct-help-box-bg: rgba(255, 255, 255, 0.07)
 }
 
@@ -6038,7 +6038,7 @@ fieldset:disabled .btn {
     .breadcrumb-item + .breadcrumb-item::before {
         float: left;
         padding-right: var(--ct-breadcrumb-item-padding-x);
-        color: rgb(245, 130, 50);
+        color: #041c2c;
         content: var(--ct-breadcrumb-divider, "\f0142")
     }
 

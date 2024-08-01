@@ -7,7 +7,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Azure AI Hub</title>
+    <title>@ViewData["Title"] - Azure AI Hub demo</title>
 
     <link rel="icon" type="image/x-icon" href="~/images/favicon.ico" />
 
@@ -45,7 +45,7 @@
                                 @* <img id="logo" src="/images/favicon.ico" class="img-fluid rounded-start" alt="logo">
                                 *@
                             </span>
-                            <span class="logo-sm">
+                            <span class="logo-lg">
                                 <img src="/images/aihub-logo-icon.png" alt="AI Hub">
                             </span>
                         </a>
@@ -149,7 +149,7 @@
 
                     <li class="nav-link arrow-none nav-user px-2">
                         <!--<a class="nav-link" href="http://www.microsoft.com" target="blank">-->
-                        <span class="logo-lg"><img src="/images/customer/customer-logo.png"></span>
+                        <span class="logo-lg"><img src="/images/customer/plain-concepts-logo@2x.png"></span>
                         
                         <!--</a>-->
                     </li>
@@ -207,17 +207,17 @@
                 <!--- Sidemenu -->
                 <ul class="side-nav">
 
-                    <li class="side-nav-title">
+@*                     <li class="side-nav-title">
                         <center>Responsible AI & Innovation Center</center>
                     </li>
-
-                    <li class="side-nav-item">
+ *@
+                   @*  <li class="side-nav-item">
                         <a class="side-nav-link" target="_blank"
                             href="https://news.microsoft.com/es-es/2024/02/20/microsoft-crea-un-centro-de-innovacion-en-ia-responsable-para-ayudar-a-las-organizaciones-espanolas-en-el-despliegue-de-proyectos-de-inteligencia-artificial/">
                             <i class="uil-link"></i>
                             <span> Learn about RAIIC </span>
                         </a>
-                    </li>
+                    </li> *@
 
 
                     @* <li class="side-nav-item">
@@ -353,8 +353,7 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-6">
-                            <script>document.write(new Date().getFullYear())</script> © Copyright - <i
-                                class="mdi mdi-microsoft"></i> Microsoft
+                            <script>document.write(new Date().getFullYear())</script> © Copyright - Plain Concepts
                             - v.@FileVersionInfo.GetVersionInfo(typeof(MVCWeb.Controllers.DashboardController).Assembly.Location).ProductVersion
                         </div>
                         <div class="col-md-6">
