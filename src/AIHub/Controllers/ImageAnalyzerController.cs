@@ -43,7 +43,7 @@ public class ImageAnalyzerController : Controller
     [HttpPost]
     public async Task<IActionResult> DenseCaptionImage(string image_url, string prompt)
     {
-        string GPT4V_ENDPOINT = $"{AOAIendpoint}openai/deployments/{AOAIDeploymentName}/chat/completions?api-version=2024-02-15-preview";
+        string GPT4o_ENDPOINT = $"{AOAIendpoint}openai/deployments/{AOAIDeploymentName}>/chat/completions?api-version=2024-02-15-preview";
         image_url = image_url + sasUri.Query;
 
         if (string.IsNullOrEmpty(AOAIsubscriptionKey))
@@ -94,7 +94,7 @@ public class ImageAnalyzerController : Controller
             max_tokens = 800,
             stream = false
         };
-        var response = await httpClient.PostAsync(GPT4V_ENDPOINT, new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json"));
+        var response = await httpClient.PostAsync(GPT4o_ENDPOINT, new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json"));
 
         if (response.IsSuccessStatusCode)
         {
