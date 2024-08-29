@@ -77,6 +77,21 @@ resource "azurerm_cognitive_deployment" "gpt4_vision" {
   }
 }
 
+resource "azurerm_cognitive_deployment" "gpt4o" {
+  name                 = "gpt4o"
+  cognitive_account_id = azurerm_cognitive_account.openai.id
+  rai_policy_name      = "Microsoft.Default"
+  model {
+    format  = "OpenAI"
+    name    = "gpt-4o"
+    version = "2024-05-13"
+  }
+  scale {
+    type     = "Standard"
+    capacity = 100
+  }
+}
+
 # Set role assignment for OpenAI
 
 resource "azurerm_role_assignment" "openai_user" {

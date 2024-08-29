@@ -229,6 +229,8 @@ module "ca_aihub" {
   chat_gpt4_model                = module.openai.gpt4_deployment_model_name
   chat_gpt4_vision_deployment    = module.openai.gpt4_vision_deployment_name
   chat_gpt4_vision_model         = module.openai.gpt4_vision_deployment_model_name
+  chat_gpt4o_deployment          = module.openai.gpt4o_deployment_name
+  chat_gpt4o_model               = module.openai.gpt4o_deployment_model_name
   embeddings_deployment          = module.openai.embedding_deployment_name
   embeddings_model               = module.openai.embedding_deployment_name
   storage_account_name           = module.st.storage_account_name

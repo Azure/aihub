@@ -132,7 +132,7 @@ resource "azapi_resource" "ca_back" {
               },
               {
                 name  = "ImageAnalyzer__DeploymentName",
-                value = var.chat_gpt4_vision_deployment
+                value = var.chat_gpt4o_deployment
               },
               {
                 name  = "VideoAnalyzer__OpenAIEndpoint",

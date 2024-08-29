@@ -18,6 +18,8 @@ variable "chat_gpt4_deployment" {}
 variable "chat_gpt4_model" {}
 variable "chat_gpt4_vision_deployment" {}
 variable "chat_gpt4_vision_model" {}
+variable "chat_gpt4o_deployment" {}
+variable "chat_gpt4o_model" {}
 variable "embeddings_deployment" {}
 variable "embeddings_model" {}
 variable "openai_endpoint" {}
