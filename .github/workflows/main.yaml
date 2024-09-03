@@ -184,7 +184,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: download artifacts - ${{ env.AIHUB_ARTIFACT_NAME }}
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
         with:
           name: ${{ env.AIHUB_ARTIFACT_NAME }}
           path: ${{ env.ARTIFACT_DIR }}/${{ env.AIHUB_ARTIFACT_NAME }}
