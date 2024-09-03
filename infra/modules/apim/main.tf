@@ -24,7 +24,7 @@ resource "azapi_resource" "apim" {
       developerPortalStatus = "Disabled"
       virtualNetworkType    = var.use_private_endpoints ? "External" : "None"
       virtualNetworkConfiguration = var.use_private_endpoints ? {
-        subnetResourceId = var.apim_subnet_id        
+        subnetResourceId = var.apim_subnet_id
       } : null
     }
   }
@@ -168,19 +168,14 @@ resource "azurerm_api_management_api_policy" "policy" {
         </on-error>
     </policies>
     XML
-    depends_on = [ azurerm_api_management_named_value.tenant_id ]
+  depends_on  = [azurerm_api_management_named_value.tenant_id]
 }
 
 # https://github.com/aavetis/azure-openai-logger/blob/main/README.md
 # KQL Query to extract OpenAI data from Application Insights
-# requests
-# | where operation_Name == "openai-api;rev=1 - Completions_Create" or operation_Name == "openai-api;rev=1 - ChatCompletions_Create"
-# | extend Prompt = parse_json(tostring(parse_json(tostring(parse_json(tostring(customDimensions.["Request-Body"])).messages[-1].content))))
-# | extend Generation = parse_json(tostring(parse_json(tostring(parse_json(tostring(customDimensions.["Response-Body"])).choices))[0].message)).content
-# | extend promptTokens = parse_json(tostring(parse_json(tostring(customDimensions.["Response-Body"])).usage)).prompt_tokens
-# | extend completionTokens = parse_json(tostring(parse_json(tostring(customDimensions.["Response-Body"])).usage)).completion_tokens
-# | extend totalTokens = parse_json(tostring(parse_json(tostring(customDimensions.["Response-Body"])).usage)).total_tokens
-# | project timestamp, Prompt, Generation, promptTokens, completionTokens, totalTokens, round(duration,2), operation_Name
+# customMetrics
+# | extend ip = tostring(parse_json(customDimensions).["Client IP"])
+# | summarize totalValueSum = sum(valueSum) by name, ip
 resource "azurerm_api_management_diagnostic" "diagnostics" {
   identifier               = "applicationinsights"
   resource_group_name      = var.resource_group_name
