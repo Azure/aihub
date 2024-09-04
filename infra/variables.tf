@@ -103,19 +103,19 @@ variable "ca_chat_image" {
 }
 
 variable "ca_prep_docs_image" {
-  default = "ghcr.io/azure/aihub/aihub-prepdocs:1.0.12"
+  default = "ghcr.io/azure/aihub/aihub-prepdocs:1.0.13"
 }
 
 variable "ca_plugin_image" {
-  default = "ghcr.io/azure/aihub/aihub-plugin:1.0.12"
+  default = "ghcr.io/azure/aihub/aihub-plugin:1.0.13"
 }
 
 variable "ca_fsi_plugin_image" {
-  default = "ghcr.io/azure/aihub/aihub-fsiplugin:1.0.12"
+  default = "ghcr.io/azure/aihub/aihub-fsiplugin:1.0.13"
 }
 
 variable "ca_aihub_image" {
-  default = "ghcr.io/azure/aihub/aihub:1.0.12"
+  default = "ghcr.io/azure/aihub/aihub:1.0.13"
 }
 
 variable "use_random_suffix" {
