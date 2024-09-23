@@ -423,8 +423,3 @@ local.settings.json
 
 # appsettings.json
 appsettings.*.json
-!appsettings.json
-!appsettings.Development.json
-!appsettings.Production.json
-!appsettings.Staging.json
-!appsettings.Test.json
