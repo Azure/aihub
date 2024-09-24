@@ -57,11 +57,6 @@ public class ImageAnalyzerController : Controller
         }
         var payload = new
         {
-            enhancements = new
-            {
-                ocr = new { enabled = true },
-                grounding = new { enabled = true }
-            },
             messages = new object[]
             {
                 new {
@@ -94,6 +89,7 @@ public class ImageAnalyzerController : Controller
             max_tokens = 800,
             stream = false
         };
+        Console.WriteLine(JsonConvert.SerializeObject(payload));
         var response = await httpClient.PostAsync(GPT4o_ENDPOINT, new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json"));
 
         if (response.IsSuccessStatusCode)
