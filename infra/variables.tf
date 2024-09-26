@@ -148,7 +148,7 @@ variable "enable_openai_plugin_compare_financial_products" {
 
 variable "use_private_endpoints" {
     type = bool
-    default = true
+    default = false
 }
 
 variable "allowed_ips" {
