@@ -104,7 +104,8 @@ public class ImageAnalyzerController : Controller
         }
         else
         {
-            Console.WriteLine($"Error after GPT4V: {response.StatusCode}, {response.ReasonPhrase}");
+            var errorContent = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"Error after GPT4o: {response.StatusCode}, {errorContent}");
         }
 
         return View("ImageAnalyzer", model);

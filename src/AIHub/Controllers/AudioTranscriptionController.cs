@@ -38,8 +38,23 @@ public class AudioTranscriptionController : Controller
         // CALL 1: STT 3.1
         var request = new HttpRequestMessage(HttpMethod.Post, "https://" + speechRegion + ".api.cognitive.microsoft.com/speechtotext/v3.1/transcriptions");
         request.Headers.Add("Ocp-Apim-Subscription-Key", speechSubscriptionKey);
-        var content = new StringContent("{\r\n\"contentUrls\": [\r\n    \"" + audio + "\"\r\n  ],\r\n  \"locale\": \"es-es\",\r\n  \"displayName\": \"My Transcription\",\r\n  \"model\": null,\r\n  \"properties\": {\r\n    \"wordLevelTimestampsEnabled\": true,\r\n    \"languageIdentification\": {\r\n      \"candidateLocales\": [\r\n        \"en-US\", \"de-DE\", \"es-ES\"\r\n      ]\r\n    }\r\n    }\r\n}", null, "application/json");
-        request.Content = content;
+        var requestBody = new
+        {
+            contentUrls = new[] { audio },
+            locale = "es-es",
+            displayName = "My Transcription",
+            model = (string?)null,
+            properties = new
+            {
+                wordLevelTimestampsEnabled = true,
+                languageIdentification = new
+                {
+                    candidateLocales = new[] { "en-US", "de-DE", "es-ES" }
+                }
+            }
+        };
+        Console.WriteLine(JsonSerializer.Serialize(requestBody));
+        request.Content = new StringContent(JsonSerializer.Serialize(requestBody), Encoding.UTF8, "application/json");
         var response = await httpClient.SendAsync(request);
         response.EnsureSuccessStatusCode();
         var responsejson = JsonSerializer.Deserialize<JsonObject>(await response.Content.ReadAsStringAsync())!;
