@@ -31,11 +31,11 @@ output "gpt4_deployment_model_name" {
 }
 
 output "gpt4o_deployment_name" {
-  value = azurerm_cognitive_deployment.gpt_4.name
+  value = azurerm_cognitive_deployment.gpt4o.name
 }
 
 output "gpt4o_deployment_model_name" {
-  value = azurerm_cognitive_deployment.gpt_4.model[0].name
+  value = azurerm_cognitive_deployment.gpt4o.model[0].name
 }
 
 output "embedding_deployment_name" {
