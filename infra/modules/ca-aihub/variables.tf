@@ -12,8 +12,6 @@ variable "storage_account_key" {}
 variable "storage_container_name" {}
 variable "search_service_name" {}
 variable "search_index_name" {}
-variable "chat_gpt_deployment" {}
-variable "chat_gpt_model" {}
 variable "chat_gpt4_deployment" {}
 variable "chat_gpt4_model" {}
 variable "chat_gpt4_vision_deployment" {}

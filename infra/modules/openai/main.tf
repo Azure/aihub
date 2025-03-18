@@ -17,21 +17,6 @@ resource "azurerm_cognitive_account" "openai" {
 
 # Deploy models into Azure OpenAI
 
-resource "azurerm_cognitive_deployment" "gpt_35_turbo" {
-  name                 = "gpt-35-turbo"
-  cognitive_account_id = azurerm_cognitive_account.openai.id
-  rai_policy_name      = "Microsoft.Default"
-  model {
-    format  = "OpenAI"
-    name    = "gpt-35-turbo"
-    version = "0613"
-  }
-  scale {
-    type     = "Standard"
-    capacity = 40
-  }
-}
-
 resource "azurerm_cognitive_deployment" "embedding" {
   name                 = "text-embedding-ada-002"
   cognitive_account_id = azurerm_cognitive_account.openai.id
@@ -73,7 +58,7 @@ resource "azurerm_cognitive_deployment" "gpt4_vision" {
   }
   scale {
     type     = "Standard"
-    capacity = 20
+    capacity = 10
   }
 }
 
@@ -88,7 +73,7 @@ resource "azurerm_cognitive_deployment" "gpt4o" {
   }
   scale {
     type     = "Standard"
-    capacity = 100
+    capacity = 30
   }
 }
 

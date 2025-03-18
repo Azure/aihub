@@ -131,7 +131,7 @@ variable "enable_apim" {
 }
 
 variable "deploy_bing" {
-  default = true
+  default = false
 }
 
 variable "pbi_report_link" {

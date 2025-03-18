@@ -104,7 +104,7 @@ resource "azapi_resource" "ca_back" {
               },
               {
                 name  = "BrandAnalyzer__DeploymentName",
-                value = var.chat_gpt_deployment
+                value = var.chat_gpt4_deployment
               },
               {
                 name  = "CallCenter__OpenAIEndpoint",
@@ -116,7 +116,7 @@ resource "azapi_resource" "ca_back" {
               },
               {
                 name  = "CallCenter__DeploymentName",
-                value = var.chat_gpt_deployment
+                value = var.chat_gpt4_deployment
               },
               {
                 name  = "ImageAnalyzer__OpenAIEndpoint",

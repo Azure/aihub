@@ -182,8 +182,8 @@ module "ca_chat" {
   cae_id                         = module.cae.cae_id
   cae_default_domain             = module.cae.default_domain
   managed_identity_id            = module.mi.mi_id
-  chat_gpt_deployment            = module.openai.gpt_deployment_name
-  chat_gpt_model                 = module.openai.gpt_deployment_model_name
+  chat_gpt_deployment            = module.openai.gpt4_deployment_name
+  chat_gpt_model                 = module.openai.gpt4_deployment_model_name
   embeddings_deployment          = module.openai.embedding_deployment_name
   embeddings_model               = module.openai.embedding_deployment_name
   storage_account_name           = module.st.storage_account_name
@@ -223,8 +223,6 @@ module "ca_aihub" {
   cae_id                         = module.cae.cae_id
   cae_default_domain             = module.cae.default_domain
   managed_identity_id            = module.mi.mi_id
-  chat_gpt_deployment            = module.openai.gpt_deployment_name
-  chat_gpt_model                 = module.openai.gpt_deployment_model_name
   chat_gpt4_deployment           = module.openai.gpt4_deployment_name
   chat_gpt4_model                = module.openai.gpt4_deployment_model_name
   chat_gpt4_vision_deployment    = module.openai.gpt4_vision_deployment_name
@@ -268,7 +266,7 @@ module "plugin" {
   cae_default_domain       = module.cae.default_domain
   appi_instrumentation_key = module.appi.appi_key
   openai_key               = module.openai.openai_key
-  openai_model             = module.openai.gpt_deployment_name
+  openai_model             = module.openai.gpt4_deployment_name
   openai_endpoint          = module.openai.openai_endpoint
 }
 
@@ -284,7 +282,7 @@ module "plugin-fsi" {
   cae_default_domain       = module.cae.default_domain
   appi_instrumentation_key = module.appi.appi_key
   openai_key               = module.openai.openai_key
-  openai_model             = module.openai.gpt_deployment_name
+  openai_model             = module.openai.gpt4_deployment_name
   openai_endpoint          = module.openai.openai_endpoint
   bing_endpoint            = "https://api.bing.microsoft.com/v7.0/search"
   bing_key                 = module.cog.bing_key
