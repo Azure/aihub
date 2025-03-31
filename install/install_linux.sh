@@ -64,6 +64,10 @@ unzip -o $zipFilePath -d $AIHubRoot
 echo "Clean up $zipFilePath..."
 rm $zipFilePath
 
+# Set subscription environment variable
+echo "Setting up Azure subscription..."
+export AZURE_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
+
 # Use Terraform to deploy AI Hub
 echo "Deploying AI Hub..."
 cd $AIHubRoot

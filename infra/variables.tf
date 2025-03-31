@@ -118,6 +118,30 @@ variable "ca_aihub_image" {
   default = "ghcr.io/azure/aihub/aihub:1.0.14"
 }
 
+variable "ai_services_name" {
+  default = "ai-services"
+}
+
+variable "ai_foundry_name" {
+  default = "hub"
+}
+
+variable "ai_foundry_project_name" {
+  default = "aiprj"
+}
+
+variable "ai_foundry_kv_name" {
+  default = "kv-hub"
+}
+
+variable "ai_foundry_st_name" {
+  default = "sthub"
+}
+
+variable "bing_account_name" {
+  default = "bing"
+}
+
 variable "use_random_suffix" {
   default = true
 }
@@ -147,11 +171,11 @@ variable "enable_openai_plugin_compare_financial_products" {
 }
 
 variable "use_private_endpoints" {
-    type = bool
-    default = false
+  type    = bool
+  default = true
 }
 
 variable "allowed_ips" {
-  type = list(string)
+  type    = list(string)
   default = []
 }

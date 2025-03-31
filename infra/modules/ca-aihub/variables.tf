@@ -34,6 +34,9 @@ variable "vision_endpoint" {}
 variable "vision_key" {}
 
 variable "storage_connection_string" {}
-variable "bing_key" {}
+
+variable "ai_foundry_project_connection_string" {}
+variable "ai_foundry_deployment_name" {}
+variable "ai_foundry_bing_connection_name" {}
 
 variable "enable_entra_id_authentication" {}

@@ -1,26 +1,28 @@
 using OpenAI.Chat;
+using Azure.AI.Projects;
 
 namespace MVCWeb.Controllers;
 
 public class BrandAnalyzerController : Controller
 {
     private BrandAnalyzerModel model;
-    private string Bingendpoint;
-    private string BingsubscriptionKey;
-    private string AOAIendpoint;
-    private string AOAIsubscriptionKey;
-    private string AOAIDeploymentName;
-    private HttpClient httpClient;
+    private string connectionString;
+    private string modelDeploymentName;
+    private string bingConnectionName;
+    private AIProjectClient projectClient;
+    private AgentsClient agentClient;
 
     public BrandAnalyzerController(IConfiguration config, IHttpClientFactory clientFactory)
     {
-        Bingendpoint = config.GetValue<string>("BrandAnalyzer:BingEndpoint") ?? throw new ArgumentNullException("BingEndpoint");
-        BingsubscriptionKey = config.GetValue<string>("BrandAnalyzer:BingKey") ?? throw new ArgumentNullException("BingKey");
-        AOAIendpoint = config.GetValue<string>("BrandAnalyzer:OpenAIEndpoint") ?? throw new ArgumentNullException("OpenAIEndpoint");
-        AOAIsubscriptionKey = config.GetValue<string>("BrandAnalyzer:OpenAISubscriptionKey") ?? throw new ArgumentNullException("OpenAISubscriptionKey");
-        AOAIDeploymentName = config.GetValue<string>("BrandAnalyzer:DeploymentName") ?? throw new ArgumentNullException("DeploymentName");
         model = new BrandAnalyzerModel();
-        httpClient = clientFactory.CreateClient();
+
+        connectionString = System.Environment.GetEnvironmentVariable("AI_FOUNDRY_PROJECT_CONNECTION_STRING");
+        modelDeploymentName = System.Environment.GetEnvironmentVariable("AI_SERVICES_MODEL_DEPLOYMENT_NAME");
+        bingConnectionName = System.Environment.GetEnvironmentVariable("BING_CONNECTION_NAME");
+
+        projectClient = new AIProjectClient(connectionString, new DefaultAzureCredential());
+
+        agentClient = projectClient.GetAgentsClient();
     }
 
     public IActionResult BrandAnalyzer()
@@ -33,7 +35,6 @@ public class BrandAnalyzerController : Controller
     {
         model.CompanyName = HttpContext.Request.Form["companyName"];
         model.Prompt = HttpContext.Request.Form["prompt"];
-        string input_context = "";
 
         if (CheckNullValues(model.CompanyName))
         {
@@ -41,75 +42,70 @@ public class BrandAnalyzerController : Controller
             return View("BrandAnalyzer");
         }
 
-        string query_bing = model.CompanyName + " opiniones de usuarios";
-        httpClient.BaseAddress = new Uri(Bingendpoint);
+        ConnectionResponse  bingConnection = await projectClient.GetConnectionsClient().GetConnectionAsync(bingConnectionName);
+        var connectionId = bingConnection.Id;
 
-        // Add an Accept header for JSON format.
-        httpClient.DefaultRequestHeaders.Accept.Add(
-        new MediaTypeWithQualityHeaderValue("application/json"));
-        httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", BingsubscriptionKey);
-        string uri = Bingendpoint + "?q=" + query_bing + "&mkt=es-ES&count=100";
-        // List data response.
-        HttpResponseMessage response = httpClient.GetAsync(uri).Result;  // Blocking call! Program will wait here until a response is received or a timeout occurs.
-        response.EnsureSuccessStatusCode();
-        string responseBody = await response.Content.ReadAsStringAsync();
-        // Above three lines can be replaced with new helper method below
-        // string responseBody = await client.GetStringAsync(uri);
-
-        response.EnsureSuccessStatusCode();
-
-        // Parse the response as JSON
-        try
+        ToolConnectionList connectionList = new()
         {
-            var responsejson = JsonSerializer.Deserialize<dynamic>(await response.Content.ReadAsStringAsync())!;
+            ConnectionList = { new ToolConnection(connectionId) }
+        };
+        BingGroundingToolDefinition bingGroundingTool = new(connectionList);
 
-            // Get the web pages from the response
-            var news = responsejson.webPages.value;
-            // Iterate over the news items and print them
-            foreach (var i in news)
+        Agent agent = await agentClient.CreateAgentAsync(
+            model: modelDeploymentName,
+            name: "my-assistant",
+            instructions: $"You will provide a list results from opinions on the Internet about {model.CompanyName} Bing search. If {model.CompanyName} is not a company what the user is asking for, answer to provide a new Company name. The user will ask you what they want to get from the company opinions.",
+            tools: [bingGroundingTool]);
+
+        var agentId = agent.Id; AgentThread thread = await agentClient.CreateThreadAsync();
+
+        // Create message to thread
+        ThreadMessage message = await agentClient.CreateMessageAsync(
+            thread.Id,
+            MessageRole.User,
+            model.Prompt);
+
+        // Run the agent
+        ThreadRun run = await agentClient.CreateRunAsync(thread, agent);
+        do
+        {
+            await Task.Delay(TimeSpan.FromMilliseconds(500));
+            run = await agentClient.GetRunAsync(thread.Id, run.Id);
+        }
+        while (run.Status == RunStatus.Queued
+            || run.Status == RunStatus.InProgress);
+
+        PageableList<ThreadMessage> messages = await agentClient.GetMessagesAsync(
+            threadId: thread.Id,
+            order: ListSortOrder.Ascending
+        );
+
+        StringBuilder sb = new();
+
+        foreach (ThreadMessage threadMessage in messages)
+        {
+            foreach (MessageContent contentItem in threadMessage.ContentItems)
             {
-                input_context = input_context + i.name + "\n" + i.snippet + "\n" + i.url + "\n" + "-------";
+                if (contentItem is MessageTextContent textItem)
+                {
+                    string response = textItem.Text;
+                    if (textItem.Annotations != null)
+                    {
+                        foreach (MessageTextAnnotation annotation in textItem.Annotations)
+                        {
+                            if (annotation is MessageTextUrlCitationAnnotation urlAnnotation)
+                            {
+                                response = response.Replace(urlAnnotation.Text, $" [{urlAnnotation.UrlCitation.Title}]({urlAnnotation.UrlCitation.Url})");
+                            }
+                        }
+                    }
+                    sb.AppendLine(response);
+
+                }
             }
         }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-        }
 
-        try
-        {
-            Uri aoaiEndpointUri = new(AOAIendpoint);
-
-            AzureOpenAIClient azureClient = string.IsNullOrEmpty(AOAIsubscriptionKey)
-                ? new(aoaiEndpointUri, new DefaultAzureCredential())
-                : new(aoaiEndpointUri, new AzureKeyCredential(AOAIsubscriptionKey));
-
-            ChatClient chatClient = azureClient.GetChatClient(AOAIDeploymentName);
-
-            var messages = new ChatMessage[]
-            {
-                new SystemChatMessage($"I will provide a list results from opinions on the Internet about {model.CompanyName} Bing search. If {model.CompanyName} is not a company what the user is asking for, answer to provide a new Company name. The user will ask you what they want to get from the company opinions. \n Results: {input_context}"),
-                new UserChatMessage(model.Prompt),
-            };
-
-            ChatCompletionOptions chatCompletionOptions = new()
-            {
-                
-                Temperature = 0.7f,
-                MaxTokens = 1000,
-                TopP = 0.95f,
-                FrequencyPenalty = 0,
-                PresencePenalty = 0,
-            };
-
-            ChatCompletion completion = await chatClient.CompleteChatAsync(messages, chatCompletionOptions);
-
-            ViewBag.Message = completion.Content[0].Text;
-        }
-        catch (RequestFailedException)
-        {
-            throw;
-        }
+        ViewBag.Message = sb.ToString();
 
         return View("BrandAnalyzer", model);
     }

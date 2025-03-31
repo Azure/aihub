@@ -34,10 +34,6 @@ resource "azapi_resource" "ca_back" {
           {
             name  = "storage-connection-string"
             value = "${var.storage_connection_string}"
-          },
-          {
-            name  = "bing-key"
-            value = "${var.bing_key}"
           }
         ]
         ingress = {
@@ -87,24 +83,16 @@ resource "azapi_resource" "ca_back" {
                 value = "contentsafety/text:detectJailbreak?api-version=2023-10-15-preview"
               },
               {
-                name  = "BrandAnalyzer__BingEndpoint",
-                value = "https://api.bing.microsoft.com/v7.0/search"
+                name  = "AI_FOUNDRY_PROJECT_CONNECTION_STRING",
+                value = "${var.ai_foundry_project_connection_string}"
               },
               {
-                name      = "BrandAnalyzer__BingKey",
-                secretRef = "bing-key"
+                name  = "AI_SERVICES_MODEL_DEPLOYMENT_NAME",
+                value = "${var.ai_foundry_deployment_name}"
               },
               {
-                name  = "BrandAnalyzer__OpenAIEndpoint",
-                value = "${var.openai_endpoint}"
-              },
-              {
-                name  = "BrandAnalyzer__OpenAISubscriptionKey",
-                value = ""
-              },
-              {
-                name  = "BrandAnalyzer__DeploymentName",
-                value = var.chat_gpt4_deployment
+                name  = "BING_CONNECTION_NAME",
+                value = "${var.ai_foundry_bing_connection_name}"
               },
               {
                 name  = "CallCenter__OpenAIEndpoint",
