@@ -10,7 +10,7 @@ resource "azurerm_cognitive_account" "openai" {
     for_each = var.use_private_endpoints ? [1] : []
     content {
       default_action = "Deny"
-      ip_rules       = var.allowed_ips      
+      ip_rules       = var.allowed_ips
     }
   }
 }
@@ -26,8 +26,8 @@ resource "azurerm_cognitive_deployment" "embedding" {
     name    = "text-embedding-ada-002"
     version = "2"
   }
-  scale {
-    type     = "Standard"
+  sku {
+    name     = "Standard"
     capacity = 40
   }
 }
@@ -41,8 +41,8 @@ resource "azurerm_cognitive_deployment" "gpt_4" {
     name    = "gpt-4"
     version = "1106-Preview"
   }
-  scale {
-    type     = "Standard"
+  sku {
+    name     = "Standard"
     capacity = 20
   }
 }
@@ -56,8 +56,8 @@ resource "azurerm_cognitive_deployment" "gpt4_vision" {
     name    = "gpt-4"
     version = "vision-preview"
   }
-  scale {
-    type     = "Standard"
+  sku {
+    name     = "Standard"
     capacity = 10
   }
 }
@@ -71,8 +71,8 @@ resource "azurerm_cognitive_deployment" "gpt4o" {
     name    = "gpt-4o"
     version = "2024-05-13"
   }
-  scale {
-    type     = "Standard"
+  sku {
+    name     = "Standard"
     capacity = 30
   }
 }
@@ -104,7 +104,7 @@ resource "azurerm_private_endpoint" "pep_openai" {
     name                           = "${var.azopenai_name}-privateserviceconnection"
     private_connection_resource_id = azurerm_cognitive_account.openai.id
     is_manual_connection           = false
-    subresource_names              = ["account"]  
+    subresource_names              = ["account"]
   }
 
   private_dns_zone_group {

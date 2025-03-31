@@ -1,5 +1,5 @@
 locals {
-  network_rules_bypass = var.use_private_endpoints ? [ "None" ] : [ "AzureServices" ]
+  network_rules_bypass = var.use_private_endpoints ? ["None"] : ["AzureServices"]
 }
 
 resource "azurerm_storage_account" "sa" {
@@ -8,7 +8,7 @@ resource "azurerm_storage_account" "sa" {
   resource_group_name             = var.resource_group_name
   account_tier                    = "Standard"
   account_replication_type        = "LRS"
-  enable_https_traffic_only       = true
+  https_traffic_only_enabled      = true
   allow_nested_items_to_be_public = false
 }
 
@@ -26,53 +26,55 @@ resource "azurerm_storage_account_network_rules" "sa_network_rules" {
 resource "azurerm_storage_container" "content" {
   name                  = "content"
   container_access_type = "private"
-  storage_account_name  = azurerm_storage_account.sa.name
+  storage_account_id    = azurerm_storage_account.sa.id
 }
 
 resource "azurerm_storage_container" "audio" {
   name                  = "audio-files"
   container_access_type = "private"
-  storage_account_name  = azurerm_storage_account.sa.name
+  storage_account_id    = azurerm_storage_account.sa.id
 }
 
 resource "azurerm_storage_container" "form-analyzer" {
   name                  = "form-analyzer"
   container_access_type = "private"
-  storage_account_name  = azurerm_storage_account.sa.name
+  storage_account_id    = azurerm_storage_account.sa.id
 }
 
 resource "azurerm_storage_container" "image-analyzer" {
   name                  = "image-analyzer"
   container_access_type = "private"
-  storage_account_name  = azurerm_storage_account.sa.name
+  storage_account_id    = azurerm_storage_account.sa.id
 }
 
 resource "azurerm_storage_container" "video-analyzer" {
   name                  = "video-analyzer"
   container_access_type = "private"
-  storage_account_name  = azurerm_storage_account.sa.name
+  storage_account_id    = azurerm_storage_account.sa.id
 }
 
 resource "azurerm_storage_container" "image-moderator" {
   name                  = "image-moderator"
   container_access_type = "private"
-  storage_account_name  = azurerm_storage_account.sa.name
+  storage_account_id    = azurerm_storage_account.sa.id
 }
 
 resource "azurerm_storage_container" "document-comparison" {
   name                  = "document-comparison"
   container_access_type = "private"
-  storage_account_name  = azurerm_storage_account.sa.name
+  storage_account_id    = azurerm_storage_account.sa.id
 }
 
 resource "azurerm_storage_share" "share" {
   name                 = "staging"
+  # storage_account_id   = azurerm_storage_account.sa.id
   storage_account_name = azurerm_storage_account.sa.name
   quota                = 5
 }
 
 resource "azurerm_storage_share" "customization" {
   name                 = "customization"
+  # storage_account_id   = azurerm_storage_account.sa.id
   storage_account_name = azurerm_storage_account.sa.name
   quota                = 5
 }
@@ -164,7 +166,7 @@ resource "azurerm_private_endpoint" "pep_file" {
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "private_dns_zone_link_file" {
-  count               = var.use_private_endpoints ? 1 : 0
+  count                 = var.use_private_endpoints ? 1 : 0
   name                  = "file"
   resource_group_name   = var.resource_group_name
   private_dns_zone_name = azurerm_private_dns_zone.private_dns_zone_file[0].name

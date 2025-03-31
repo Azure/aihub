@@ -1,7 +1,9 @@
 data "azurerm_subscription" "current" {}
 
+data "azurerm_client_config" "current" {}
+
 data "http" "current_ip" {
-  url = "http://ipv4.icanhazip.com"
+  url   = "http://ipv4.icanhazip.com"
   count = var.use_private_endpoints ? 1 : 0
 }
 
@@ -30,8 +32,16 @@ locals {
   ca_chat_name            = "${var.ca_chat_name}${local.name_sufix}"
   ca_prep_docs_name       = "${var.ca_prep_docs_name}${local.name_sufix}"
   ca_aihub_name           = "${var.ca_aihub_name}${local.name_sufix}"
-  func_name               = "plugin${local.sufix}"
-  cv_name                 = "${var.cv_name}${local.name_sufix}"
+
+  ai_services_name        = "${var.ai_services_name}${local.name_sufix}"
+  ai_foundry_name         = "${var.ai_foundry_name}${local.name_sufix}"
+  ai_foundry_project_name = "${var.ai_foundry_project_name}${local.name_sufix}"
+  ai_foundry_kv_name      = "${var.ai_foundry_kv_name}${local.name_sufix}"
+  ai_foundry_st_name      = "${var.ai_foundry_st_name}${local.sufix}"
+  bing_account_name       = "${var.bing_account_name}${local.name_sufix}"
+
+  func_name = "plugin${local.sufix}"
+  cv_name   = "${var.cv_name}${local.name_sufix}"
 }
 
 resource "azurerm_resource_group" "rg" {
@@ -74,7 +84,7 @@ module "apim" {
   openai_service_endpoint  = module.openai.openai_endpoint
   tenant_id                = data.azurerm_subscription.current.tenant_id
   use_private_endpoints    = var.use_private_endpoints
- 
+
   depends_on = [module.nsg]
 }
 
@@ -99,7 +109,7 @@ module "search" {
   principal_id                = module.mi.principal_id
   allowed_ips                 = local.allowed_ips
   vnet_id                     = module.vnet.virtual_network_id
-  private_endpoints_subnet_id = module.vnet.pe_subnet_id 
+  private_endpoints_subnet_id = module.vnet.pe_subnet_id
   use_private_endpoints       = var.use_private_endpoints
 }
 
@@ -125,7 +135,7 @@ module "st" {
   storage_account_name        = local.storage_account_name
   principal_id                = module.mi.principal_id
   vnet_id                     = module.vnet.virtual_network_id
-  private_endpoints_subnet_id = module.vnet.pe_subnet_id 
+  private_endpoints_subnet_id = module.vnet.pe_subnet_id
   use_private_endpoints       = var.use_private_endpoints
   allowed_ips                 = local.allowed_ips
 }
@@ -139,8 +149,24 @@ module "openai" {
   allowed_ips                 = local.allowed_ips
   vnet_id                     = module.vnet.virtual_network_id
   vnet_location               = azurerm_resource_group.rg.location
-  private_endpoints_subnet_id = module.vnet.pe_subnet_id 
+  private_endpoints_subnet_id = module.vnet.pe_subnet_id
   use_private_endpoints       = var.use_private_endpoints
+}
+
+module "ai_foundry" {
+  source                      = "./modules/ai-foundry"
+  location                    = azurerm_resource_group.rg.location
+  resource_group_name         = azurerm_resource_group.rg.name
+  resource_group_id           = azurerm_resource_group.rg.id
+  ai_foundry_name             = local.ai_foundry_name
+  ai_services_name            = local.ai_services_name
+  ai_foundry_project_name     = local.ai_foundry_project_name
+  kv_name                     = local.ai_foundry_kv_name
+  st_name                     = local.ai_foundry_st_name
+  bing_account_name           = local.bing_account_name
+  subscription_id             = data.azurerm_subscription.current.subscription_id
+  tenant_id                   = data.azurerm_subscription.current.tenant_id
+  current_principal_object_id = data.azurerm_client_config.current.object_id
 }
 
 module "cog" {
@@ -160,7 +186,7 @@ module "cog" {
   content_safety_location            = var.location_content_safety
   allowed_ips                        = local.allowed_ips
   vnet_id                            = module.vnet.virtual_network_id
-  private_endpoints_subnet_id        = module.vnet.pe_subnet_id 
+  private_endpoints_subnet_id        = module.vnet.pe_subnet_id
   use_private_endpoints              = var.use_private_endpoints
 }
 
@@ -216,42 +242,44 @@ module "ca_prep_docs" {
 }
 
 module "ca_aihub" {
-  source                         = "./modules/ca-aihub"
-  location                       = azurerm_resource_group.rg.location
-  resource_group_id              = azurerm_resource_group.rg.id
-  ca_name                        = local.ca_aihub_name
-  cae_id                         = module.cae.cae_id
-  cae_default_domain             = module.cae.default_domain
-  managed_identity_id            = module.mi.mi_id
-  chat_gpt4_deployment           = module.openai.gpt4_deployment_name
-  chat_gpt4_model                = module.openai.gpt4_deployment_model_name
-  chat_gpt4_vision_deployment    = module.openai.gpt4_vision_deployment_name
-  chat_gpt4_vision_model         = module.openai.gpt4_vision_deployment_model_name
-  chat_gpt4o_deployment          = module.openai.gpt4o_deployment_name
-  chat_gpt4o_model               = module.openai.gpt4o_deployment_model_name
-  embeddings_deployment          = module.openai.embedding_deployment_name
-  embeddings_model               = module.openai.embedding_deployment_name
-  storage_account_name           = module.st.storage_account_name
-  storage_account_key            = module.st.key
-  storage_container_name         = module.st.storage_container_name
-  search_service_name            = module.search.search_service_name
-  search_index_name              = module.search.search_index_name
-  openai_endpoint                = var.enable_apim ? "${module.apim[0].gateway_url}/" : module.openai.openai_endpoint
-  chat_fqdn                      = module.ca_chat.fqdn
-  pbi_report_link                = var.pbi_report_link
-  content_safety_endpoint        = module.cog.content_safety_endpoint
-  content_safety_key             = module.cog.content_safety_key
-  cognitive_service_endpoint     = module.cog.cognitive_service_endpoint
-  cognitive_service_key          = module.cog.cognitive_service_key
-  speech_key                     = module.cog.speech_key
-  vision_endpoint                = module.cog.vision_endpoint
-  vision_key                     = module.cog.vision_key
-  storage_connection_string      = module.st.connection_string
-  bing_key                       = module.cog.bing_key
-  tenant_id                      = data.azurerm_subscription.current.tenant_id
-  managed_identity_client_id     = module.mi.client_id
-  enable_entra_id_authentication = var.enable_entra_id_authentication
-  image_name                     = var.ca_aihub_image
+  source                               = "./modules/ca-aihub"
+  location                             = azurerm_resource_group.rg.location
+  resource_group_id                    = azurerm_resource_group.rg.id
+  ca_name                              = local.ca_aihub_name
+  cae_id                               = module.cae.cae_id
+  cae_default_domain                   = module.cae.default_domain
+  managed_identity_id                  = module.mi.mi_id
+  chat_gpt4_deployment                 = module.openai.gpt4_deployment_name
+  chat_gpt4_model                      = module.openai.gpt4_deployment_model_name
+  chat_gpt4_vision_deployment          = module.openai.gpt4_vision_deployment_name
+  chat_gpt4_vision_model               = module.openai.gpt4_vision_deployment_model_name
+  chat_gpt4o_deployment                = module.openai.gpt4o_deployment_name
+  chat_gpt4o_model                     = module.openai.gpt4o_deployment_model_name
+  embeddings_deployment                = module.openai.embedding_deployment_name
+  embeddings_model                     = module.openai.embedding_deployment_name
+  storage_account_name                 = module.st.storage_account_name
+  storage_account_key                  = module.st.key
+  storage_container_name               = module.st.storage_container_name
+  search_service_name                  = module.search.search_service_name
+  search_index_name                    = module.search.search_index_name
+  openai_endpoint                      = var.enable_apim ? "${module.apim[0].gateway_url}/" : module.openai.openai_endpoint
+  chat_fqdn                            = module.ca_chat.fqdn
+  pbi_report_link                      = var.pbi_report_link
+  content_safety_endpoint              = module.cog.content_safety_endpoint
+  content_safety_key                   = module.cog.content_safety_key
+  cognitive_service_endpoint           = module.cog.cognitive_service_endpoint
+  cognitive_service_key                = module.cog.cognitive_service_key
+  speech_key                           = module.cog.speech_key
+  vision_endpoint                      = module.cog.vision_endpoint
+  vision_key                           = module.cog.vision_key
+  storage_connection_string            = module.st.connection_string
+  ai_foundry_bing_connection_name      = module.ai_foundry.bing_connection_name
+  ai_foundry_deployment_name           = module.ai_foundry.deployment_name
+  ai_foundry_project_connection_string = module.ai_foundry.project_connection_string
+  tenant_id                            = data.azurerm_subscription.current.tenant_id
+  managed_identity_client_id           = module.mi.client_id
+  enable_entra_id_authentication       = var.enable_entra_id_authentication
+  image_name                           = var.ca_aihub_image
 }
 
 module "plugin" {

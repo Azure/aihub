@@ -1,10 +1,10 @@
 resource "azurerm_storage_account" "sa" {
-  name                      = "stfunc${var.func_name}"
-  location                  = var.location
-  resource_group_name       = var.resource_group_name
-  account_tier              = "Standard"
-  account_replication_type  = "LRS"
-  enable_https_traffic_only = true
+  name                       = "stfunc${var.func_name}"
+  location                   = var.location
+  resource_group_name        = var.resource_group_name
+  account_tier               = "Standard"
+  account_replication_type   = "LRS"
+  https_traffic_only_enabled = true
 }
 
 resource "azapi_resource" "ca_function" {
