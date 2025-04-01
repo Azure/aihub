@@ -8,7 +8,6 @@ variable "speech_name" {}
 variable "vision_name" {}
 variable "vision_location" {}
 variable "bing_name" {}
-variable "deploy_bing" {}
 variable "content_safety_storage_resource_id" {}
 variable "content_safety_location" {}
 variable "allowed_ips" {}

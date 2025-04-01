@@ -1,9 +1,0 @@
-{
-  "profiles": {
-    "OpenAI_Plugin": {
-      "commandName": "Project",
-      "commandLineArgs": "--port 7059",
-      "launchBrowser": false
-    }
-  }
-}

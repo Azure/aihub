@@ -183,7 +183,6 @@ module "cog" {
   vision_name                        = local.vision_name
   vision_location                    = var.location_azopenai
   content_safety_storage_resource_id = module.st.storage_account_id
-  deploy_bing                        = var.deploy_bing
   content_safety_location            = var.location_content_safety
   allowed_ips                        = local.allowed_ips
   vnet_id                            = module.vnet.virtual_network_id
@@ -297,22 +296,4 @@ module "plugin" {
   openai_key               = module.openai.openai_key
   openai_model             = module.openai.gpt4_deployment_name
   openai_endpoint          = module.openai.openai_endpoint
-}
-
-module "plugin-fsi" {
-  count                    = var.enable_openai_plugin_compare_financial_products ? 1 : 0
-  source                   = "./modules/ca-plugin-fsi"
-  location                 = azurerm_resource_group.rg.location
-  resource_group_name      = azurerm_resource_group.rg.name
-  resource_group_id        = azurerm_resource_group.rg.id
-  func_name                = "fsi${local.func_name}"
-  image_name               = var.ca_fsi_plugin_image
-  cae_id                   = module.cae.cae_id
-  cae_default_domain       = module.cae.default_domain
-  appi_instrumentation_key = module.appi.appi_key
-  openai_key               = module.openai.openai_key
-  openai_model             = module.openai.gpt4_deployment_name
-  openai_endpoint          = module.openai.openai_endpoint
-  bing_endpoint            = "https://api.bing.microsoft.com/v7.0/search"
-  bing_key                 = module.cog.bing_key
 }
