@@ -110,12 +110,8 @@ variable "ca_plugin_image" {
   default = "ghcr.io/azure/aihub/aihub-plugin:1.0.14"
 }
 
-variable "ca_fsi_plugin_image" {
-  default = "ghcr.io/azure/aihub/aihub-fsiplugin:1.0.14"
-}
-
 variable "ca_aihub_image" {
-  default = "ghcr.io/azure/aihub/aihub:1.0.14"
+  default = "ghcr.io/azure/aihub/aihub:1.0.15-preview.2"
 }
 
 variable "ai_services_name" {
@@ -147,15 +143,11 @@ variable "use_random_suffix" {
 }
 
 variable "enable_entra_id_authentication" {
-  default = true
+  default = false
 }
 
 variable "enable_apim" {
   default = true
-}
-
-variable "deploy_bing" {
-  default = false
 }
 
 variable "pbi_report_link" {
@@ -172,7 +164,7 @@ variable "enable_openai_plugin_compare_financial_products" {
 
 variable "use_private_endpoints" {
   type    = bool
-  default = true
+  default = false
 }
 
 variable "allowed_ips" {

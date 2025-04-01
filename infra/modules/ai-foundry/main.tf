@@ -140,7 +140,7 @@ resource "azapi_resource" "bing_connection" {
   schema_validation_enabled = false
   body = {
     properties = {
-      category      = "APIKey"
+      category      = "ApiKey"
       target        = azapi_resource.bing_search.output.properties.endpoint
       authType      = "ApiKey"
       isSharedToAll = true
