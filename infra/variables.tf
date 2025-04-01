@@ -103,15 +103,15 @@ variable "ca_chat_image" {
 }
 
 variable "ca_prep_docs_image" {
-  default = "ghcr.io/azure/aihub/aihub-prepdocs:1.0.14"
+  default = "ghcr.io/azure/aihub/aihub-prepdocs:1.0.15"
 }
 
 variable "ca_plugin_image" {
-  default = "ghcr.io/azure/aihub/aihub-plugin:1.0.14"
+  default = "ghcr.io/azure/aihub/aihub-plugin:1.0.15"
 }
 
 variable "ca_aihub_image" {
-  default = "ghcr.io/azure/aihub/aihub:1.0.15-preview.2"
+  default = "ghcr.io/azure/aihub/aihub:1.0.15"
 }
 
 variable "ai_services_name" {
@@ -143,7 +143,7 @@ variable "use_random_suffix" {
 }
 
 variable "enable_entra_id_authentication" {
-  default = false
+  default = true
 }
 
 variable "enable_apim" {
