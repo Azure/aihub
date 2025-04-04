@@ -77,7 +77,7 @@ Remove-Item $zipFilePath -Force
 
 # Set subscription environment variable
 Write-Output  "Setting up Azure subscription..."
-$Env:AZURE_SUBSCRIPTION_ID = (az account show --query id -o tsv)
+$Env:ARM_SUBSCRIPTION_ID = (az account show --query id -o tsv)
 
 # Use Terraform to deploy AI Hub
 Write-Output "Deploying AI Hub..."
