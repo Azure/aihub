@@ -6,12 +6,12 @@ output "openai_endpoint" {
   value = azurerm_cognitive_account.openai.endpoint
 }
 
-output "gpt4_vision_deployment_name" {
-  value = azurerm_cognitive_deployment.gpt4_vision.name
+output "gpt4_1_deployment_name" {
+  value = azurerm_cognitive_deployment.gpt4_1.name
 }
 
-output "gpt4_vision_deployment_model_name" {
-  value = azurerm_cognitive_deployment.gpt4_vision.model[0].name
+output "gpt4_1_deployment_model_name" {
+  value = azurerm_cognitive_deployment.gpt4_1.model[0].name
 }
 
 output "gpt4_deployment_name" {

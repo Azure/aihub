@@ -39,7 +39,7 @@ resource "azurerm_cognitive_deployment" "gpt_4" {
   model {
     format  = "OpenAI"
     name    = "gpt-4"
-    version = "1106-Preview"
+    version = "turbo-2024-04-09"
   }
   sku {
     name     = "Standard"
@@ -47,17 +47,17 @@ resource "azurerm_cognitive_deployment" "gpt_4" {
   }
 }
 
-resource "azurerm_cognitive_deployment" "gpt4_vision" {
-  name                 = "gpt4-vision"
+resource "azurerm_cognitive_deployment" "gpt4_1" {
+  name                 = "gpt4.1"
   cognitive_account_id = azurerm_cognitive_account.openai.id
   rai_policy_name      = "Microsoft.Default"
   model {
     format  = "OpenAI"
-    name    = "gpt-4"
-    version = "vision-preview"
+    name    = "gpt-4.1"
+    version = "2025-04-14"
   }
   sku {
-    name     = "Standard"
+    name     = "GlobalStandard"
     capacity = 10
   }
 }
@@ -69,7 +69,7 @@ resource "azurerm_cognitive_deployment" "gpt4o" {
   model {
     format  = "OpenAI"
     name    = "gpt-4o"
-    version = "2024-05-13"
+    version = "2024-08-06"
   }
   sku {
     name     = "Standard"

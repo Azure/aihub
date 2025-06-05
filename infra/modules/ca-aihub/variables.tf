@@ -14,8 +14,8 @@ variable "search_service_name" {}
 variable "search_index_name" {}
 variable "chat_gpt4_deployment" {}
 variable "chat_gpt4_model" {}
-variable "chat_gpt4_vision_deployment" {}
-variable "chat_gpt4_vision_model" {}
+variable "chat_gpt4_1_deployment" {}
+variable "chat_gpt4_1_model" {}
 variable "chat_gpt4o_deployment" {}
 variable "chat_gpt4o_model" {}
 variable "embeddings_deployment" {}
