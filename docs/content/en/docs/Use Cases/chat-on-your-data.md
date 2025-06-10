@@ -14,4 +14,17 @@ Feel the power of artificial intelligence and cloud computing to provide a smart
 
 **AI Hub** uses Azure Cognitive Search to serve an index of vectorized content, that will be used by our LLM (ChatGPT) to respond to user's query.
 
+## How It Works
+
+When you upload documents to AI Hub, they go through a comprehensive indexing process:
+
+1. **Document Processing**: Files are uploaded to Azure Blob Storage and processed using Azure Form Recognizer to extract text while preserving structure
+2. **Content Chunking**: Text is intelligently split into sections with overlap to maintain context
+3. **Vectorization**: Each section is converted to embeddings using OpenAI's embedding models
+4. **Indexing**: Content and vectors are stored in Azure Cognitive Search for fast retrieval
+
+This process enables the system to understand your documents semantically and provide accurate, contextual responses to your queries.
+
+For detailed information about the document indexing process, see the [Azure Cognitive Search concepts documentation](/aihub/docs/concepts/azure-cognitive-search/#document-indexing-process).
+
 Learn more at the official documentation: [What is Azure Cognitive Search?](https://learn.microsoft.com/en-us/azure/search/search-what-is-azure-search).
