@@ -93,6 +93,16 @@ resource "azapi_resource" "ca_back" {
               {
                 name  = "APP_LOG_LEVEL"
                 value = "DEBUG"
+              },
+              {
+                name  = "DEFAULT_QUESTIONS"
+                value = jsonencode([
+                  "Make me a summary of the document",
+                  "Get me the most relevant topics of the document",
+                  "Explain the document for a CEO",
+                  "Explain the document for a kid", 
+                  "Translate the main topics of the document to X language"
+                ])
               }
             ],
           },
