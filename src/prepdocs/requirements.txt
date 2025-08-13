@@ -1,4 +1,4 @@
-pypdf==3.17.0
+pypdf==6.0.0
 azure-identity==1.16.1
 azure-search-documents==11.4.0b6
 azure-ai-formrecognizer==3.2.1
