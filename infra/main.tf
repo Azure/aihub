@@ -138,6 +138,7 @@ module "st" {
   private_endpoints_subnet_id = module.vnet.pe_subnet_id
   use_private_endpoints       = var.use_private_endpoints
   allowed_ips                 = local.allowed_ips
+  current_user_object_id      = data.azurerm_client_config.current.object_id
 }
 
 module "openai" {
@@ -208,8 +209,8 @@ module "ca_chat" {
   cae_id                         = module.cae.cae_id
   cae_default_domain             = module.cae.default_domain
   managed_identity_id            = module.mi.mi_id
-  chat_gpt_deployment            = module.openai.gpt4_deployment_name
-  chat_gpt_model                 = module.openai.gpt4_deployment_model_name
+  chat_gpt_deployment            = module.openai.gpt4o_deployment_name
+  chat_gpt_model                 = module.openai.gpt4o_deployment_model_name
   embeddings_deployment          = module.openai.embedding_deployment_name
   embeddings_model               = module.openai.embedding_deployment_name
   storage_account_name           = module.st.storage_account_name
@@ -249,20 +250,20 @@ module "ca_aihub" {
   cae_id                               = module.cae.cae_id
   cae_default_domain                   = module.cae.default_domain
   managed_identity_id                  = module.mi.mi_id
-  chat_gpt4_deployment                 = module.openai.gpt4_deployment_name
-  chat_gpt4_model                      = module.openai.gpt4_deployment_model_name
-  chat_gpt4_1_deployment                = module.openai.gpt4_1_deployment_name
-  chat_gpt4_1_model                     = module.openai.gpt4_1_deployment_model_name
-  chat_gpt4o_deployment                 = module.openai.gpt4o_deployment_name
-  chat_gpt4o_model                      = module.openai.gpt4o_deployment_model_name
-  embeddings_deployment                 = module.openai.embedding_deployment_name
-  embeddings_model                      = module.openai.embedding_deployment_name
-  storage_account_name                  = module.st.storage_account_name
-  storage_account_key                   = module.st.key
-  storage_container_name                = module.st.storage_container_name
-  search_service_name                   = module.search.search_service_name
-  search_index_name                     = module.search.search_index_name
-  openai_endpoint                       = var.enable_apim ? "${module.apim[0].gateway_url}/" : module.openai.openai_endpoint
+  chat_gpt4_deployment                 = module.openai.gpt4o_deployment_name
+  chat_gpt4_model                      = module.openai.gpt4o_deployment_model_name
+  chat_gpt4_1_deployment               = module.openai.gpt4_1_deployment_name
+  chat_gpt4_1_model                    = module.openai.gpt4_1_deployment_model_name
+  chat_gpt4o_deployment                = module.openai.gpt4o_deployment_name
+  chat_gpt4o_model                     = module.openai.gpt4o_deployment_model_name
+  embeddings_deployment                = module.openai.embedding_deployment_name
+  embeddings_model                     = module.openai.embedding_deployment_name
+  storage_account_name                 = module.st.storage_account_name
+  storage_account_key                  = module.st.key
+  storage_container_name               = module.st.storage_container_name
+  search_service_name                  = module.search.search_service_name
+  search_index_name                    = module.search.search_index_name
+  openai_endpoint                      = var.enable_apim ? "${module.apim[0].gateway_url}/" : module.openai.openai_endpoint
   chat_fqdn                            = module.ca_chat.fqdn
   pbi_report_link                      = var.pbi_report_link
   content_safety_endpoint              = module.cog.content_safety_endpoint
@@ -294,6 +295,6 @@ module "plugin" {
   cae_default_domain       = module.cae.default_domain
   appi_instrumentation_key = module.appi.appi_key
   openai_key               = module.openai.openai_key
-  openai_model             = module.openai.gpt4_deployment_name
+  openai_model             = module.openai.gpt4o_deployment_name
   openai_endpoint          = module.openai.openai_endpoint
 }

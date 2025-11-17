@@ -1,3 +1,5 @@
+data "azurerm_client_config" "current" {}
+
 module "sp" {
   count   = var.enable_entra_id_authentication ? 1 : 0
   source  = "../sp"
@@ -33,7 +35,7 @@ resource "azapi_resource" "current" {
           }
           validation = {
             allowedAudiences = [
-              "api://${module.sp[0].client_id}"
+              "api://${data.azurerm_client_config.current.tenant_id}/${module.sp[0].client_id}"
             ]
           }
         }

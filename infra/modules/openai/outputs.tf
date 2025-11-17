@@ -14,14 +14,6 @@ output "gpt4_1_deployment_model_name" {
   value = azurerm_cognitive_deployment.gpt4_1.model[0].name
 }
 
-output "gpt4_deployment_name" {
-  value = azurerm_cognitive_deployment.gpt_4.name
-}
-
-output "gpt4_deployment_model_name" {
-  value = azurerm_cognitive_deployment.gpt_4.model[0].name
-}
-
 output "gpt4o_deployment_name" {
   value = azurerm_cognitive_deployment.gpt4o.name
 }

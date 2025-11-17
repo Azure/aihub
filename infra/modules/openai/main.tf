@@ -32,21 +32,6 @@ resource "azurerm_cognitive_deployment" "embedding" {
   }
 }
 
-resource "azurerm_cognitive_deployment" "gpt_4" {
-  name                 = "gpt-4"
-  cognitive_account_id = azurerm_cognitive_account.openai.id
-  rai_policy_name      = "Microsoft.Default"
-  model {
-    format  = "OpenAI"
-    name    = "gpt-4"
-    version = "turbo-2024-04-09"
-  }
-  sku {
-    name     = "Standard"
-    capacity = 20
-  }
-}
-
 resource "azurerm_cognitive_deployment" "gpt4_1" {
   name                 = "gpt4.1"
   cognitive_account_id = azurerm_cognitive_account.openai.id

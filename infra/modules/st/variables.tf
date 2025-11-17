@@ -6,3 +6,4 @@ variable "allowed_ips" {}
 variable "vnet_id" {}
 variable "private_endpoints_subnet_id" {}
 variable "use_private_endpoints" {}
+variable current_user_object_id {}

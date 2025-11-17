@@ -5,7 +5,7 @@ resource "random_uuid" "uuid" {
 
 resource "azuread_application" "sp" {
   display_name    = var.sp_name
-  identifier_uris = ["api://${var.sp_name}"]
+  identifier_uris = ["api://${data.azurerm_client_config.current.tenant_id}/${var.sp_name}"]
   owners = [
     data.azurerm_client_config.current.object_id
   ]

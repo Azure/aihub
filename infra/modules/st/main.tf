@@ -66,14 +66,14 @@ resource "azurerm_storage_container" "document-comparison" {
 }
 
 resource "azurerm_storage_share" "share" {
-  name                 = "staging"
+  name = "staging"
   # storage_account_id   = azurerm_storage_account.sa.id
   storage_account_name = azurerm_storage_account.sa.name
   quota                = 5
 }
 
 resource "azurerm_storage_share" "customization" {
-  name                 = "customization"
+  name = "customization"
   # storage_account_id   = azurerm_storage_account.sa.id
   storage_account_name = azurerm_storage_account.sa.name
   quota                = 5
@@ -171,4 +171,10 @@ resource "azurerm_private_dns_zone_virtual_network_link" "private_dns_zone_link_
   resource_group_name   = var.resource_group_name
   private_dns_zone_name = azurerm_private_dns_zone.private_dns_zone_file[0].name
   virtual_network_id    = var.vnet_id
+}
+
+resource "azurerm_role_assignment" "storage_file_contributor_terraform" {
+  scope                = azurerm_storage_account.sa.id
+  role_definition_name = "Storage File Data Privileged Contributor"
+  principal_id         = var.current_user_object_id
 }
