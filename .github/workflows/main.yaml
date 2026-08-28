@@ -29,12 +29,12 @@ jobs:
       packages: write
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           fetch-depth: 0
       
       - name: Set up .NET Core
-        uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@871f041373faaad213a635d9afb62905ec029bbb # v1.10.1
         with:
           dotnet-version: '8.x'
           include-prerelease: true
@@ -56,24 +56,24 @@ jobs:
         working-directory: './src/AIHub'
 
       - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: .net-app
           path: ${{env.DOTNET_ROOT}}/myapp
 
       - name: Login to the Container registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
           
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
         
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@v3
+        uses: docker/metadata-action@b2391d37b4157fa4aa2e118d643f417910ff3242 # v3.8.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           
@@ -82,7 +82,7 @@ jobs:
           echo "GITHUB_REPOSITORY_LOWER_CASE=${GITHUB_REPOSITORY,,}" >> ${GITHUB_ENV}
           
       - name: Build and push Docker image for AIHub
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@1104d471370f9806843c095c1db02b5a90c5f8b6 # v3.3.1
         with:
           context: ./src/AIHub/
           file: ./src/AIHub/Dockerfile
@@ -93,12 +93,12 @@ jobs:
 
       - name: Extract metadata (tags, labels) for prep-docs Docker
         id: meta-docs
-        uses: docker/metadata-action@v3
+        uses: docker/metadata-action@b2391d37b4157fa4aa2e118d643f417910ff3242 # v3.8.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.DOCS_IMAGE_NAME }}
 
       - name: Build and push Docker image for prep-docs
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@1104d471370f9806843c095c1db02b5a90c5f8b6 # v3.3.1
         with:
           context: ./src/prepdocs/
           file: ./src/prepdocs/Dockerfile
@@ -108,12 +108,12 @@ jobs:
 
       - name: Extract metadata (tags, labels) for plugin Docker
         id: meta-plugin
-        uses: docker/metadata-action@v3
+        uses: docker/metadata-action@b2391d37b4157fa4aa2e118d643f417910ff3242 # v3.8.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.PLUGIN_IMAGE_NAME }}
 
       - name: Build and push Docker image for plugin
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@1104d471370f9806843c095c1db02b5a90c5f8b6 # v3.3.1
         with:
           context: ./src/OpenAI.Plugin/
           file: ./src/OpenAI.Plugin/Dockerfile
@@ -122,7 +122,7 @@ jobs:
           labels: ${{ steps.meta-plugin.outputs.labels }}
    
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: ${{ env.AIHUB_ARTIFACT_NAME }}
           path: |
@@ -140,12 +140,12 @@ jobs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@a37ce9120846195fa4ece8f58b268e6043cb2f26 # v3.7.0
         with:
           fetch-depth: 0
   
       - name: release
-        uses: actions/create-release@v1
+        uses: actions/create-release@0cb9c9b65d5d1901c1f53e5e66eaf4afd303e70e # v1.1.4
         id: create_release
         with:
           tag_name: ${{ github.ref }}
@@ -167,7 +167,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: download artifacts - ${{ env.AIHUB_ARTIFACT_NAME }}
-        uses: actions/download-artifact@v4.1.7
+        uses: actions/download-artifact@65a9edc5881444af0b9093a5e628f2fe47ea3b2e # v4.1.7
         with:
           name: ${{ env.AIHUB_ARTIFACT_NAME }}
           path: ${{ env.ARTIFACT_DIR }}/${{ env.AIHUB_ARTIFACT_NAME }}
@@ -176,7 +176,7 @@ jobs:
         run: zip -r ${{ env.AIHUB_ARTIFACT_NAME }}.zip ${{ env.ARTIFACT_DIR }}/${{ env.AIHUB_ARTIFACT_NAME }}/*
 
       - name: upload artifacts
-        uses: actions/upload-release-asset@v1
+        uses: actions/upload-release-asset@e8f9f06c4b078e705bd2ea027f0926603fc9b4d5 # v1.0.2
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
