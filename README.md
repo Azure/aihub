@@ -1,5 +1,14 @@
 # AI Hub
 
+> ## This repository is being archived
+> 
+> This repository is no longer actively maintained and is being archived.
+> 
+> If you're interested in related work, please check out its successor:
+> 👉 **[Azure/agentverse](https://github.com/azure/agentverse)**
+> 
+> Thank you to everyone who contributed to and used this project!
+
 Learn more at the official documentation: [AI Hub](https://azure.github.io/aihub/)
 
 ## High-level Architecture
